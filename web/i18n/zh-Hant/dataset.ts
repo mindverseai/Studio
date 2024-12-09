@@ -12,7 +12,7 @@ const translation = {
   datasetDeleted: '知識庫已刪除',
   datasetDeleteFailed: '刪除知識庫失敗',
   didYouKnow: '你知道嗎？',
-  intro1: '知識庫可以被整合到 Dify 應用中',
+  intro1: '知識庫可以被整合到 Mindverse 應用中',
   intro2: '作為上下文',
   intro3: ',',
   intro4: '或可以',
@@ -73,7 +73,7 @@ const translation = {
   nTo1RetrievalLegacyLinkText: 'N對1檢索將於9月正式棄用。',
   defaultRetrievalTip: '默認情況下，使用多路徑檢索。從多個知識庫中檢索知識，然後重新排名。',
   editExternalAPIConfirmWarningContent: {
-    end: 'external knowledge，並且此修改將應用於所有這些 Knowledge。是否確實要保存此更改？',
+    end: 'external knowledge，並且此修改將應用於所有這些 Knowledge。是否確實要保���此更改？',
     front: '此外部知識 API 連結到',
   },
   editExternalAPIFormWarning: {
@@ -139,7 +139,7 @@ const translation = {
   externalKnowledgeIdPlaceholder: '請輸入 Knowledge ID',
   editExternalAPIFormTitle: '編輯外部知識 API',
   externalKnowledgeId: '外部知識ID',
-  externalAPIPanelDescription: '外部知識 API 用於連接到 Dify 外部的知識庫，並從該知識庫中檢索知識。',
+  externalAPIPanelDescription: '外部知識 API 用於連接到 Mindverse 外部的知識庫，並從該知識庫中檢索知識。',
   externalAPI: '外部 API',
   editExternalAPITooltipTitle: '關聯知識',
   externalKnowledgeName: '外部知識名稱',

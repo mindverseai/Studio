@@ -12,7 +12,7 @@ const translation = {
   datasetDeleted: 'ナレッジが削除されました',
   datasetDeleteFailed: 'ナレッジの削除に失敗しました',
   didYouKnow: 'ご存知ですか？',
-  intro1: 'ナレッジはDifyアプリケーションに統合することができます',
+  intro1: 'ナレッジベースは Mindverse アプリケーションに統合できます',
   intro2: 'コンテキストとして',
   intro3: '、',
   intro4: 'または',
@@ -61,7 +61,7 @@ const translation = {
   rerankSettings: 'Rerank設定',
   weightedScore: {
     title: 'ウェイト設定',
-    description: '重みを調整することで、並べ替え戦略はセマンティックマッチングとキーワードマッチングのどちらを優先するかを決定します。',
+    description: '重みを調整することで、並べ替え戦略はセマンティックマッチングとキーワードマッチングのどち��を優先するかを決定します。',
     semanticFirst: 'セマンティック優先',
     keywordFirst: 'キーワード優先',
     customized: 'カスタマイズ',
@@ -87,7 +87,7 @@ const translation = {
     },
     content: {
       front: 'この外部ナレッジAPIは、',
-      end: '外部の知識。このAPIを削除すると、それらすべてが無効になります。この API を削除してもよろしいですか ?',
+      end: '外部の知識。このAPIを削除すると、���れらすべてが無効になります。この API を削除してもよろしいですか ?',
     },
     noConnectionContent: 'この API を削除してもよろしいですか ?',
   },
@@ -145,7 +145,7 @@ const translation = {
   createExternalAPI: '外部ナレッジ API を追加する',
   externalKnowledgeDescriptionPlaceholder: 'このナレッジベースの内容を説明する(オプション)',
   allExternalTip: '外部ナレッジのみを使用する場合、ユーザーは Rerank モデルを有効にするかどうかを選択できます。有効にしない場合、取得されたチャンクはスコアに基づいて並べ替えられます。異なるナレッジベースの検索戦略に一貫性がない場合、不正確になります。',
-  externalAPIPanelDescription: '外部ナレッジAPIは、Difyの外部のナレッジベースに接続し、そのナレッジベースからナレッジを取得するために使用されます。',
+  externalAPIPanelDescription: '外部ナレッジ API は、Mindverse 外部のナレッジベースに接続し、そのナレッジベースからナレッジを取得するために使用されます。',
 }
 
 export default translation

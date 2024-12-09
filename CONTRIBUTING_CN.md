@@ -1,8 +1,10 @@
-所以你想为 Dify 做贡献 - 这太棒了，我们迫不及待地想看到你的贡献。作为一家人员和资金有限的初创公司，我们有着雄心勃勃的目标，希望设计出最直观的工作流程来构建和管理 LLM 应用程序。社区的任何帮助都是宝贵的。
+# 贡献指南
+
+所以你想为 Mindverse 做贡献 - 这太棒了，我们迫不及待地想看到你的贡献。作为一家人员和资金有限的初创公司，我们有着雄心勃勃的目标，希望设计出最直观的工作流程来构建和管理 LLM 应用程序。社区的任何帮助都是宝贵的。
 
 考虑到我们的现状，我们需要灵活快速地交付，但我们也希望确保像你这样的贡献者在贡献过程中获得尽可能顺畅的体验。我们为此编写了这份贡献指南，旨在让你熟悉代码库和我们与贡献者的合作方式，以便你能快速进入有趣的部分。
 
-这份指南，就像 Dify 本身一样，是一个不断改进的工作。如果有时它落后于实际项目，我们非常感谢你的理解，并欢迎提供任何反馈以供我们改进。
+这份指南，就像 Mindverse 本身一样，是一个不断改进的工作。如果有时它落后于实际项目，我们非常感谢你的理解，并欢迎提供任何反馈以供我们改进。
 
 在许可方面，请花一分钟阅读我们简短的 [许可证和贡献者协议](./LICENSE)。社区还遵守 [行为准则](https://github.com/langgenius/.github/blob/main/CODE_OF_CONDUCT.md)。
 
@@ -49,23 +51,24 @@
   | 非紧急 bugs, 性能提升                        | 中等优先级 |
   | 小幅修复(错别字, 能正常工作但存在误导的 UI)                | 低优先级    |
 
-## 安装
+## 开发设置
 
-以下是设置 Dify 进行开发的步骤：
+以下是设置 Mindverse 进行开发的步骤：
 
-### 1. Fork 该仓库
+### 1. Fork 仓库
+
+在 GitHub 上 Fork 仓库到你的账户。
 
 ### 2. 克隆仓库
 
-从终端克隆代码仓库：
-
+```bash
+git clone git@github.com:<github_username>/mindverse.git
+cd mindverse
 ```
-git clone git@github.com:<github_username>/dify.git
-```
 
-### 3. 验证依赖项
+### 3. 安装依赖
 
-Dify 依赖以下工具和库：
+Mindverse 依赖以下工具和库：
 
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
@@ -73,15 +76,13 @@ Dify 依赖以下工具和库：
 - [npm](https://www.npmjs.com/) version 8.x.x or [Yarn](https://yarnpkg.com/)
 - [Python](https://www.python.org/) version 3.11.x or 3.12.x
 
-### 4. 安装
+### 4. 安装后端和前端
 
-Dify 由后端和前端组成。通过 `cd api/` 导航到后端目录，然后按照 [后端 README](api/README.md) 进行安装。在另一个终端中，通过 `cd web/` 导航到前端目录，然后按照 [前端 README](web/README.md) 进行安装。
+Mindverse 由后端和前端组成。通过 `cd api/` 导航到后端目录，然后按照 [后端 README](api/README.md) 进行安装。在另一个终端中，通过 `cd web/` 导航到前端目录，然后按照 [前端 README](web/README.md) 进行安装。
 
-查看 [安装常见问题解答](https://docs.dify.ai/v/zh-hans/learn-more/faq/install-faq) 以获取常见问题列表和故障排除步骤。
+### 5. 在浏览器中访问 Mindverse
 
-### 5. 在浏览器中访问 Dify
-
-为了验证您的设置，打开浏览器并访问 [http://localhost:3000](http://localhost:3000)（默认或您自定义的 URL 和端口）。现在您应该看到 Dify 正在运行。
+为了验证您的设置，打开浏览器并访问 [http://localhost:3000](http://localhost:3000)（默认或您自定义的 URL 和端口）。现在您应该看到 Mindverse 正在运行。
 
 ## 开发
 
@@ -89,11 +90,11 @@ Dify 由后端和前端组成。通过 `cd api/` 导航到后端目录，然后�
 
 如果您要向 Agent 或 Workflow 添加工具提供程序，请参考 [此指南](./api/core/tools/README.md)。
 
-为了帮助您快速了解您的贡献在哪个部分，以下是 Dify 后端和前端的简要注释大纲：
+为了帮助您快速了解您的贡献在哪个部分，以下是 Mindverse 后端和前端的简要注释大纲：
 
 ### 后端
 
-Dify 的后端使用 Python 编写，使用 [Flask](https://flask.palletsprojects.com/en/3.0.x/) 框架。它使用 [SQLAlchemy](https://www.sqlalchemy.org/) 作为 ORM，使用 [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html) 作为任务队列。授权逻辑通过 Flask-login 进行处理。
+Mindverse 的后端使用 Python 编写，使用 [Flask](https://flask.palletsprojects.com/en/3.0.x/) 框架。它使用 [SQLAlchemy](https://www.sqlalchemy.org/) 作为 ORM，使用 [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html) 作为任务队列。授权逻辑通过 Flask-login 进行处理。
 
 ```
 [api/]

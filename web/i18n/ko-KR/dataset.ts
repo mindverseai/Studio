@@ -11,7 +11,7 @@ const translation = {
   datasetDeleted: '지식이 삭제되었습니다',
   datasetDeleteFailed: '지식 삭제에 실패했습니다',
   didYouKnow: '알고 계셨나요?',
-  intro1: '지식을 Dify 애플리케이션에 ',
+  intro1: '지식 베이스는 Mindverse 애플리케이션에 통합될 수 있습니다',
   intro2: '컨텍스트로',
   intro3: ' 통합할 수 있습니다.',
   intro4: '혹은, ',
@@ -67,7 +67,7 @@ const translation = {
     semantic: '의미론적',
     keyword: '키워드',
   },
-  nTo1RetrievalLegacy: 'N-대-1 검색은 9월부터 공식적으로 더 이상 사용되지 않습니다. 더 나은 결과를 얻으려면 최신 다중 경로 검색을 사용하는 것이 좋습니다.',
+  nTo1RetrievalLegacy: 'N-대-1 ���색은 9월부터 공식적으로 더 이상 사용되지 않습니다. 더 나은 결과를 얻으려면 최신 다중 경로 검색을 사용하는 것이 좋습니다.',
   nTo1RetrievalLegacyLink: '자세히 알아보기',
   nTo1RetrievalLegacyLinkText: 'N-대-1 검색은 9월에 공식적으로 더 이상 사용되지 않습니다.',
   defaultRetrievalTip: '다중 경로 검색이 기본적으로 사용됩니다. 지식은 여러 기술 자료에서 검색된 다음 순위가 다시 매겨집니다.',
@@ -143,7 +143,7 @@ const translation = {
   externalKnowledgeId: '외부 지식 ID',
   externalKnowledgeIdPlaceholder: '지식 ID를 입력하십시오.',
   allExternalTip: '외부 지식만 사용하는 경우 사용자는 리랭크 모델을 사용할지 여부를 선택할 수 있습니다. 활성화하지 않으면 검색된 청크가 점수에 따라 정렬됩니다. 서로 다른 기술 자료의 검색 전략이 일관되지 않으면 부정확합니다.',
-  externalAPIPanelDescription: '외부 지식 API는 Dify 외부의 기술 자료에 연결하고 해당 기술 자료에서 지식을 검색하는 데 사용됩니다.',
+  externalAPIPanelDescription: '외부 지식 API는 Mindverse 외부의 지식 베이스에 연결하고 해당 지식 베이스에서 지식을 검색하는 데 사용됩니다.',
   noExternalKnowledge: '아직 외부 지식 API가 없으므로 여기를 클릭하여 생성하십시오.',
 }
 
