@@ -12,6 +12,7 @@ import { DotsGrid } from '@/app/components/base/icons/src/vender/line/general'
 import { Colors } from '@/app/components/base/icons/src/vender/line/others'
 import { Route } from '@/app/components/base/icons/src/vender/line/mapsAndTravel'
 import CustomCreateCard from '@/app/components/tools/provider/custom-create-card'
+import ContributeCard from '@/app/components/tools/provider/contribute'
 import ProviderCard from '@/app/components/tools/provider/card'
 import ProviderDetail from '@/app/components/tools/provider/detail'
 import Empty from '@/app/components/tools/add-tool-modal/empty'
@@ -66,47 +67,57 @@ const ProviderList = () => {
   }, [collectionList, currentProvider])
 
   return (
-    <div className='flex flex-col h-full'>
-      <div className='sticky top-0 flex justify-between items-center pt-4 px-12 pb-2 leading-[56px] bg-gray-100 z-10 flex-wrap gap-y-2'>
-        <TabSliderNew
-          value={activeTab}
-          onChange={setActiveTab}
-          options={options}
-        />
-        <div className='flex items-center gap-2'>
-          <LabelFilter type='tool' value={tagFilterValue} onChange={handleTagsChange} />
-          <Input
-            showLeftIcon
-            showClearIcon
-            wrapperClassName='w-[200px]'
-            value={keywords}
-            onChange={e => handleKeywordsChange(e.target.value)}
-            onClear={() => handleKeywordsChange('')}
+    <div className='relative flex overflow-hidden bg-gray-100 shrink-0 h-0 grow'>
+      <div className='relative flex flex-col overflow-y-auto bg-gray-100 grow'>
+        <div className={cn(
+          'sticky top-0 flex justify-between items-center pt-4 px-12 pb-2 leading-[56px] bg-gray-100 z-20 flex-wrap gap-y-2',
+          currentProvider && 'pr-6',
+        )}>
+          <TabSliderNew
+            value={activeTab}
+            onChange={(state) => {
+              setActiveTab(state)
+              if (state !== activeTab)
+                setCurrentProvider(undefined)
+            }}
+            options={options}
           />
+          <div className='flex items-center gap-2'>
+            <LabelFilter value={tagFilterValue} onChange={handleTagsChange} />
+            <Input
+              showLeftIcon
+              showClearIcon
+              wrapperClassName='w-[200px]'
+              value={keywords}
+              onChange={e => handleKeywordsChange(e.target.value)}
+              onClear={() => handleKeywordsChange('')}
+            />
+          </div>
         </div>
-      </div>
-      <div className='grow px-12 py-4 overflow-auto'>
-        {activeTab === 'api' && <CustomCreateCard onRefreshData={handleRefreshData} />}
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        <div className={cn(
+          'relative grid content-start grid-cols-1 gap-4 px-12 pt-2 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grow shrink-0',
+          currentProvider && 'pr-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+        )}>
+          {activeTab === 'builtin' && <ContributeCard />}
+          {activeTab === 'api' && <CustomCreateCard onRefreshData={getProviderList} />}
           {filteredCollectionList.map(collection => (
             <ProviderCard
+              active={currentProvider?.id === collection.id}
+              onSelect={() => setCurrentProvider(collection)}
               key={collection.id}
               collection={collection}
-              onRefreshData={handleRefreshData}
-              onShowDetail={handleShowDetail}
             />
           ))}
+          {!filteredCollectionList.length && <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'><Empty /></div>}
         </div>
-        {filteredCollectionList.length === 0 && activeTab === 'workflow' && <Empty />}
       </div>
-      {showDetail && (
-        <ProviderDetail
-          show={showDetail}
-          onCancel={handleCancelDetail}
-          collection={currentCollection!}
-          onRefreshData={handleRefreshData}
-        />
-      )}
+      <div className={cn(
+        'shrink-0 w-0 border-l-[0.5px] border-black/8 overflow-y-auto transition-all duration-200 ease-in-out',
+        currentProvider && 'w-[420px]',
+      )}>
+        {currentProvider && <ProviderDetail collection={currentProvider} onRefreshData={getProviderList} />}
+      </div>
+      <div className='absolute top-5 right-5 p-1 cursor-pointer' onClick={() => setCurrentProvider(undefined)}><RiCloseLine className='w-4 h-4' /></div>
     </div>
   )
 }
