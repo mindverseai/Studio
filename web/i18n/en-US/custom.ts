@@ -6,7 +6,7 @@ const translation = {
   },
   webapp: {
     title: 'Customize WebApp brand',
-    removeBrand: 'Remove Powered by Dify',
+    removeBrand: 'Remove "Powered by Mindverse"',
     changeLogo: 'Change Powered by Brand Image',
     changeLogoTip: 'SVG or PNG format with a minimum size of 40x40px',
   },
@@ -22,9 +22,10 @@ const translation = {
   restore: 'Restore Defaults',
   customize: {
     contactUs: ' contact us ',
-    prefix: 'To customize the brand logo within the app, please',
+    prefix: 'To customize brand icons in Mindverse, please',
     suffix: 'to upgrade to the Enterprise edition.',
   },
+  customToolTip: 'Learn more about Mindverse custom tools',
 }
 
 export default translation

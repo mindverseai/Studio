@@ -6,7 +6,7 @@ const translation = {
   },
   webapp: {
     title: 'WebAppブランドのカスタマイズ',
-    removeBrand: 'Powered by Difyを削除',
+    removeBrand: '"Powered by Mindverse" を削除',
     changeLogo: 'Powered byブランド画像を変更',
     changeLogoTip: '最小サイズ40x40pxのSVGまたはPNG形式',
   },
@@ -22,9 +22,10 @@ const translation = {
   restore: 'デフォルトに戻す',
   customize: {
     contactUs: 'お問い合わせ',
-    prefix: 'アプリ内のブランドロゴをカスタマイズするには、',
+    prefix: 'Mindverse 内のブランドアイコンをカスタマイズするには、',
     suffix: 'エンタープライズ版にアップグレードしてください。',
   },
+  customToolTip: 'Mindverse のカスタムツールについて詳しく学ぶ',
 }
 
 export default translation

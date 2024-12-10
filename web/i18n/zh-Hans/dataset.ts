@@ -10,7 +10,7 @@ const translation = {
   externalKnowledgeNamePlaceholder: '请输入外部知识库名称',
   externalKnowledgeDescriptionPlaceholder: '描述知识库内容（可选）',
   learnHowToWriteGoodKnowledgeDescription: '了解如何编写良好的知识库描述',
-  externalAPIPanelDescription: '外部知识库 API 用于连接到 Dify 之外的知识库并从中检索知识。',
+  externalAPIPanelDescription: '外部知识 API 用于连接到 Mindverse 外部的知识库，并从该知识库中检索知识。',
   externalAPIPanelDocumentation: '了解如何创建外部知识库 API',
   documentCount: ' 文档',
   wordCount: ' 千字符',
@@ -43,7 +43,7 @@ const translation = {
   connectDatasetIntro: {
     title: '如何连接到外部知识库',
     content: {
-      front: '要连接到外部知识库，您需要先创建一个外部 API。请仔细阅读并参考',
+      front: '要连接到外部知识库，您需要��创建一个外部 API。请仔细阅读并参考',
       link: '了解如何创建外部 API',
       end: '。然后找到相应的知识库 ID 并填写在左侧表单中。如果所有信息正确，点击连接按钮后将自动跳转到知识库中的检索测试。',
     },
@@ -68,7 +68,7 @@ const translation = {
     placeholder: '选择一个外部知识 API',
   },
   didYouKnow: '你知道吗？',
-  intro1: '知识库可以被集成到 Dify 应用中',
+  intro1: '知识库可��被整合到 Mindverse 应用中',
   intro2: '作为上下文',
   intro3: ',',
   intro4: '或可以',

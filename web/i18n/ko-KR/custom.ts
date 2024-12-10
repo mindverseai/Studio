@@ -6,7 +6,7 @@ const translation = {
   },
   webapp: {
     title: 'WebApp 브랜드 사용자 정의',
-    removeBrand: 'Powered by Dify 삭제',
+    removeBrand: '"Powered by Mindverse" 제거',
     changeLogo: 'Powered by 브랜드 이미지 변경',
     changeLogoTip: '최소 크기 40x40px의 SVG 또는 PNG 형식',
   },
@@ -22,9 +22,10 @@ const translation = {
   restore: '기본값으로 복원',
   customize: {
     contactUs: '문의하기',
-    prefix: '앱 내 브랜드 로고를 사용자 정의하려면,',
+    prefix: 'Mindverse에서 브랜드 아이콘을 사용자 정의하려면',
     suffix: '엔터프라이즈 버전으로 업그레이드하세요.',
   },
+  customToolTip: 'Mindverse 사용자 정의 도구에 대해 자세히 알아보기',
 }
 
 export default translation
