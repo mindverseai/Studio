@@ -440,6 +440,7 @@ services:
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/www:/var/www/html
       - ./volumes/certbot/logs:/var/log/letsencrypt
+      - ./certbot/docker-entrypoint.sh:/docker-entrypoint.sh
     environment:
       - CERTBOT_EMAIL=jack@mind-verse.de
       - CERTBOT_DOMAIN=studio3.mind-verse.de
