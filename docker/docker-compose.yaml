@@ -437,6 +437,7 @@ services:
     profiles:
       - certbot
     volumes:
+      - ./volumes/certbot/www:/var/www/certbot
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/www:/var/www/html
       - ./volumes/certbot/logs:/var/log/letsencrypt
@@ -462,6 +463,7 @@ services:
       - ./nginx/ssl:/etc/ssl # cert dir (legacy)
       - ./volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
       - ./volumes/certbot/conf:/etc/letsencrypt
+      - ./volumes/certbot/www:/var/www/certbot
       - ./volumes/certbot/www:/var/www/html
     entrypoint:
       [
