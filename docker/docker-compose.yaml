@@ -472,8 +472,8 @@ services:
       - ./nginx/proxy.conf.template:/etc/nginx/proxy.conf.template
       - ./nginx/https.conf.template:/etc/nginx/https.conf.template
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/docker-entrypoint.sh:/docker-entrypoint-mount.sh
-      - ./nginx/ssl:/etc/ssl # cert dir (legacy)
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ./nginx/ssl:/etc/nginx/ssl
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/www:/var/www/certbot
     entrypoint:
