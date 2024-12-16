@@ -437,6 +437,7 @@ services:
     profiles:
       - certbot
     volumes:
+      - ./certbot/update-cert.template.txt:/update-cert.template.txt
       - ./volumes/certbot/www:/var/www/certbot
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/logs:/var/log/letsencrypt
