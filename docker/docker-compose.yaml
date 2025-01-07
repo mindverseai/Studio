@@ -441,6 +441,8 @@ services:
     container_name: docker-certbot-1
     volumes:
       - ./volumes/certbot/www:/var/www/html
+      - ./certbot/update-cert.template.txt:/update-cert.template.txt
+      - ./volumes/certbot/www:/var/www/certbot
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/logs:/var/log/letsencrypt
       - ./certbot/docker-entrypoint.sh:/docker-entrypoint.sh
