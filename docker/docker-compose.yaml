@@ -850,7 +850,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./volumes/certbot/www:/var/www/html
     environment:
