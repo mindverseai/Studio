@@ -439,8 +439,7 @@ services:
   # use `docker-compose --profile certbot up` to start the certbot service.
   certbot:
     image: certbot/certbot
-    profiles:
-      - certbot
+    container_name: docker-certbot-1
     volumes:
       - ./volumes/certbot/conf:/etc/letsencrypt
       - ./volumes/certbot/www:/var/www/html
@@ -454,6 +453,8 @@ services:
       - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
     entrypoint: ['/docker-entrypoint.sh']
     command: ['tail', '-f', '/dev/null']
+    networks:
+      - default
 
   # The nginx reverse proxy.
   # used for reverse proxying the API service and Web service.
