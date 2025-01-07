@@ -34,5 +34,10 @@ printf '%s\n' "\nRunning Certbot command"
     --no-eff-email \
     $CERTBOT_OPTIONS
 
-printf '%s\n' "\nExecuting additional command (if any):" "$@"
-exec "$@"
+if [ $# -eq 0 ]; then
+    printf '%s\n' "\nNo additional command provided. Exiting."
+    exit 0
+else
+    printf '%s\n' "\nExecuting additional command:" "$@"
+    exec "$@"
+fi
