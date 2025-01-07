@@ -335,6 +335,7 @@ services:
       context: ../web
       dockerfile: Dockerfile
     restart: always
+    user: root
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
       APP_API_URL: ${APP_API_URL:-}
@@ -344,6 +345,10 @@ services:
       CSP_WHITELIST: ${CSP_WHITELIST:-}
     networks:
       - default
+    volumes:
+      - ./letsencrypt:/app/web/.well-known/acme-challenge
+      - ./volumes/certbot/www:/var/www/html
+
 
   # The postgres database.
   db:
@@ -431,11 +436,9 @@ services:
       - default
 
   # Certbot service
-  # use `docker-compose --profile certbot up` to start the certbot service.
   certbot:
     image: certbot/certbot
-    profiles:
-      - certbot
+    container_name: docker-certbot-1
     volumes:
       - ./certbot/update-cert.template.txt:/update-cert.template.txt
       - ./volumes/certbot/www:/var/www/certbot
@@ -443,25 +446,11 @@ services:
       - ./volumes/certbot/logs:/var/log/letsencrypt
       - ./certbot/docker-entrypoint.sh:/docker-entrypoint.sh
     environment:
-      CERTBOT_EMAIL: jack@mind-verse.de
-      CERTBOT_DOMAIN: studio3.mind-verse.de
-      CERTBOT_OPTIONS:
-    entrypoint: ["/docker-entrypoint.sh"]
-    command:
-      [
-        "certonly",
-        "--webroot",
-        "-w",
-        "/var/www/certbot",
-        "-d",
-        "studio3.mind-verse.de",
-        "-d",
-        "www.studio3.mind-verse.de",
-        "--email",
-        "jack@mind-verse.de",
-        "--agree-tos",
-        "--no-eff-email",
-      ]
+      - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+      - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
+      - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
+    entrypoint: ['/docker-entrypoint.sh']
+    command: ['tail', '-f', '/dev/null']
 
   # The nginx reverse proxy.
   # used for reverse proxying the API service and Web service.

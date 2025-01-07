@@ -26,5 +26,18 @@ sed -e "s|\${CERTBOT_EMAIL}|$CERTBOT_EMAIL|g" \
 
 chmod +x /update-cert.sh
 
-printf '%s\n' "\nExecuting command:" "$@"
-exec "$@"
+printf '%s\n' "\nRunning Certbot command"
+/usr/local/bin/certbot certonly --webroot --webroot-path /var/www/html \
+    -d "$CERTBOT_DOMAIN" \
+    -m "$CERTBOT_EMAIL" \
+    --agree-tos \
+    --no-eff-email \
+    $CERTBOT_OPTIONS
+
+if [ $# -eq 0 ]; then
+    printf '%s\n' "\nNo additional command provided. Exiting."
+    exit 0
+else
+    printf '%s\n' "\nExecuting additional command:" "$@"
+    exec "$@"
+fi
