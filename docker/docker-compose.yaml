@@ -450,8 +450,7 @@ services:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
       - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
       - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
-    #entrypoint: ['/docker-entrypoint.sh']
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    entrypoint: ['/docker-entrypoint.sh']
     command: ['tail', '-f', '/dev/null']
     depends_on:
       - nginx
