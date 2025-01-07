@@ -335,6 +335,7 @@ services:
       context: ../web
       dockerfile: Dockerfile
     restart: always
+    user: root
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
       APP_API_URL: ${APP_API_URL:-}
