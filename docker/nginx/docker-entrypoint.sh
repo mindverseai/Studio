@@ -5,16 +5,9 @@ HTTPS_REDIRECT=''
 HTTPS_SERVER=''
 
 if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
-    # Check if the certificate and key files for the specified domain exist
-    if [ -n "${CERTBOT_DOMAIN}" ] && \
-       [ -f "/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}" ] && \
-       [ -f "/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}" ]; then
-        SSL_CERTIFICATE_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}"
-        SSL_CERTIFICATE_KEY_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}"
-    else
-        SSL_CERTIFICATE_PATH="/etc/nginx/ssl/${NGINX_SSL_CERT_FILENAME}"
-        SSL_CERTIFICATE_KEY_PATH="/etc/nginx/ssl/${NGINX_SSL_CERT_KEY_FILENAME}"
-    fi
+    SSL_CERTIFICATE_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}"
+    SSL_CERTIFICATE_KEY_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}"
+
     export SSL_CERTIFICATE_PATH
     export SSL_CERTIFICATE_KEY_PATH
 
