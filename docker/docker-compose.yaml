@@ -349,6 +349,8 @@ services:
       - "80:3000"
     volumes:
       - ./letsencrypt:/app/web/.well-known/acme-challenge
+      - ./volumes/certbot/www:/var/www/html
+
 
   # The postgres database.
   db:
