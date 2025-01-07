@@ -850,9 +850,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./sites-enabled:/etc/nginx/sites-enabled
-      - /path/to/your/website:/var/www/binect-studio.mind-verse.de
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./volumes/certbot/www:/var/www/html
 
 networks:
   # create a network between sandbox, api and ssrf_proxy, and can not access outside.
