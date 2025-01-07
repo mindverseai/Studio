@@ -451,6 +451,8 @@ services:
       - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
     entrypoint: ['/docker-entrypoint.sh']
     command: ['tail', '-f', '/dev/null']
+    depends_on:
+      - nginx
 
   # The nginx reverse proxy.
   # used for reverse proxying the API service and Web service.
