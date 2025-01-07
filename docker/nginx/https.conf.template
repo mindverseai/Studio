@@ -1,8 +1,6 @@
 # Please do not directly edit this file. Instead, modify the .env variables related to NGINX configuration.
 
 listen ${NGINX_SSL_PORT} ssl;
-ssl_certificate /etc/nginx/ssl/nginx.crt;
-ssl_certificate_key /etc/nginx/ssl/nginx.key;
 ssl_protocols TLSv1.2 TLSv1.3;
 ssl_ciphers HIGH:!aNULL:!MD5;
 ssl_prefer_server_ciphers on;
