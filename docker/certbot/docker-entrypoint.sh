@@ -5,7 +5,8 @@ printf '%s\n' "Docker entrypoint script is running"
 
 validate_env_vars() {
     for var in CERTBOT_EMAIL CERTBOT_DOMAIN; do
-        if [ -z "${!var}" ]; then
+        eval value=\$$var
+        if [ -z "$value" ]; then
             printf '%s\n' "Error: $var is not set" >&2
             exit 1
         fi
@@ -40,7 +41,7 @@ sed -e "s|\${CERTBOT_EMAIL}|$CERTBOT_EMAIL|g" \
 chmod +x /update-cert.sh
 
 obtain_or_renew_cert() {
-    /usr/local/bin/certbot certonly --webroot --webroot-path /var/www/html \
+    certbot certonly --webroot --webroot-path /var/www/html \
         -d "$CERTBOT_DOMAIN" \
         -m "$CERTBOT_EMAIL" \
         --agree-tos \
@@ -60,7 +61,7 @@ printf '%s\n' "\nSetting up certificate renewal cron job"
 echo "0 */12 * * * /update-cert.sh" | crontab -
 
 # Start crond in the background
-/usr/sbin/crond
+crond
 
 trap 'echo "Stopping container..."; kill $(jobs -p)' SIGTERM
 
