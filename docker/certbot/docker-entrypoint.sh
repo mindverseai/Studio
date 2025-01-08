@@ -26,6 +26,8 @@ for dir in "/etc/letsencrypt" "/var/www/html" "/var/log/letsencrypt"; do
         ls -la "$dir"
     else
         printf '%s\n' "$dir does not exist."
+        mkdir -p "$dir"
+        printf '%s\n' "Created $dir"
     fi
 done
 
@@ -37,22 +39,30 @@ sed -e "s|\${CERTBOT_EMAIL}|$CERTBOT_EMAIL|g" \
 
 chmod +x /update-cert.sh
 
-if [ -d "/etc/letsencrypt/live/$CERTBOT_DOMAIN" ]; then
-    printf '%s\n' "\nCertificates for $CERTBOT_DOMAIN already exist. Skipping initial certificate creation."
-else
-    printf '%s\n' "\nRunning Certbot command"
+obtain_or_renew_cert() {
     /usr/local/bin/certbot certonly --webroot --webroot-path /var/www/html \
         -d "$CERTBOT_DOMAIN" \
         -m "$CERTBOT_EMAIL" \
         --agree-tos \
         --no-eff-email \
         $CERTBOT_OPTIONS
+}
+
+if [ -d "/etc/letsencrypt/live/$CERTBOT_DOMAIN" ]; then
+    printf '%s\n' "\nCertificates for $CERTBOT_DOMAIN already exist. Attempting renewal."
+    obtain_or_renew_cert --force-renewal
+else
+    printf '%s\n' "\nObtaining initial certificate for $CERTBOT_DOMAIN"
+    obtain_or_renew_cert
 fi
 
 printf '%s\n' "\nSetting up certificate renewal cron job"
 echo "0 */12 * * * /update-cert.sh" | crontab -
 
-trap 'echo "Stopping container..."; exit 0' SIGTERM
+# Start crond in the background
+/usr/sbin/crond
+
+trap 'echo "Stopping container..."; kill $(jobs -p)' SIGTERM
 
 if [ $# -eq 0 ]; then
     printf '%s\n' "\nNo additional command provided. Waiting indefinitely."

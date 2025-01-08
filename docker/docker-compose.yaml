@@ -450,10 +450,11 @@ services:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
       - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
       - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
+      - TZ=${TZ:-UTC}
     entrypoint: ['/docker-entrypoint.sh']
-    command: ['tail', '-f', '/dev/null']
     depends_on:
       - nginx
+    restart: unless-stopped
 
   # The nginx reverse proxy.
   # used for reverse proxying the API service and Web service.
