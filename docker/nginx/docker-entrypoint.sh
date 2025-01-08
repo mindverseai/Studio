@@ -63,12 +63,7 @@ EOF
     export HTTPS_REDIRECT
     export HTTPS_SERVER
 
-    if [ "${NGINX_ENABLE_CERTBOT_CHALLENGE}" = "true" ]; then
-        ACME_CHALLENGE_LOCATION='location /.well-known/acme-challenge/ { root /var/www/certbot; }'
-    else
-        ACME_CHALLENGE_LOCATION=''
-    fi
-    export ACME_CHALLENGE_LOCATION
+    # ACME_CHALLENGE_LOCATION is now set as an environment variable, no need to set it here
 
     # Process templates
     env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
