@@ -6,8 +6,12 @@ generate_nginx_config() {
     # Initialize variables
     HTTPS_REDIRECT=''
     HTTPS_SERVER=''
+    ACME_CHALLENGE_LOCATION=''
 
-    if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
+    # Set up ACME challenge location
+    ACME_CHALLENGE_LOCATION='location /.well-known/acme-challenge/ { root /var/www/html; try_files $uri =404; }'
+
+    if [ "${NGINX_HTTPS_ENABLED}" = "true" ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME} ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME} ]; then
         SSL_CERTIFICATE_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}"
         SSL_CERTIFICATE_KEY_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}"
 
@@ -60,10 +64,14 @@ server {
 }
 EOF
 )
+    else
+        # If HTTPS is not enabled or certificates are not available, clear the HTTPS_REDIRECT
+        HTTPS_REDIRECT=''
     fi
 
     export HTTPS_REDIRECT
     export HTTPS_SERVER
+    export ACME_CHALLENGE_LOCATION
 
     # Process templates
     env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
