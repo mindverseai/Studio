@@ -31,6 +31,8 @@ server {
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;
 
+    ${ACME_CHALLENGE_LOCATION}
+
     location /console/api {
         proxy_pass http://api:5001;
         include proxy.conf;
@@ -62,8 +64,6 @@ EOF
 
     export HTTPS_REDIRECT
     export HTTPS_SERVER
-
-    # ACME_CHALLENGE_LOCATION is now set as an environment variable, no need to set it here
 
     # Process templates
     env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
