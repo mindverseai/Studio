@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Function to generate Nginx configuration
 generate_nginx_config() {
@@ -17,8 +18,7 @@ generate_nginx_config() {
         HTTPS_REDIRECT='return 301 https://$server_name$request_uri;'
 
         # Create HTTPS server block
-        HTTPS_SERVER=$(
-            cat <<EOF
+        HTTPS_SERVER=$(cat <<EOF
 server {
     listen ${NGINX_SSL_PORT} ssl;
     server_name ${NGINX_SERVER_NAME};
@@ -57,7 +57,7 @@ server {
     }
 }
 EOF
-        )
+)
     fi
 
     export HTTPS_REDIRECT
@@ -72,17 +72,16 @@ EOF
 
     # Process templates
     env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
-    envsubst "$env_vars" </etc/nginx/nginx.conf.template >/etc/nginx/nginx.conf
-    envsubst "$env_vars" </etc/nginx/proxy.conf.template >/etc/nginx/proxy.conf
-    envsubst "$env_vars" </etc/nginx/conf.d/default.conf.template >/etc/nginx/conf.d/default.conf
+    envsubst "$env_vars" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+    envsubst "$env_vars" < /etc/nginx/proxy.conf.template > /etc/nginx/proxy.conf
+    envsubst "$env_vars" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 }
 
-# Generate initial config without SSL
-NGINX_HTTPS_ENABLED=false
+# Generate initial config
 generate_nginx_config
 
 # Start Nginx
-nginx
+nginx -g 'daemon off;' &
 
 # Wait for SSL certificates if HTTPS is enabled
 if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
@@ -91,8 +90,7 @@ if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
         sleep 5
     done
 
-    # Generate full config with SSL
-    NGINX_HTTPS_ENABLED=true
+    # Regenerate config with SSL
     generate_nginx_config
 
     # Reload Nginx
@@ -100,4 +98,4 @@ if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
 fi
 
 # Keep the script running
-tail -f /dev/null
+wait
