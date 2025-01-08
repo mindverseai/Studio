@@ -462,14 +462,16 @@ services:
     image: nginx:latest
     restart: always
     volumes:
-    - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
-    - ./nginx/proxy.conf.template:/etc/nginx/proxy.conf.template
-    - ./nginx/https.conf.template:/etc/nginx/https.conf.template
-    - ./nginx/conf.d/default.conf.template:/etc/nginx/conf.d/default.conf.template
-    - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh
-    - ./nginx/ssl:/etc/nginx/ssl
-    - ./volumes/certbot/conf:/etc/letsencrypt
-      - ./volumes/certbot/www:/var/www/html
+      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+      - ./nginx/proxy.conf.template:/etc/nginx/proxy.conf.template:ro
+      - ./nginx/https.conf.template:/etc/nginx/https.conf.template:ro
+      - ./nginx/conf.d/default.conf.template:/etc/nginx/conf.d/default.conf.template:ro
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./volumes/certbot/conf:/etc/letsencrypt:ro
+      - ./volumes/certbot/www:/var/www/html:rw
+      - ./volumes/certbot/www:/var/www/certbot:rw
+      - ./volumes/certbot/logs:/var/log/letsencrypt:rw
     entrypoint: ["/docker-entrypoint.sh"]
     command: ["nginx", "-g", "daemon off;"]
     environment:
@@ -487,7 +489,7 @@ services:
       NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
       NGINX_ENABLE_CERTBOT_CHALLENGE: ${NGINX_ENABLE_CERTBOT_CHALLENGE:-true}
       CERTBOT_DOMAIN: ${CERTBOT_DOMAIN:-binect-studio.mind-verse.de}
-      ACME_CHALLENGE_LOCATION: ${ACME_CHALLENGE_LOCATION:-location /.well-known/acme-challenge/ { root /var/www/html; try_files $uri =404; }}
+      ACME_CHALLENGE_LOCATION: ${ACME_CHALLENGE_LOCATION:-"location /.well-known/acme-challenge/ { root /var/www/html; try_files $uri =404; }"}
     depends_on:
       - api
       - web
