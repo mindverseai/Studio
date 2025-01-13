@@ -349,7 +349,6 @@ services:
       - ./letsencrypt:/app/web/.well-known/acme-challenge
       - ./volumes/certbot/www:/var/www/html
 
-
   # The postgres database.
   db:
     image: postgres:15-alpine
@@ -451,7 +450,7 @@ services:
       - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
       - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
       - TZ=${TZ:-UTC}
-    entrypoint: ['/docker-entrypoint.sh']
+    entrypoint: ["/docker-entrypoint.sh"]
     depends_on:
       - nginx
     restart: unless-stopped
@@ -848,8 +847,8 @@ services:
   webserver:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./volumes/certbot/www:/var/www/html
