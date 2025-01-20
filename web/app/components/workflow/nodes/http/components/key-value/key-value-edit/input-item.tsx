@@ -69,10 +69,10 @@ const InputItem: FC<Props> = ({
   return (
     <div className={cn("flex items-center", className)}>
       <Input
-        id={`input-${nodeId}-${instanceId}`}
-        name={`input-${nodeId}-${instanceId}`}
+        id={`input-${String(nodeId)}-${instanceId || "default"}`}
+        name={`input-${String(nodeId)}-${instanceId || "default"}`}
         className="grow"
-        value={value}
+        value={value || ""}
         onChange={onChange}
         placeholder={placeholder}
         readOnly={readOnly}

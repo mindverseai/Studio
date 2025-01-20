@@ -46,9 +46,9 @@ const TextEditor: FC<Props> = ({
         isInNode={isInNode}
       >
         <textarea
-          id={`text-editor-${title}`}
-          name={`text-editor-${title}`}
-          value={value}
+          id={`text-editor-${typeof title === "string" ? title : "editor"}`}
+          name={`text-editor-${typeof title === "string" ? title : "editor"}`}
+          value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           onFocus={setIsFocus}
           onBlur={handleBlur}

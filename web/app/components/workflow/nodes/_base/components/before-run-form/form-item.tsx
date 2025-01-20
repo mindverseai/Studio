@@ -133,9 +133,9 @@ const FormItem: FC<Props> = ({
       <div className="grow">
         {type === InputVarType.textInput && (
           <Input
-            id={payload.variable}
-            name={payload.variable}
-            value={value || ""}
+            id={String(payload.variable)}
+            name={String(payload.variable)}
+            value={value ? String(value) : ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={t("appDebug.variableConfig.inputPlaceholder")!}
             autoFocus={autoFocus}
@@ -144,10 +144,10 @@ const FormItem: FC<Props> = ({
 
         {type === InputVarType.number && (
           <Input
-            id={payload.variable}
-            name={payload.variable}
+            id={String(payload.variable)}
+            name={String(payload.variable)}
             type="number"
-            value={value || ""}
+            value={value ? String(value) : ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={t("appDebug.variableConfig.inputPlaceholder")!}
             autoFocus={autoFocus}
@@ -156,9 +156,9 @@ const FormItem: FC<Props> = ({
 
         {type === InputVarType.paragraph && (
           <Textarea
-            id={payload.variable}
-            name={payload.variable}
-            value={value || ""}
+            id={String(payload.variable)}
+            name={String(payload.variable)}
+            value={value ? String(value) : ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={t("appDebug.variableConfig.inputPlaceholder")!}
             autoFocus={autoFocus}
