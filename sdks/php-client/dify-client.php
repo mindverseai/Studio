@@ -132,7 +132,7 @@ class ChatClient extends DifyClient {
     public function get_suggestions($message_id, $user) {
         $params = [
             'user' => $user
-        ]
+        ];
         return $this->send_request('GET', "messages/{$message_id}/suggested", null, $params);
     }
     
