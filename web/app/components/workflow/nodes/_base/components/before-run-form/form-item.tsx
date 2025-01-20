@@ -133,6 +133,8 @@ const FormItem: FC<Props> = ({
       <div className="grow">
         {type === InputVarType.textInput && (
           <Input
+            id={payload.variable}
+            name={payload.variable}
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={t("appDebug.variableConfig.inputPlaceholder")!}
@@ -142,6 +144,8 @@ const FormItem: FC<Props> = ({
 
         {type === InputVarType.number && (
           <Input
+            id={payload.variable}
+            name={payload.variable}
             type="number"
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
