@@ -558,30 +558,33 @@ export const getToolCheckParams = (
       : provider_type === CollectionType.custom
       ? customTools
       : workflowTools;
-  const currCollection = currentTools.find((item) => item.id === provider_id);
-  const currTool = currCollection?.tools.find(
-    (tool) => tool.name === tool_name
+  const currCollection = currentTools?.find((item) => item?.id === provider_id);
+  const currTool = currCollection?.tools?.find(
+    (tool) => tool?.name === tool_name
   );
   const formSchemas = currTool
     ? toolParametersToFormSchemas(currTool.parameters)
     : [];
   const toolInputVarSchema = formSchemas.filter(
-    (item: any) => item.form === "llm"
+    (item: any) => item?.form === "llm"
   );
   const toolSettingSchema = formSchemas.filter(
-    (item: any) => item.form !== "llm"
+    (item: any) => item?.form !== "llm"
   );
 
   return {
     toolInputsSchema: (() => {
       const formInputs: InputVar[] = [];
       toolInputVarSchema.forEach((item: any) => {
-        formInputs.push({
-          label: item.label[language] || item.label.en_US,
-          variable: item.variable,
-          type: item.type,
-          required: item.required,
-        });
+        if (item?.label) {
+          formInputs.push({
+            label:
+              item.label[language] || item.label.en_US || item.variable || "",
+            variable: item.variable,
+            type: item.type,
+            required: item.required,
+          });
+        }
       });
       return formInputs;
     })(),
