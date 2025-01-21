@@ -14,6 +14,7 @@ import { checkOrSetAccessToken } from '../utils'
 import s from './style.module.css'
 import RunBatch from './run-batch'
 import ResDownload from './run-batch/res-download'
+import styles from './styles.module.css'
 import cn from '@/utils/classnames'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import RunOnce from '@/app/components/share/text-generation/run-once'
@@ -153,7 +154,7 @@ const TextGeneration: FC<IMainProps> = ({
   const pendingTaskList = allTaskList.filter(task => task.status === TaskStatus.pending)
   const noPendingTask = pendingTaskList.length === 0
   const showTaskList = allTaskList.filter(task => task.status !== TaskStatus.pending)
-  const [currGroupNum, doSetCurrGroupNum] = useState(0)
+  const [_currGroupNum, doSetCurrGroupNum] = useState(0)
   const currGroupNumRef = useRef(0)
   const setCurrGroupNum = (num: number) => {
     doSetCurrGroupNum(num)
@@ -166,7 +167,7 @@ const TextGeneration: FC<IMainProps> = ({
   const allFailedTaskList = allTaskList.filter(task => task.status === TaskStatus.failed)
   const allTasksFinished = allTaskList.every(task => task.status === TaskStatus.completed)
   const allTasksRun = allTaskList.every(task => [TaskStatus.completed, TaskStatus.failed].includes(task.status))
-  const [batchCompletionRes, doSetBatchCompletionRes] = useState<Record<string, string>>({})
+  const [_batchCompletionRes, doSetBatchCompletionRes] = useState<Record<string, string>>({})
   const batchCompletionResRef = useRef<Record<string, string>>({})
   const setBatchCompletionRes = (res: Record<string, string>) => {
     doSetBatchCompletionRes(res)
@@ -404,7 +405,7 @@ const TextGeneration: FC<IMainProps> = ({
       setMoreLikeThisConfig(more_like_this)
       setTextToSpeechConfig(text_to_speech)
     })()
-  }, [])
+  }, [fetchInitData])
 
   // Can Use metadata(https://beta.nextjs.org/docs/api-reference/metadata) to set title. But it only works in server side client.
   useEffect(() => {
@@ -658,10 +659,7 @@ const TextGeneration: FC<IMainProps> = ({
 
         {/* Result */}
         <div
-          className={resWrapClassNames}
-          style={{
-            background: (!isPC && isShowResSidebar) ? 'rgba(35, 56, 118, 0.2)' : 'none',
-          }}
+          className={`${resWrapClassNames} ${(!isPC && isShowResSidebar) ? styles.resultWrapperMobile : styles.resultWrapperDefault}`}
         >
           {renderResWrap}
         </div>

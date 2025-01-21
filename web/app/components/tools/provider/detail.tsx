@@ -5,6 +5,7 @@ import { useContext } from 'use-context-selector'
 import { AuthHeaderPrefix, AuthType, CollectionType } from '../types'
 import type { Collection, CustomCollectionBackend, Tool, WorkflowToolProviderRequest, WorkflowToolProviderResponse } from '../types'
 import ToolItem from './tool-item'
+import styles from './styles.module.css'
 import cn from '@/utils/classnames'
 import I18n from '@/context/i18n'
 import { getLanguage } from '@/i18n/language'
@@ -217,11 +218,14 @@ const ProviderDetail = ({
       <div className='flex items-center py-1 gap-2'>
         <div className='relative shrink-0'>
           {typeof collection.icon === 'string' && (
-            <div className='w-8 h-8 bg-center bg-cover bg-no-repeat rounded-md' style={{ backgroundImage: `url(${collection.icon})` }} />
+            <div
+              className={styles.dynamicBackground}
+              style={{ backgroundImage: `url(${collection.icon})` }}
+            />
           )}
           {typeof collection.icon !== 'string' && (
             <AppIcon
-              size='small'
+              className={styles.appIcon}
               icon={collection.icon.content}
               background={collection.icon.background}
             />
