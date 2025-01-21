@@ -30,6 +30,7 @@ import type { ToolNodeType } from "./nodes/tool/types";
 import type { IterationNodeType } from "./nodes/iteration/types";
 import { CollectionType } from "@/app/components/tools/types";
 import { toolParametersToFormSchemas } from "@/app/components/tools/utils/to-form-schema";
+import { useState, useEffect, useCallback } from "react";
 
 const WHITE = "WHITE";
 const GRAY = "GRAY";
@@ -880,3 +881,31 @@ export const getParallelInfo = (
     hasAbnormalEdges,
   };
 };
+
+// Neuer State für Tools-Ladestatus
+const [toolsLoaded, setToolsLoaded] = useState(false);
+
+// Separater useEffect für Tools-Ladung
+useEffect(() => {
+  const loadTools = async () => {
+    try {
+      await Promise.all([
+        handleFetchAllTools("builtin"),
+        handleFetchAllTools("custom"), 
+        handleFetchAllTools("workflow")
+      ]);
+      setToolsLoaded(true);
+    } catch (error) {
+      console.error("Error loading tools:", error);
+      setToolsLoaded(true); // Trotz Fehler fortfahren
+    }
+  };
+  loadTools();
+}, [handleFetchAllTools]);
+
+// Workflow-Daten erst laden wenn Tools geladen sind
+const handleGetInitialWorkflowData = useCallback(async () => {
+  if (!toolsLoaded) return; // Warten bis Tools geladen sind
+  
+  // ... Rest der Funktion
+}, [..., toolsLoaded]);
