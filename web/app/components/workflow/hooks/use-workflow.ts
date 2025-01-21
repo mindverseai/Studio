@@ -506,13 +506,16 @@ export const useWorkflowInit = () => {
   const [data, setData] = useState<FetchWorkflowDraftResponse>();
   const [isLoading, setIsLoading] = useState(true);
   const [toolsLoaded, setToolsLoaded] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     workflowStore.setState({ appId: appDetail.id });
   }, [appDetail.id, workflowStore]);
 
-  // Load tools first
+  // Load tools first - with initialization check
   useEffect(() => {
+    if (isInitialized) return;
+
     const loadTools = async () => {
       try {
         await Promise.all([
@@ -525,12 +528,13 @@ export const useWorkflowInit = () => {
         console.error("Error loading tools:", error);
         setToolsLoaded(true); // Continue even if there's an error
       }
+      setIsInitialized(true);
     };
     loadTools();
-  }, [handleFetchAllTools]);
+  }, [handleFetchAllTools, isInitialized]);
 
   const handleGetInitialWorkflowData = useCallback(async () => {
-    if (!toolsLoaded) return; // Wait for tools to load first
+    if (!toolsLoaded || !appDetail?.id) return; // Wait for tools to load first and appDetail to be available
 
     try {
       const res = await fetchWorkflowDraft(
@@ -590,8 +594,9 @@ export const useWorkflowInit = () => {
   ]);
 
   useEffect(() => {
+    if (!isInitialized) return;
     handleGetInitialWorkflowData();
-  }, [handleGetInitialWorkflowData]);
+  }, [handleGetInitialWorkflowData, isInitialized]);
 
   useEffect(() => {
     if (data) {
