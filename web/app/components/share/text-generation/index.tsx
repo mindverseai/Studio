@@ -659,7 +659,7 @@ const TextGeneration: FC<IMainProps> = ({
 
         {/* Result */}
         <div
-          className={`${resWrapClassNames} ${(!isPC && isShowResSidebar) ? styles.resultWrapperMobile : styles.resultWrapperDefault}`}
+          className={`${resWrapClassNames} ${((!isPC) && isShowResSidebar) ? styles.resultWrapperMobile : styles.resultWrapperDefault}`}
         >
           {renderResWrap}
         </div>
