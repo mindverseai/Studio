@@ -7,12 +7,12 @@ const textareaVariants = cva("", {
   variants: {
     size: {
       regular: "px-3 radius-md system-sm-regular",
-      large: "px-4 radius-lg system-md-regular",
-    },
+      large: "px-4 radius-lg system-md-regular"
+    }
   },
   defaultVariants: {
-    size: "regular",
-  },
+    size: "regular"
+  }
 });
 
 export type TextareaProps = {
@@ -27,18 +27,7 @@ export type TextareaProps = {
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
-    {
-      className,
-      value,
-      onChange,
-      disabled,
-      size,
-      destructive,
-      styleCss,
-      id,
-      name,
-      ...props
-    },
+    { className, value, onChange, disabled, size, destructive, styleCss, id, name, ...props },
     ref
   ) => {
     return (
