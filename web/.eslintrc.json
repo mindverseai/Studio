@@ -1,33 +1,31 @@
 {
-  "extends": ["next", "@antfu", "plugin:storybook/recommended"],
+  "extends": [
+    "next",
+    "@antfu",
+    "plugin:storybook/recommended"
+  ],
   "rules": {
-    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    "@typescript-eslint/consistent-type-definitions": [
+      "error",
+      "type"
+    ],
     "@typescript-eslint/no-var-requires": "off",
     "no-console": "off",
     "indent": "off",
-    "@typescript-eslint/indent": "off",
-    "no-mixed-operators": "off",
-    "operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
-    "react-hooks/exhaustive-deps": "warn",
-    "react/display-name": "warn",
-    "@typescript-eslint/semi": ["error", "always"],
-    "@typescript-eslint/quotes": ["error", "double"],
-    "curly": ["error", "all"],
-    "@typescript-eslint/comma-dangle": ["error", "never"],
-    "@typescript-eslint/brace-style": ["error", "1tbs"],
-    "@typescript-eslint/member-delimiter-style": [
+    "@typescript-eslint/indent": [
       "error",
+      2,
       {
-        "multiline": {
-          "delimiter": "semi",
-          "requireLast": true
-        },
-        "singleline": {
-          "delimiter": "semi",
-          "requireLast": false
-        }
+        "SwitchCase": 1,
+        "flatTernaryExpressions": false,
+        "ignoredNodes": [
+          "PropertyDefinition[decorators]",
+          "TSUnionType",
+          "FunctionExpression[params]:has(Identifier[decorators])"
+        ]
       }
     ],
-    "arrow-parens": ["error", "always"]
+    "react-hooks/exhaustive-deps": "warn",
+    "react/display-name": "warn"
   }
 }

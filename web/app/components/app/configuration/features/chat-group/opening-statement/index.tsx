@@ -1,174 +1,179 @@
 /* eslint-disable multiline-ternary */
-"use client";
+'use client'
 
-import React, { useEffect, useRef, useState } from "react";
-import type { FC } from "react";
-import { RiAddLine, RiDeleteBinLine } from "@remixicon/react/";
-import { useContext } from "use-context-selector";
-import produce from "immer";
-import { useTranslation } from "react-i18next";
-import { useBoolean } from "ahooks";
-import { ReactSortable } from "react-sortablejs";
-import cn from "@/utils/classnames";
-import ConfigContext from "@/context/debug-configuration";
-import Panel from "@/app/components/app/configuration/base/feature-panel";
-import Button from "@/app/components/base/button";
-import OperationBtn from "@/app/components/app/configuration/base/operation-btn";
-import { getInputKeys } from "@/app/components/base/block-input";
-import ConfirmAddVar from "@/app/components/app/configuration/config-prompt/confirm-add-var";
-import { getNewVar } from "@/utils/var";
-import { varHighlightHTML } from "@/app/components/app/configuration/base/var-highlight";
-import Toast from "@/app/components/base/toast";
+import React, { useEffect, useRef, useState } from 'react'
+import type { FC } from 'react'
+import { RiAddLine, RiDeleteBinLine } from '@remixicon/react'
+import { useContext } from 'use-context-selector'
+import produce from 'immer'
+import { useTranslation } from 'react-i18next'
+import { useBoolean } from 'ahooks'
+import { ReactSortable } from 'react-sortablejs'
+import cn from '@/utils/classnames'
+import ConfigContext from '@/context/debug-configuration'
+import Panel from '@/app/components/app/configuration/base/feature-panel'
+import Button from '@/app/components/base/button'
+import OperationBtn from '@/app/components/app/configuration/base/operation-btn'
+import { getInputKeys } from '@/app/components/base/block-input'
+import ConfirmAddVar from '@/app/components/app/configuration/config-prompt/confirm-add-var'
+import { getNewVar } from '@/utils/var'
+import { varHighlightHTML } from '@/app/components/app/configuration/base/var-highlight'
+import Toast from '@/app/components/base/toast'
 
-const MAX_QUESTION_NUM = 10;
+const MAX_QUESTION_NUM = 10
 
 export type IOpeningStatementProps = {
-  value: string;
-  readonly?: boolean;
-  onChange?: (value: string) => void;
-  suggestedQuestions?: string[];
-  onSuggestedQuestionsChange?: (value: string[]) => void;
-};
+  value: string
+  readonly?: boolean
+  onChange?: (value: string) => void
+  suggestedQuestions?: string[]
+  onSuggestedQuestionsChange?: (value: string[]) => void
+}
 
 // regex to match the {{}} and replace it with a span
-const regex = /\{\{([^}]+)\}\}/g;
+const regex = /\{\{([^}]+)\}\}/g
 
 const OpeningStatement: FC<IOpeningStatementProps> = ({
-  value = "",
+  value = '',
   readonly,
   onChange,
   suggestedQuestions = [],
-  onSuggestedQuestionsChange = () => {}
+  onSuggestedQuestionsChange = () => {},
 }) => {
-  const { t } = useTranslation();
-  const { modelConfig, setModelConfig } = useContext(ConfigContext);
-  const promptVariables = modelConfig.configs.prompt_variables;
-  const [notIncludeKeys, setNotIncludeKeys] = useState<string[]>([]);
+  const { t } = useTranslation()
+  const { modelConfig, setModelConfig } = useContext(ConfigContext)
+  const promptVariables = modelConfig.configs.prompt_variables
+  const [notIncludeKeys, setNotIncludeKeys] = useState<string[]>([])
 
-  const hasValue = !!(value || "").trim();
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const hasValue = !!(value || '').trim()
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const [isFocus, { setTrue: didSetFocus, setFalse: setBlur }] = useBoolean(false);
+  const [isFocus, { setTrue: didSetFocus, setFalse: setBlur }] = useBoolean(false)
 
   const setFocus = () => {
-    didSetFocus();
+    didSetFocus()
     setTimeout(() => {
-      const input = inputRef.current;
+      const input = inputRef.current
       if (input) {
-        input.focus();
-        input.setSelectionRange(input.value.length, input.value.length);
+        input.focus()
+        input.setSelectionRange(input.value.length, input.value.length)
       }
-    }, 0);
-  };
+    }, 0)
+  }
 
-  const [tempValue, setTempValue] = useState(value);
+  const [tempValue, setTempValue] = useState(value)
   useEffect(() => {
-    setTempValue(value || "");
-  }, [value]);
+    setTempValue(value || '')
+  }, [value])
 
-  const [tempSuggestedQuestions, setTempSuggestedQuestions] = useState(suggestedQuestions || []);
+  const [tempSuggestedQuestions, setTempSuggestedQuestions] = useState(
+    suggestedQuestions || [],
+  )
 
   const notEmptyQuestions = tempSuggestedQuestions.filter(
-    (question) => !!question && question.trim()
-  );
+    question => !!question && question.trim(),
+  )
 
-  const coloredContent = (tempValue || "")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(regex, varHighlightHTML({ name: "$1" }))
-    .replace(/\n/g, "<br />");
+  const coloredContent = (tempValue || '')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(regex, varHighlightHTML({ name: '$1' }))
+    .replace(/\n/g, '<br />')
 
   const handleEdit = () => {
-    if (readonly) {
-      setFocus();
-    }
-  };
+    if (readonly)
+      setFocus()
+  }
 
-  const [isShowConfirmAddVar, { setTrue: showConfirmAddVar, setFalse: hideConfirmAddVar }] =
-    useBoolean(false);
+  const [
+    isShowConfirmAddVar,
+    { setTrue: showConfirmAddVar, setFalse: hideConfirmAddVar },
+  ] = useBoolean(false)
 
   const handleCancel = () => {
-    setBlur();
-    setTempValue(value);
-    setTempSuggestedQuestions(suggestedQuestions);
-  };
+    setBlur()
+    setTempValue(value)
+    setTempSuggestedQuestions(suggestedQuestions)
+  }
 
   const handleConfirm = () => {
-    if (!(tempValue || "").trim()) {
+    if (!(tempValue || '').trim()) {
       Toast.notify({
-        type: "error",
-        message: t("common.errorMsg.fieldRequired", {
-          field: t("appDebug.openingStatement.title")
-        })
-      });
-      return;
+        type: 'error',
+        message: t('common.errorMsg.fieldRequired', {
+          field: t('appDebug.openingStatement.title'),
+        }),
+      })
+      return
     }
-    const keys = getInputKeys(tempValue);
-    const promptKeys = promptVariables.map((item) => item.key);
-    let notIncludeKeys: string[] = [];
+    const keys = getInputKeys(tempValue)
+    const promptKeys = promptVariables.map(item => item.key)
+    let notIncludeKeys: string[] = []
 
     if (promptKeys.length === 0) {
-      if (keys.length > 0) {
-        notIncludeKeys = keys;
-      }
-    } else {
-      notIncludeKeys = keys.filter((key) => !promptKeys.includes(key));
+      if (keys.length > 0)
+        notIncludeKeys = keys
+    }
+    else {
+      notIncludeKeys = keys.filter(key => !promptKeys.includes(key))
     }
 
     if (notIncludeKeys.length > 0) {
-      setNotIncludeKeys(notIncludeKeys);
-      showConfirmAddVar();
-      return;
+      setNotIncludeKeys(notIncludeKeys)
+      showConfirmAddVar()
+      return
     }
-    setBlur();
-    onChange?.(tempValue);
-    onSuggestedQuestionsChange(tempSuggestedQuestions);
-  };
+    setBlur()
+    onChange?.(tempValue)
+    onSuggestedQuestionsChange(tempSuggestedQuestions)
+  }
 
   const cancelAutoAddVar = () => {
-    onChange?.(tempValue);
-    hideConfirmAddVar();
-    setBlur();
-  };
+    onChange?.(tempValue)
+    hideConfirmAddVar()
+    setBlur()
+  }
 
   const autoAddVar = () => {
     const newModelConfig = produce(modelConfig, (draft) => {
       draft.configs.prompt_variables = [
         ...draft.configs.prompt_variables,
-        ...notIncludeKeys.map((key) => getNewVar(key, "string"))
-      ];
-    });
-    onChange?.(tempValue);
-    setModelConfig(newModelConfig);
-    hideConfirmAddVar();
-    setBlur();
-  };
+        ...notIncludeKeys.map(key => getNewVar(key, 'string')),
+      ]
+    })
+    onChange?.(tempValue)
+    setModelConfig(newModelConfig)
+    hideConfirmAddVar()
+    setBlur()
+  }
 
   const headerRight = !readonly ? (
     isFocus ? (
       <div className="flex items-center space-x-1">
         <Button variant="ghost" size="small" onClick={handleCancel}>
-          {t("common.operation.cancel")}
+          {t('common.operation.cancel')}
         </Button>
         <Button onClick={handleConfirm} variant="primary" size="small">
-          {t("common.operation.save")}
+          {t('common.operation.save')}
         </Button>
       </div>
     ) : (
       <OperationBtn
         type="edit"
-        actionName={hasValue ? "" : (t("appDebug.openingStatement.writeOpener") as string)}
+        actionName={hasValue ? '' : (t('appDebug.openingStatement.writeOpener') as string)}
         onClick={handleEdit}
       />
     )
-  ) : null;
+  ) : null
 
   const renderQuestions = () => {
     return isFocus ? (
       <div>
         <div className="flex items-center py-2">
           <div className="shrink-0 flex space-x-0.5 leading-[18px] text-xs font-medium text-gray-500">
-            <div className="uppercase">{t("appDebug.openingStatement.openingQuestion")}</div>
+            <div className="uppercase">
+              {t('appDebug.openingStatement.openingQuestion')}
+            </div>
             <div>·</div>
             <div>
               {tempSuggestedQuestions.length}/{MAX_QUESTION_NUM}
@@ -180,9 +185,9 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
           className="space-y-1"
           list={tempSuggestedQuestions.map((name, index) => ({
             id: index,
-            name
+            name,
           }))}
-          setList={(list) => setTempSuggestedQuestions(list.map((item) => item.name))}
+          setList={list => setTempSuggestedQuestions(list.map(item => item.name))}
           handle=".handle"
           ghostClass="opacity-50"
           animation={150}
@@ -210,26 +215,25 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
               </div>
               <input
                 type="input"
-                value={question || ""}
-                title={t("appDebug.openingStatement.questionInput") as string}
-                placeholder={t("appDebug.openingStatement.questionPlaceholder") as string}
+                value={question || ''}
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const value = e.target.value
                   setTempSuggestedQuestions(
                     tempSuggestedQuestions.map((item, i) => {
-                      if (index === i) {
-                        return value;
-                      }
-                      return item;
-                    })
-                  );
+                      if (index === i)
+                        return value
+                      return item
+                    }),
+                  )
                 }}
                 className="w-full overflow-x-auto pl-1.5 pr-8 text-sm leading-9 text-gray-900 border-0 grow h-9 bg-transparent focus:outline-none cursor-pointer rounded-lg"
               />
               <div
                 className="block absolute top-1/2 translate-y-[-50%] right-1.5 p-1 rounded-md cursor-pointer hover:bg-[#FEE4E2] hover:text-[#D92D20]"
                 onClick={() => {
-                  setTempSuggestedQuestions(tempSuggestedQuestions.filter((_, i) => index !== i));
+                  setTempSuggestedQuestions(
+                    tempSuggestedQuestions.filter((_, i) => index !== i),
+                  )
                 }}
               >
                 <RiDeleteBinLine className="w-3.5 h-3.5" />
@@ -240,13 +244,13 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
         {tempSuggestedQuestions.length < MAX_QUESTION_NUM && (
           <div
             onClick={() => {
-              setTempSuggestedQuestions([...tempSuggestedQuestions, ""]);
+              setTempSuggestedQuestions([...tempSuggestedQuestions, ''])
             }}
             className="mt-1 flex items-center h-9 px-3 gap-2 rounded-lg cursor-pointer text-gray-400  bg-gray-100 hover:bg-gray-200"
           >
             <RiAddLine className="w-4 h-4" />
             <div className="text-gray-500 text-[13px]">
-              {t("appDebug.variableConfig.addOption")}
+              {t('appDebug.variableConfig.addOption')}
             </div>
           </div>
         )}
@@ -263,13 +267,16 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
           </div>
         ))}
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <Panel
-      className={cn(isShowConfirmAddVar && "h-[220px]", "relative mt-4 !bg-gray-25")}
-      title={t("appDebug.openingStatement.title")}
+      className={cn(
+        isShowConfirmAddVar && 'h-[220px]',
+        'relative mt-4 !bg-gray-25',
+      )}
+      title={t('appDebug.openingStatement.title')}
       headerIcon={
         <svg
           width="16"
@@ -288,9 +295,10 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
       }
       headerRight={headerRight}
       hasHeaderBottomBorder={!hasValue}
+      isFocus={isFocus}
     >
-      <div className={cn("text-gray-700 text-sm", isFocus && "focused")}>
-        {hasValue || (!hasValue && isFocus) ? (
+      <div className="text-gray-700 text-sm">
+        {(hasValue || (!hasValue && isFocus)) ? (
           <>
             {isFocus ? (
               <div>
@@ -298,15 +306,15 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
                   ref={inputRef}
                   value={tempValue}
                   rows={3}
-                  onChange={(e) => setTempValue(e.target.value)}
+                  onChange={e => setTempValue(e.target.value)}
                   className="w-full px-0 text-sm border-0 bg-transparent focus:outline-none"
-                  placeholder={t("appDebug.openingStatement.placeholder") as string}
+                  placeholder={t('appDebug.openingStatement.placeholder') as string}
                 />
               </div>
             ) : (
               <div
                 dangerouslySetInnerHTML={{
-                  __html: coloredContent
+                  __html: coloredContent,
                 }}
               />
             )}
@@ -314,7 +322,7 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
           </>
         ) : (
           <div className="pt-2 pb-1 text-xs text-gray-500">
-            {t("appDebug.openingStatement.noDataPlaceHolder")}
+            {t('appDebug.openingStatement.noDataPlaceHolder')}
           </div>
         )}
 
@@ -328,7 +336,7 @@ const OpeningStatement: FC<IOpeningStatementProps> = ({
         )}
       </div>
     </Panel>
-  );
-};
+  )
+}
 
-export default React.memo(OpeningStatement);
+export default React.memo(OpeningStatement)

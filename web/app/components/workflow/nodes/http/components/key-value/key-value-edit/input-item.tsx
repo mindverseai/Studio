@@ -33,24 +33,30 @@ const InputItem: FC<Props> = ({
   placeholder,
   readOnly,
   isSupportFile,
-  insertVarTipToLeft
+  insertVarTipToLeft,
 }) => {
   const { t } = useTranslation();
 
   const hasValue = !!value;
 
   const [isFocus, setIsFocus] = useState(false);
-  const { availableVars, availableNodesWithParent } = useAvailableVarList(nodeId, {
-    onlyLeafNodeVar: false,
-    filterVar: (varPayload: Var) => {
-      const supportVarTypes = [VarType.string, VarType.number, VarType.secret];
-      if (isSupportFile) {
-        supportVarTypes.push(...[VarType.file, VarType.arrayFile]);
-      }
+  const { availableVars, availableNodesWithParent } = useAvailableVarList(
+    nodeId,
+    {
+      onlyLeafNodeVar: false,
+      filterVar: (varPayload: Var) => {
+        const supportVarTypes = [
+          VarType.string,
+          VarType.number,
+          VarType.secret,
+        ];
+        if (isSupportFile)
+          supportVarTypes.push(...[VarType.file, VarType.arrayFile]);
 
-      return supportVarTypes.includes(varPayload.type);
+        return supportVarTypes.includes(varPayload.type);
+      },
     }
-  });
+  );
 
   const handleRemove = useCallback(
     (e: React.MouseEvent) => {
@@ -72,7 +78,7 @@ const InputItem: FC<Props> = ({
         readOnly={readOnly}
         insertVarTipToLeft={insertVarTipToLeft}
       />
-      {hasRemove && <RemoveButton onClick={handleRemove} />}
+      {hasRemove && <RemoveButton onClick={onRemove} />}
     </div>
   );
 };
