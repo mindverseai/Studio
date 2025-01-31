@@ -52,7 +52,7 @@ obtain_or_renew_cert() {
 if [ -d "/etc/letsencrypt/live/$CERTBOT_DOMAIN" ]; then
     printf '%s\n' "\nCertificates for $CERTBOT_DOMAIN already exist. Attempting renewal."
     obtain_or_renew_cert --force-renewal
-#else
+else
     #printf '%s\n' "\nObtaining initial certificate for $CERTBOT_DOMAIN"
     #obtain_or_renew_cert
 fi
