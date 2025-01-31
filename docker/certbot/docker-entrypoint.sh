@@ -50,11 +50,18 @@ obtain_or_renew_cert() {
 }
 
 if [ -d "/etc/letsencrypt/live/$CERTBOT_DOMAIN" ]; then
-    printf '%s\n' "\nCertificates for $CERTBOT_DOMAIN already exist. Attempting renewal."
-    obtain_or_renew_cert --force-renewal
+    printf '%s\n' "\nChecking if certificate needs renewal"
+    certbot certificates | grep "VALID:" | grep -q "$CERTBOT_DOMAIN" && {
+        DAYS_REMAINING=$(certbot certificates | grep "VALID:" | grep "$CERTBOT_DOMAIN" | awk '{print $6}')
+        if [ "$DAYS_REMAINING" -lt 30 ]; then
+            printf '%s\n' "\nCertificate will expire in less than 30 days. Attempting renewal."
+            obtain_or_renew_cert --force-renewal
+        else
+            printf '%s\n' "\nCertificate still valid for $DAYS_REMAINING days. Skipping renewal."
+        fi
+    }
 else
-    printf '%s\n' "\nObtaining initial certificate for $CERTBOT_DOMAIN"
-    obtain_or_renew_cert
+    printf '%s\n' "\nNo existing certificate found. Please request one manually when needed."
 fi
 
 printf '%s\n' "\nSetting up certificate renewal cron job"
