@@ -1,18 +1,10 @@
 'use client'
 import type { FC } from 'react'
-import { useUnmount } from 'ahooks'
 import React, { useCallback, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import {
-  RiDashboard2Fill,
-  RiDashboard2Line,
-  RiFileList3Fill,
-  RiFileList3Line,
-  RiTerminalBoxFill,
-  RiTerminalBoxLine,
-  RiTerminalWindowFill,
-  RiTerminalWindowLine,
-} from '@remixicon/react'
+import { Grid01 } from '@/app/components/base/icons/src/vender/line/layout'
+import { FileText } from '@/app/components/base/icons/src/vender/line/files'
+import { TerminalSquare } from '@/app/components/base/icons/src/vender/line/development'
 import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
 import { useContextSelector } from 'use-context-selector'
@@ -61,16 +53,16 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
         ? [{
           name: t('common.appMenus.promptEng'),
           href: `/app/${appId}/${(mode === 'workflow' || mode === 'advanced-chat') ? 'workflow' : 'configuration'}`,
-          icon: RiTerminalWindowLine,
-          selectedIcon: RiTerminalWindowFill,
+          icon: TerminalSquare,
+          selectedIcon: TerminalSquare,
         }]
         : []
       ),
       {
         name: t('common.appMenus.apiAccess'),
         href: `/app/${appId}/develop`,
-        icon: RiTerminalBoxLine,
-        selectedIcon: RiTerminalBoxFill,
+        icon: TerminalSquare,
+        selectedIcon: TerminalSquare,
       },
       ...(isCurrentWorkspaceEditor
         ? [{
@@ -78,16 +70,16 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
             ? t('common.appMenus.logAndAnn')
             : t('common.appMenus.logs'),
           href: `/app/${appId}/logs`,
-          icon: RiFileList3Line,
-          selectedIcon: RiFileList3Fill,
+          icon: FileText,
+          selectedIcon: FileText,
         }]
         : []
       ),
       {
         name: t('common.appMenus.overview'),
         href: `/app/${appId}/overview`,
-        icon: RiDashboard2Line,
-        selectedIcon: RiDashboard2Fill,
+        icon: Grid01,
+        selectedIcon: Grid01,
       },
     ]
     return navs
@@ -95,7 +87,7 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
 
   useEffect(() => {
     if (appDetail) {
-      document.title = `${(appDetail.name || 'App')} - Mindverse`
+      document.title = `${(appDetail.name || 'App')} - Swiftpage`
       const localeMode = localStorage.getItem('app-detail-collapse-or-expand') || 'expand'
       const mode = isMobile ? 'collapse' : 'expand'
       setAppSiderbarExpand(isMobile ? mode : localeMode)
@@ -133,11 +125,12 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
       if (e.status === 404)
         router.replace('/apps')
     })
-  }, [appId, isCurrentWorkspaceEditor, systemFeatures, getNavigations, pathname, router, setAppDetail])
 
-  useUnmount(() => {
-    setAppDetail()
-  })
+    // Cleanup function
+    return () => {
+      setAppDetail()
+    }
+  }, [ appId, isCurrentWorkspaceEditor, systemFeatures, getNavigations, pathname, router, setAppDetail ])
 
   if (!appDetail) {
     return (
@@ -150,7 +143,13 @@ const AppDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
   return (
     <div className={cn(s.app, 'flex', 'overflow-hidden')}>
       {appDetail && (
-        <AppSideBar title={appDetail.name} icon={appDetail.icon} icon_background={appDetail.icon_background} desc={appDetail.mode} navigation={navigation} />
+        <AppSideBar
+          title={appDetail.name || ''}
+          icon={appDetail.icon || ''}
+          icon_background={appDetail.icon_background || ''}
+          desc={appDetail.mode || ''}
+          navigation={navigation}
+        />
       )}
       <div className="bg-white grow overflow-hidden">
         {children}

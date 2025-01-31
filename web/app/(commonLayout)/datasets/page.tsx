@@ -5,7 +5,7 @@ const AppList = async () => {
 }
 
 export const metadata = {
-  title: 'Datasets - Mindverse',
+  title: 'Datasets - Swiftpage',
 }
 
 export default AppList

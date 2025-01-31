@@ -33,8 +33,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
   )
 }
 
-export const metadata = {
-  title: 'Mindverse',
+export const metadata: Metadata = {
+  title: 'Swiftpage',
 }
 
 export default Layout

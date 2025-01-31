@@ -13,7 +13,7 @@ const Layout: FC = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined')
-      document.title = `${t('tools.title')} - Mindverse`
+      document.title = `${t('tools.title')} - Swiftpage`
     if (isCurrentWorkspaceDatasetOperator)
       return router.replace('/datasets')
   }, [isCurrentWorkspaceDatasetOperator, router, t])

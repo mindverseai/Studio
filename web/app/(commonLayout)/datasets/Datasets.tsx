@@ -57,7 +57,7 @@ const Datasets = ({
 
   useEffect(() => {
     loadingStateRef.current = isLoading
-    document.title = `${t('dataset.knowledge')} - Mindverse`
+    document.title = `${t('dataset.knowledge')} - Swiftpage`
   }, [isLoading])
 
   useEffect(() => {

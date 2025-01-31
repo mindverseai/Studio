@@ -49,7 +49,7 @@ const Chatbot = () => {
       if (customConfig)
         document.title = `${site.title}`
       else
-        document.title = `${site.title} - Powered by Mindverse`
+        document.title = `${site.title} - Powered by Swiftpage`
     }
   }, [site, customConfig, themeBuilder])
 

@@ -24,7 +24,7 @@ const Explore: FC<IExploreProps> = ({
   const [installedApps, setInstalledApps] = useState<InstalledApp[]>([])
 
   useEffect(() => {
-    document.title = `${t('explore.title')} -  Mindverse`;
+    document.title = `${t('explore.title')} -  Swiftpage`;
     (async () => {
       const { accounts } = await fetchMembers({ url: '/workspaces/current/members', params: {} })
       if (!accounts)

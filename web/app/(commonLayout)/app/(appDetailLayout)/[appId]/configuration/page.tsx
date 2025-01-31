@@ -8,7 +8,7 @@ const IConfiguration = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined')
-      document.title = `${t('appDebug.orchestrate')} - Mindverse`
+      document.title = `${t('appDebug.orchestrate')} - Swiftpage`
   }, [t])
 
   return (

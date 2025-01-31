@@ -413,7 +413,7 @@ const TextGeneration: FC<IMainProps> = ({
       if (canReplaceLogo)
         document.title = `${siteInfo.title}`
       else
-        document.title = `${siteInfo.title} - Powered by Mindverse`
+        document.title = `${siteInfo.title} - Powered by Swiftpage`
     }
   }, [siteInfo?.title, canReplaceLogo])
 

@@ -7,7 +7,7 @@ import './styles/globals.css'
 import './styles/markdown.scss'
 
 export const metadata = {
-  title: 'Mindverse',
+  title: 'Swiftpage',
 }
 
 export const viewport: Viewport = {
