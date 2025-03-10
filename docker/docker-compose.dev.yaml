@@ -10,18 +10,16 @@ services:
       - ../web:/app/web
     environment:
       NODE_ENV: development
-      CONSOLE_API_URL: ${CONSOLE_API_URL:-http://api:5001}
-      APP_API_URL: ${APP_API_URL:-http://api:5001}
+      CONSOLE_API_URL: ${CONSOLE_API_URL:-http://localhost:5001}
+      APP_API_URL: ${APP_API_URL:-http://localhost:5001}
       NEXT_TELEMETRY_DISABLED: 1
       PORT: 3000
     ports:
       - "3000:3000"
-    depends_on:
-      - api
     networks:
       - default
 
 networks:
   default:
-    external:
-      name: docker_default
+    name: docker_default
+    external: true

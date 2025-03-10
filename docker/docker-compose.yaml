@@ -916,14 +916,15 @@ services:
     image: opensearchproject/opensearch-dashboards:latest
     profiles:
       - opensearch
+    depends_on:
+      - opensearch
+    restart: always
     environment:
       OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
     volumes:
       - ./volumes/opensearch/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     networks:
       - opensearch-net
-    depends_on:
-      - opensearch
 
   # MyScale vector database
   myscale:
