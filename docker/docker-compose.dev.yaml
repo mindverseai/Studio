@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  # Development version of the web frontend
+  web-dev:
+    image: node:20-alpine3.20
+    working_dir: /app
+    command: sh -c "npm install -g pnpm@9.12.2 && cd web && pnpm install && pnpm dev"
+    volumes:
+      - ../web:/app/web
+    environment:
+      NODE_ENV: development
+      CONSOLE_API_URL: ${CONSOLE_API_URL:-http://api:5001}
+      APP_API_URL: ${APP_API_URL:-http://api:5001}
+      NEXT_TELEMETRY_DISABLED: 1
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: docker_default
