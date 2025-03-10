@@ -1,21 +1,28 @@
-'use client'
-import type { FC } from 'react'
-import classNames from '@/utils/classnames'
+"use client";
+import type { FC } from "react";
+import classNames from "@/utils/classnames";
+import { useSelector } from "@/app/components/base/theme-provider";
 
 type LogoSiteProps = {
-  className?: string
-}
+  className?: string;
+};
 
-const LogoSite: FC<LogoSiteProps> = ({
-  className,
-}) => {
+const LogoSite: FC<LogoSiteProps> = ({ className }) => {
+  const { theme } = useSelector((s) => {
+    return {
+      theme: s.theme,
+    };
+  });
+
+  const src =
+    theme === "light" ? "/logo/mind-verse.png" : `/logo/mind-verse.png`;
   return (
     <img
-      src={'/logo/logo.png'}
-      className={classNames('block w-[22.651px] h-[24.5px]', className)}
-      alt='logo'
+      src={src}
+      className={classNames("block w-[22.651px] h-[24.5px]", className)}
+      alt="logo"
     />
-  )
-}
+  );
+};
 
-export default LogoSite
+export default LogoSite;
