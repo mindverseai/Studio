@@ -1,3 +1,3 @@
 export const isDify = () => {
-  return document.referrer.includes('dify.ai')
+  return document.referrer.includes('mindverse.ai') || document.referrer.includes('mind-verse.de')
 }

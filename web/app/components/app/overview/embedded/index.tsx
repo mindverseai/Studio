@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import copy from "copy-to-clipboard";
+import style from "./style.module.css";
+import Modal from "@/app/components/base/modal";
+import Tooltip from "@/app/components/base/tooltip";
+import { useAppContext } from "@/context/app-context";
+import { IS_CE_EDITION } from "@/config";
+import type { SiteInfo } from "@/models/share";
 import {
-  RiClipboardFill,
-  RiClipboardLine,
-} from '@remixicon/react'
-import copy from 'copy-to-clipboard'
-import style from './style.module.css'
-import Modal from '@/app/components/base/modal'
-import Tooltip from '@/app/components/base/tooltip'
-import { useAppContext } from '@/context/app-context'
-import { IS_CE_EDITION } from '@/config'
-import type { SiteInfo } from '@/models/share'
-import { useThemeContext } from '@/app/components/base/chat/embedded-chatbot/theme/theme-context'
-import ActionButton from '@/app/components/base/action-button'
-import cn from '@/utils/classnames'
+  Clipboard,
+  ClipboardCheck,
+} from "@/app/components/base/icons/src/vender/line/files";
+import { useThemeContext } from "@/app/components/base/chat/embedded-chatbot/theme/theme-context";
+import ActionButton from "@/app/components/base/action-button";
+import cn from "@/utils/classnames";
 
 type Props = {
-  siteInfo?: SiteInfo
-  isShow: boolean
-  onClose: () => void
-  accessToken: string
-  appBaseUrl: string
-  className?: string
-}
+  siteInfo?: SiteInfo;
+  isShow: boolean;
+  onClose: () => void;
+  accessToken: string;
+  appBaseUrl: string;
+  className?: string;
+};
 
 const OPTION_MAP = {
   iframe: {
@@ -35,16 +35,25 @@ const OPTION_MAP = {
 </iframe>`,
   },
   scripts: {
-    getContent: (url: string, token: string, primaryColor: string, isTestEnv?: boolean) =>
+    getContent: (
+      url: string,
+      token: string,
+      primaryColor: string,
+      isTestEnv?: boolean
+    ) =>
       `<script>
- window.difyChatbotConfig = {
-  token: '${token}'${isTestEnv
-    ? `,
+ window.mindverseChatbotConfig = {
+  token: '${token}'${
+        isTestEnv
+          ? `,
   isDev: true`
-    : ''}${IS_CE_EDITION
-    ? `,
+          : ""
+      }${
+        IS_CE_EDITION
+          ? `,
   baseUrl: '${url}'`
-    : ''}
+          : ""
+      }
  }
 </script>
 <script
@@ -53,66 +62,88 @@ const OPTION_MAP = {
  defer>
 </script>
 <style>
-  #dify-chatbot-bubble-button {
+  #mindverse-chatbot-bubble-button {
     background-color: ${primaryColor} !important;
   }
-  #dify-chatbot-bubble-window {
+  #mindverse-chatbot-bubble-window {
     width: 24rem !important;
-    height: 40rem !important;
   }
 </style>`,
   },
   chromePlugin: {
-    getContent: (url: string, token: string) => `ChatBot URL: ${url}/chatbot/${token}`,
+    getContent: (url: string, token: string) => `Chrome Extension: #`,
   },
-}
-const prefixEmbedded = 'appOverview.overview.appInfo.embedded'
+};
+const prefixEmbedded = "appOverview.overview.appInfo.embedded";
 
-type Option = keyof typeof OPTION_MAP
+type Option = keyof typeof OPTION_MAP;
 
 type OptionStatus = {
-  iframe: boolean
-  scripts: boolean
-  chromePlugin: boolean
-}
+  iframe: boolean;
+  scripts: boolean;
+  chromePlugin: boolean;
+};
 
-const Embedded = ({ siteInfo, isShow, onClose, appBaseUrl, accessToken, className }: Props) => {
-  const { t } = useTranslation()
-  const [option, setOption] = useState<Option>('iframe')
-  const [isCopied, setIsCopied] = useState<OptionStatus>({ iframe: false, scripts: false, chromePlugin: false })
+const Embedded = ({
+  siteInfo,
+  isShow,
+  onClose,
+  appBaseUrl,
+  accessToken,
+  className,
+}: Props) => {
+  const { t } = useTranslation();
+  const [option, setOption] = useState<Option>("iframe");
+  const [isCopied, setIsCopied] = useState<OptionStatus>({
+    iframe: false,
+    scripts: false,
+    chromePlugin: false,
+  });
 
-  const { langeniusVersionInfo } = useAppContext()
-  const themeBuilder = useThemeContext()
-  themeBuilder.buildTheme(siteInfo?.chat_color_theme ?? null, siteInfo?.chat_color_theme_inverted ?? false)
-  const isTestEnv = langeniusVersionInfo.current_env === 'TESTING' || langeniusVersionInfo.current_env === 'DEVELOPMENT'
+  const { langeniusVersionInfo } = useAppContext();
+  const themeBuilder = useThemeContext();
+  themeBuilder.buildTheme(
+    siteInfo?.chat_color_theme ?? null,
+    siteInfo?.chat_color_theme_inverted ?? false
+  );
+  const isTestEnv =
+    langeniusVersionInfo.current_env === "TESTING" ||
+    langeniusVersionInfo.current_env === "DEVELOPMENT";
   const onClickCopy = () => {
-    if (option === 'chromePlugin') {
-      const splitUrl = OPTION_MAP[option].getContent(appBaseUrl, accessToken).split(': ')
-      if (splitUrl.length > 1)
-        copy(splitUrl[1])
+    if (option === "chromePlugin") {
+      const splitUrl = OPTION_MAP[option]
+        .getContent(appBaseUrl, accessToken)
+        .split(": ");
+      if (splitUrl.length > 1) copy(splitUrl[1]);
+    } else {
+      copy(
+        OPTION_MAP[option].getContent(
+          appBaseUrl,
+          accessToken,
+          themeBuilder.theme?.primaryColor ?? "#1C64F2",
+          isTestEnv
+        )
+      );
     }
-    else {
-      copy(OPTION_MAP[option].getContent(appBaseUrl, accessToken, themeBuilder.theme?.primaryColor ?? '#1C64F2', isTestEnv))
-    }
-    setIsCopied({ ...isCopied, [option]: true })
-  }
+    setIsCopied({ ...isCopied, [option]: true });
+  };
 
   // when toggle option, reset then copy status
   const resetCopyStatus = () => {
-    const cache = { ...isCopied }
+    const cache = { ...isCopied };
     Object.keys(cache).forEach((key) => {
-      cache[key as keyof OptionStatus] = false
-    })
-    setIsCopied(cache)
-  }
+      cache[key as keyof OptionStatus] = false;
+    });
+    setIsCopied(cache);
+  };
 
   const navigateToChromeUrl = () => {
-    window.open('https://chrome.google.com/webstore/detail/dify-chatbot/ceehdapohffmjmkdcifjofadiaoeggaf', '_blank')
-  }
+    window.open("#", "_blank");
+  };
 
   useEffect(() => {
-    resetCopyStatus()
-  }, [isShow])
+    resetCopyStatus();
+  }, [isShow]);
 
   return (
     <Modal
@@ -134,27 +165,42 @@ const Embedded = ({ siteInfo, isShow, onClose, appBaseUrl, accessToken, classNam
               className={cn(
                 style.option,
                 style[`${v}Icon`],
-                option === v && style.active,
+                option === v && style.active
               )}
               onClick={() => {
-                setOption(v as Option)
-                resetCopyStatus()
+                setOption(v as Option);
+                resetCopyStatus();
               }}
             ></div>
-          )
+          );
         })}
       </div>
-      {option === 'chromePlugin' && (
+      {option === "chromePlugin" && (
         <div className="w-full mt-6">
-          <div className={cn('gap-2 py-3 justify-center items-center inline-flex w-full rounded-lg',
-            'bg-primary-600 hover:bg-primary-600/75 cursor-pointer text-white hover:shadow-sm flex-shrink-0')}>
-            <div className={`w-4 h-4 relative ${style.pluginInstallIcon}`}></div>
-            <div className="text-white text-sm font-medium font-['Inter'] leading-tight" onClick={navigateToChromeUrl}>{t(`${prefixEmbedded}.chromePlugin`)}</div>
+          <div
+            className={cn(
+              "gap-2 py-3 justify-center items-center inline-flex w-full rounded-lg",
+              "bg-primary-600 hover:bg-primary-600/75 cursor-pointer text-white hover:shadow-sm flex-shrink-0"
+            )}
+          >
+            <div
+              className={`w-4 h-4 relative ${style.pluginInstallIcon}`}
+            ></div>
+            <div
+              className="text-white text-sm font-medium font-['Inter'] leading-tight"
+              onClick={navigateToChromeUrl}
+            >
+              {t(`${prefixEmbedded}.chromePlugin`)}
+            </div>
           </div>
         </div>
       )}
-      <div className={cn('w-full bg-background-section border-[0.5px] border-components-panel-border rounded-lg flex-col justify-start items-start inline-flex',
-        'mt-6')}>
+      <div
+        className={cn(
+          "w-full bg-background-section border-[0.5px] border-components-panel-border rounded-lg flex-col justify-start items-start inline-flex",
+          "mt-6"
+        )}
+      >
         <div className="inline-flex items-center self-stretch justify-start gap-2 py-1 pl-3 pr-1  rounded-t-lg bg-background-section-burn">
           <div className="grow shrink-0 text-text-secondary system-sm-medium">
             {t(`${prefixEmbedded}.${option}`)}
@@ -163,27 +209,32 @@ const Embedded = ({ siteInfo, isShow, onClose, appBaseUrl, accessToken, classNam
             popupContent={
               (isCopied[option]
                 ? t(`${prefixEmbedded}.copied`)
-                : t(`${prefixEmbedded}.copy`)) || ''
+                : t(`${prefixEmbedded}.copy`)) || ""
             }
           >
             <ActionButton>
-              <div
-                onClick={onClickCopy}
-              >
-                {isCopied[option] && <RiClipboardFill className='w-4 h-4' />}
-                {!isCopied[option] && <RiClipboardLine className='w-4 h-4' />}
+              <div onClick={onClickCopy}>
+                {isCopied[option] && <ClipboardCheck className="w-4 h-4" />}
+                {!isCopied[option] && <Clipboard className="w-4 h-4" />}
               </div>
             </ActionButton>
           </Tooltip>
         </div>
         <div className="flex items-start justify-start w-full gap-2 p-3 overflow-x-auto">
           <div className="grow shrink basis-0 text-text-secondary text-[13px] leading-tight font-mono">
-            <pre className='select-text'>{OPTION_MAP[option].getContent(appBaseUrl, accessToken, themeBuilder.theme?.primaryColor ?? '#1C64F2', isTestEnv)}</pre>
+            <pre className="select-text">
+              {OPTION_MAP[option].getContent(
+                appBaseUrl,
+                accessToken,
+                themeBuilder.theme?.primaryColor ?? "#1C64F2",
+                isTestEnv
+              )}
+            </pre>
           </div>
         </div>
       </div>
     </Modal>
-  )
-}
+  );
+};
 
-export default Embedded
+export default Embedded;

@@ -453,9 +453,9 @@ const translation = {
     },
   },
   apiBasedExtension: {
-    title: 'API-Erweiterungen bieten eine zentralisierte API-Verwaltung und vereinfachen die Konfiguration für die einfache Verwendung in Mindverse-Anwendungen.',
+    title: 'API-basierte Erweiterungen',
     link: 'Erfahren Sie, wie Sie Ihre eigene API-Erweiterung entwickeln.',
-    linkUrl: 'https://docs.dify.ai/features/extension/api_based_extension',
+    linkUrl: '#',
     add: 'API-Erweiterung hinzufügen',
     selector: {
       title: 'API-Erweiterung',
