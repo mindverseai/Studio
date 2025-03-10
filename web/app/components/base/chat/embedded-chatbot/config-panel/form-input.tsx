@@ -3,14 +3,24 @@ import { useTranslation } from "react-i18next";
 import { memo } from "react";
 import Textarea from "@/app/components/base/textarea";
 
-type InputProps = {
-  form: any;
-  value: string;
-  onChange: (variable: string, value: string) => void;
-};
-const FormInput: FC<InputProps> = ({ form, value, onChange }) => {
-  const { t } = useTranslation();
-  const { type, label, required, max_length, variable } = form;
+interface InputProps {
+  form: any
+  value: string
+  onChange: (variable: string, value: string) => void
+}
+const FormInput: FC<InputProps> = ({
+  form,
+  value,
+  onChange,
+}) => {
+  const { t } = useTranslation()
+  const {
+    type,
+    label,
+    required,
+    max_length,
+    variable,
+  } = form
 
   if (type === "paragraph") {
     return (

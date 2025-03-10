@@ -1,26 +1,26 @@
-"use client";
-import type { FC } from "react";
-import React, { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
-import useAvailableVarList from "../../../../_base/hooks/use-available-var-list";
-import cn from "@/utils/classnames";
-import RemoveButton from "@/app/components/workflow/nodes/_base/components/remove-button";
-import Input from "@/app/components/workflow/nodes/_base/components/input-support-select-var";
-import type { Var } from "@/app/components/workflow/types";
-import { VarType } from "@/app/components/workflow/types";
-type Props = {
-  className?: string;
-  instanceId?: string;
-  nodeId: string;
-  value: string;
-  onChange: (newValue: string) => void;
-  hasRemove: boolean;
-  onRemove?: () => void;
-  placeholder?: string;
-  readOnly?: boolean;
-  isSupportFile?: boolean;
-  insertVarTipToLeft?: boolean;
-};
+'use client'
+import type { FC } from 'react'
+import React, { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import useAvailableVarList from '../../../../_base/hooks/use-available-var-list'
+import cn from '@/utils/classnames'
+import RemoveButton from '@/app/components/workflow/nodes/_base/components/remove-button'
+import Input from '@/app/components/workflow/nodes/_base/components/input-support-select-var'
+import type { Var } from '@/app/components/workflow/types'
+import { VarType } from '@/app/components/workflow/types'
+interface Props {
+  className?: string
+  instanceId?: string
+  nodeId: string
+  value: string
+  onChange: (newValue: string) => void
+  hasRemove: boolean
+  onRemove?: () => void
+  placeholder?: string
+  readOnly?: boolean
+  isSupportFile?: boolean
+  insertVarTipToLeft?: boolean
+}
 
 const InputItem: FC<Props> = ({
   className,

@@ -44,80 +44,55 @@ const ChatUserInput = ({ inputs }: Props) => {
   if (!promptVariables.length) return null;
 
   return (
-    <div
-      className={cn(
-        "bg-components-panel-on-panel-item-bg rounded-xl border-[0.5px] border-components-panel-border-subtle shadow-xs z-[1]"
-      )}
-    >
-      <div className="px-4 pt-3 pb-4">
-        {promptVariables.map(
-          ({ key, name, type, options, max_length, required }, index) => (
-            <div key={key} className="mb-4 last-of-type:mb-0">
-              <div>
-                <div className="h-6 mb-1 flex items-center gap-1 text-text-secondary system-sm-semibold">
-                  <div className="truncate">{name || key}</div>
-                  {!required && (
-                    <span className="text-text-tertiary system-xs-regular">
-                      {t("workflow.panel.optional")}
-                    </span>
-                  )}
-                </div>
-                <div className="grow">
-                  {type === "string" && (
-                    <Input
-                      id={key}
-                      name={key}
-                      value={inputs[key] ? `${inputs[key]}` : ""}
-                      onChange={(e) => {
-                        handleInputValueChange(key, e.target.value);
-                      }}
-                      placeholder={name}
-                      autoFocus={index === 0}
-                      maxLength={max_length || DEFAULT_VALUE_MAX_LEN}
-                    />
-                  )}
-                  {type === "paragraph" && (
-                    <Textarea
-                      id={key}
-                      name={key}
-                      className="grow h-[120px]"
-                      placeholder={name}
-                      value={inputs[key] ? `${inputs[key]}` : ""}
-                      onChange={(e) => {
-                        handleInputValueChange(key, e.target.value);
-                      }}
-                    />
-                  )}
-                  {type === "select" && (
-                    <Select
-                      className="w-full"
-                      defaultValue={inputs[key] as string}
-                      onSelect={(i) => {
-                        handleInputValueChange(key, i.value as string);
-                      }}
-                      items={(options || []).map((i) => ({
-                        name: i,
-                        value: i,
-                      }))}
-                      allowSearch={false}
-                      bgClassName="bg-gray-50"
-                    />
-                  )}
-                  {type === "number" && (
-                    <Input
-                      id={key}
-                      name={key}
-                      type="number"
-                      value={inputs[key] ? `${inputs[key]}` : ""}
-                      onChange={(e) => {
-                        handleInputValueChange(key, e.target.value);
-                      }}
-                      placeholder={name}
-                      autoFocus={index === 0}
-                      maxLength={max_length || DEFAULT_VALUE_MAX_LEN}
-                    />
-                  )}
-                </div>
+    <div className={cn('bg-components-panel-on-panel-item-bg rounded-xl border-[0.5px] border-components-panel-border-subtle shadow-xs z-[1]')}>
+      <div className='px-4 pt-3 pb-4'>
+        {promptVariables.map(({ key, name, type, options, max_length, required }, index) => (
+          <div
+            key={key}
+            className='mb-4 last-of-type:mb-0'
+          >
+            <div>
+              <div className='h-6 mb-1 flex items-center gap-1 text-text-secondary system-sm-semibold'>
+                <div className='truncate'>{name || key}</div>
+                {!required && <span className='text-text-tertiary system-xs-regular'>{t('workflow.panel.optional')}</span>}
+              </div>
+              <div className='grow'>
+                {type === 'string' && (
+                  <Input
+                    value={inputs[key] ? `${inputs[key]}` : ''}
+                    onChange={(e) => { handleInputValueChange(key, e.target.value) }}
+                    placeholder={name}
+                    autoFocus={index === 0}
+                    maxLength={max_length || DEFAULT_VALUE_MAX_LEN}
+                  />
+                )}
+                {type === 'paragraph' && (
+                  <Textarea
+                    className='grow h-[120px]'
+                    placeholder={name}
+                    value={inputs[key] ? `${inputs[key]}` : ''}
+                    onChange={(e) => { handleInputValueChange(key, e.target.value) }}
+                  />
+                )}
+                {type === 'select' && (
+                  <Select
+                    className='w-full'
+                    defaultValue={inputs[key] as string}
+                    onSelect={(i) => { handleInputValueChange(key, i.value as string) }}
+                    items={(options || []).map(i => ({ name: i, value: i }))}
+                    allowSearch={false}
+                  />
+                )}
+                {type === 'number' && (
+                  <Input
+                    type='number'
+                    value={inputs[key] ? `${inputs[key]}` : ''}
+                    onChange={(e) => { handleInputValueChange(key, e.target.value) }}
+                    placeholder={name}
+                    autoFocus={index === 0}
+                    maxLength={max_length || DEFAULT_VALUE_MAX_LEN}
+                  />
+                )}
               </div>
             </div>
           )

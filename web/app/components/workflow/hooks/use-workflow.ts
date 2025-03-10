@@ -34,10 +34,12 @@ import {
   fetchAllBuiltInTools,
   fetchAllCustomTools,
   fetchAllWorkflowTools,
-} from "@/service/tools";
-import I18n from "@/context/i18n";
-import { CollectionType } from "@/app/components/tools/types";
-import { CUSTOM_ITERATION_START_NODE } from "@/app/components/workflow/nodes/iteration-start/constants";
+} from '@/service/tools'
+import I18n from '@/context/i18n'
+import { CollectionType } from '@/app/components/tools/types'
+import { CUSTOM_ITERATION_START_NODE } from '@/app/components/workflow/nodes/iteration-start/constants'
+import { useWorkflowConfig } from '@/service/use-workflow'
+import { canFindTool } from '@/utils'
 
 export const useIsChatMode = () => {
   const appDetail = useAppStore((s) => s.appDetail);
@@ -46,18 +48,17 @@ export const useIsChatMode = () => {
 };
 
 export const useWorkflow = () => {
-  const { t } = useTranslation();
-  const { locale } = useContext(I18n);
-  const store = useStoreApi();
-  const workflowStore = useWorkflowStore();
-  const nodesExtraData = useNodesExtraData();
-  const setPanelWidth = useCallback(
-    (width: number) => {
-      localStorage.setItem("workflow-node-panel-width", `${width}`);
-      workflowStore.setState({ panelWidth: width });
-    },
-    [workflowStore]
-  );
+  const { t } = useTranslation()
+  const { locale } = useContext(I18n)
+  const store = useStoreApi()
+  const workflowStore = useWorkflowStore()
+  const appId = useStore(s => s.appId)
+  const nodesExtraData = useNodesExtraData()
+  const { data: workflowConfig } = useWorkflowConfig(appId)
+  const setPanelWidth = useCallback((width: number) => {
+    localStorage.setItem('workflow-node-panel-width', `${width}`)
+    workflowStore.setState({ panelWidth: width })
+  }, [workflowStore])
 
   const getTreeLeafNodes = useCallback(
     (nodeId: string) => {
@@ -230,47 +231,14 @@ export const useWorkflow = () => {
 
       if (!currentNode) return false;
 
-      if (currentNode.data.type === BlockEnum.Start) return true;
-
-      const checkPreviousNodes = (node: Node) => {
-        const previousNodes = getBeforeNodeById(node.id);
-
-        for (const prevNode of previousNodes) {
-          if (prevNode.data.type === BlockEnum.Start) return true;
-          if (checkPreviousNodes(prevNode)) return true;
-        }
-
-        return false;
-      };
-
-      return checkPreviousNodes(currentNode);
-    },
-    [store, getBeforeNodeById]
-  );
-
-  const handleOutVarRenameChange = useCallback(
-    (
-      nodeId: string,
-      oldValeSelector: ValueSelector,
-      newVarSelector: ValueSelector
-    ) => {
-      const { getNodes, setNodes } = store.getState();
-      const afterNodes = getAfterNodesInSameBranch(nodeId);
-      const effectNodes = findUsedVarNodes(oldValeSelector, afterNodes);
-      if (effectNodes.length > 0) {
-        const newNodes = getNodes().map((node) => {
-          if (effectNodes.find((n) => n.id === node.id))
-            return updateNodeVars(node, oldValeSelector, newVarSelector);
-
-          return node;
-        });
-        setNodes(newNodes);
+      if (parallel.depth > (workflowConfig?.parallel_depth_limit || PARALLEL_DEPTH_LIMIT)) {
+        const { setShowTips } = workflowStore.getState()
+        setShowTips(t('workflow.common.parallelTip.depthLimit', { num: (workflowConfig?.parallel_depth_limit || PARALLEL_DEPTH_LIMIT) }))
+        return false
       }
 
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    [store]
-  );
+    return true
+  }, [t, workflowStore, workflowConfig?.parallel_depth_limit])
 
   const isVarUsedInNodes = useCallback(
     (varSelector: ValueSelector) => {
@@ -542,18 +510,11 @@ export const useWorkflowInit = () => {
       );
       setData(res);
       workflowStore.setState({
-        envSecrets: (res.environment_variables || [])
-          .filter((env) => env.value_type === "secret")
-          .reduce((acc, env) => {
-            acc[env.id] = env.value;
-            return acc;
-          }, {} as Record<string, string>),
-        environmentVariables:
-          res.environment_variables?.map((env) =>
-            env.value_type === "secret"
-              ? { ...env, value: "[__HIDDEN__]" }
-              : env
-          ) || [],
+        envSecrets: (res.environment_variables || []).filter(env => env.value_type === 'secret').reduce((acc, env) => {
+          acc[env.id] = env.value
+          return acc
+        }, {} as Record<string, string>),
+        environmentVariables: res.environment_variables?.map(env => env.value_type === 'secret' ? { ...env, value: '[__HIDDEN__]' } : env) || [],
         conversationVariables: res.conversation_variables || [],
       });
       setSyncWorkflowDraftHash(res.hash);
@@ -665,11 +626,10 @@ export const useToolIcon = (data: Node["data"]) => {
       if (data.provider_type === CollectionType.builtIn)
         targetTools = buildInTools;
       else if (data.provider_type === CollectionType.custom)
-        targetTools = customTools;
-      else targetTools = workflowTools;
-      return targetTools.find(
-        (toolWithProvider) => toolWithProvider.id === data.provider_id
-      )?.icon;
+        targetTools = customTools
+      else
+        targetTools = workflowTools
+      return targetTools.find(toolWithProvider => canFindTool(toolWithProvider.id, data.provider_id))?.icon
     }
   }, [data, buildInTools, customTools, workflowTools]);
 

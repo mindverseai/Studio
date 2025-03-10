@@ -27,14 +27,14 @@ import { BubbleX } from "@/app/components/base/icons/src/vender/line/others";
 import { FILE_EXTS } from "@/app/components/base/prompt-editor/constants";
 import cn from "@/utils/classnames";
 
-type Props = {
-  payload: InputVar;
-  value: any;
-  onChange: (value: any) => void;
-  className?: string;
-  autoFocus?: boolean;
-  inStepRun?: boolean;
-};
+interface Props {
+  payload: InputVar
+  value: any
+  onChange: (value: any) => void
+  className?: string
+  autoFocus?: boolean
+  inStepRun?: boolean
+}
 
 const FormItem: FC<Props> = ({
   payload,
