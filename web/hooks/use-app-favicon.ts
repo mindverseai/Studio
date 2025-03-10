@@ -21,7 +21,12 @@ export function useAppFavicon(options: UseAppFaviconOptions) {
   } = options
 
   useAsyncEffect(async () => {
-    if (!enable || (icon_type === 'image' && !icon_url) || (icon_type === 'emoji' && !icon))
+    if (!enable)
+      return
+
+    // If no valid icon is provided, don't modify the favicon
+    // This will allow the default favicon.ico to be used
+    if ((icon_type === 'image' && !icon_url) || (icon_type === 'emoji' && !icon))
       return
 
     const isValidImageIcon = icon_type === 'image' && icon_url
@@ -38,7 +43,7 @@ export function useAppFavicon(options: UseAppFaviconOptions) {
             + '</svg>'
 
     link.rel = 'shortcut icon'
-    link.type = 'image/svg'
+    link.type = isValidImageIcon ? 'image/x-icon' : 'image/svg+xml'
     document.getElementsByTagName('head')[0].appendChild(link)
-  }, [enable, icon, icon_background])
+  }, [enable, icon, icon_background, icon_type, icon_url])
 }
