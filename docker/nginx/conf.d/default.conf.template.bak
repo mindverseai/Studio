@@ -22,9 +22,8 @@ server {
     listen ${NGINX_SSL_PORT} ssl;
     server_name ${NGINX_SERVER_NAME};
 
-    # Überprüfe, ob die Zertifikate existieren
-    ssl_certificate_key /etc/letsencrypt/live/${CERTBOT_DOMAIN}/privkey.pem;
-    ssl_certificate /etc/letsencrypt/live/${CERTBOT_DOMAIN}/fullchain.pem;
+    ssl_certificate /etc/letsencrypt/live/${NGINX_SERVER_NAME}/${NGINX_SSL_CERT_FILENAME};
+    ssl_certificate_key /etc/letsencrypt/live/${NGINX_SERVER_NAME}/${NGINX_SSL_CERT_KEY_FILENAME};
     ssl_protocols ${NGINX_SSL_PROTOCOLS};
 
     client_max_body_size ${NGINX_CLIENT_MAX_BODY_SIZE};
@@ -56,12 +55,11 @@ server {
       include proxy.conf;
     }
 
-    # Nur aktivieren, wenn der Plugin-Daemon-Service läuft
-    # location /e/ {
-    #   proxy_pass http://plugin_daemon:5002;
-    #   proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
-    #   include proxy.conf;
-    # }
+    location /e/ {
+      proxy_pass http://plugin_daemon:5002;
+      proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
+      include proxy.conf;
+    }
 
     location / {
       proxy_pass http://web:3000;
