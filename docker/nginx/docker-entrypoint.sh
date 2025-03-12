@@ -3,76 +3,6 @@ set -e
 
 # Function to generate Nginx configuration
 generate_nginx_config() {
-    # Initialize variables
-    HTTPS_REDIRECT=''
-    HTTPS_SERVER=''
-    ACME_CHALLENGE_LOCATION=''
-
-    # Set up ACME challenge location
-    ACME_CHALLENGE_LOCATION='location /.well-known/acme-challenge/ { root /var/www/html; try_files $uri =404; }'
-
-    if [ "${NGINX_HTTPS_ENABLED}" = "true" ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME} ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME} ]; then
-        SSL_CERTIFICATE_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}"
-        SSL_CERTIFICATE_KEY_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}"
-
-        export SSL_CERTIFICATE_PATH
-        export SSL_CERTIFICATE_KEY_PATH
-
-        # Set up HTTPS redirect
-        HTTPS_REDIRECT='return 301 https://$server_name$request_uri;'
-
-        # Create HTTPS server block
-        HTTPS_SERVER=$(cat <<EOF
-server {
-    listen ${NGINX_SSL_PORT} ssl;
-    server_name ${NGINX_SERVER_NAME};
-
-    ssl_certificate ${SSL_CERTIFICATE_PATH};
-    ssl_certificate_key ${SSL_CERTIFICATE_KEY_PATH};
-    ssl_protocols ${NGINX_SSL_PROTOCOLS};
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    ssl_prefer_server_ciphers on;
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 10m;
-
-    ${ACME_CHALLENGE_LOCATION}
-
-    location /console/api {
-        proxy_pass http://api:5001;
-        include /etc/nginx/proxy.conf;
-    }
-
-    location /api {
-        proxy_pass http://api:5001;
-        include /etc/nginx/proxy.conf;
-    }
-
-    location /v1 {
-        proxy_pass http://api:5001;
-        include /etc/nginx/proxy.conf;
-    }
-
-    location /files {
-        proxy_pass http://api:5001;
-        include /etc/nginx/proxy.conf;
-    }
-
-    location / {
-        proxy_pass http://web:3000;
-        include /etc/nginx/proxy.conf;
-    }
-}
-EOF
-)
-    else
-        # If HTTPS is not enabled or certificates are not available, clear the HTTPS_REDIRECT
-        HTTPS_REDIRECT=''
-    fi
-
-    export HTTPS_REDIRECT
-    export HTTPS_SERVER
-    export ACME_CHALLENGE_LOCATION
-
     # Process templates
     env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
     envsubst "$env_vars" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
@@ -80,20 +10,53 @@ EOF
     envsubst "$env_vars" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 }
 
+# Check if SSL certificates exist
+check_ssl_certificates() {
+    if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
+        if [ ! -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME} ] || [ ! -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME} ]; then
+            echo "Warning: HTTPS is enabled but SSL certificates not found. Nginx will start with HTTP only until certificates are available."
+            echo "Waiting for certificates to be generated at /etc/letsencrypt/live/${CERTBOT_DOMAIN}/"
+            # Create a temporary SSL certificate to allow Nginx to start
+            mkdir -p /etc/nginx/ssl/
+            openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
+                -keyout /etc/nginx/ssl/temp.key \
+                -out /etc/nginx/ssl/temp.crt \
+                -subj "/CN=localhost" 2>/dev/null
+            
+            # Create a temporary config that uses the temporary certificates
+            sed -i "s|/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}|/etc/nginx/ssl/temp.key|g" /etc/nginx/conf.d/default.conf
+            sed -i "s|/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}|/etc/nginx/ssl/temp.crt|g" /etc/nginx/conf.d/default.conf
+            return 1
+        else
+            echo "SSL certificates found. HTTPS is fully enabled."
+            return 0
+        fi
+    else
+        echo "HTTPS is disabled. Running with HTTP only."
+        return 0
+    fi
+}
+
 # Generate initial config
 generate_nginx_config
 
+# Check SSL certificates
+check_ssl_certificates
+certificates_ready=$?
+
 # Start Nginx
 nginx -g 'daemon off;' &
+nginx_pid=$!
 
 # Wait for SSL certificates if HTTPS is enabled
-if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
+if [ "${NGINX_HTTPS_ENABLED}" = "true" ] && [ $certificates_ready -eq 1 ]; then
     while [ ! -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME} ] || [ ! -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME} ]; do
         echo "Waiting for SSL certificates..."
         sleep 5
     done
 
-    # Regenerate config with SSL
+    echo "SSL certificates found. Regenerating config and reloading Nginx."
+    # Regenerate config with real SSL certificates
     generate_nginx_config
 
     # Reload Nginx
@@ -101,4 +64,4 @@ if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
 fi
 
 # Keep the script running
-wait
+wait $nginx_pid
