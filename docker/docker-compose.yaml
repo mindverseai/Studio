@@ -463,9 +463,7 @@ services:
 
   # Frontend web application.
   web:
-    build:
-      context: ..
-      dockerfile: docker/custom-web.Dockerfile
+    image: langgenius/dify-web:1.0.0
     restart: always
     user: root
     environment:

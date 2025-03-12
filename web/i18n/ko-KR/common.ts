@@ -147,7 +147,7 @@ const translation = {
     communityFeedback: '로드맵 및 피드백',
     roadmap: '로드맵',
     community: '커뮤니티',
-    about: 'Dify 소개',
+    about: 'Mindverse 소개',
     logout: '로그아웃',
   },
   settings: {

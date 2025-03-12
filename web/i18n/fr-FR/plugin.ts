@@ -177,7 +177,7 @@ const translation = {
     viewMore: 'Voir plus',
     pluginsResult: '{{num}} résultats',
     discover: 'Découvrir',
-    difyMarketplace: 'Marché Dify',
+    difyMarketplace: 'Marché Mindverse',
     empower: 'Renforcez le développement de votre IA',
     sortBy: 'Ville noire',
   },

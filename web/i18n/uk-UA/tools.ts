@@ -9,7 +9,7 @@ const translation = {
   },
   contribute: {
     line1: 'Мені цікаво зробити свій внесок',
-    line2: 'створення інструментів для Dify.',
+    line2: 'створення інструментів для Mindverse.',
     viewGuide: 'Переглянути інструкцію',
   },
   author: 'Автор',
@@ -149,7 +149,7 @@ const translation = {
     emptyTipCustom: 'Створення власного інструмента',
   },
   openInStudio: 'Відкрити в Студії',
-  customToolTip: 'Дізнайтеся більше про користувацькі інструменти Dify',
+  customToolTip: 'Дізнайтеся більше про користувацькі інструменти Mindverse',
   toolNameUsageTip: 'Ім\'я виклику інструменту для міркувань і підказок агента',
   copyToolName: 'Ім\'я копії',
   noTools: 'Інструментів не знайдено',

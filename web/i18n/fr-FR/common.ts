@@ -189,7 +189,7 @@ const translation = {
     deleteConfirmTip: 'Pour confirmer, veuillez envoyer ce qui suit depuis votre adresse e-mail enregistrée à ',
     myAccount: 'Mon compte',
     account: 'Compte',
-    studio: 'Dify Studio',
+    studio: 'Mindverse Studio',
     deletePrivacyLinkTip: 'Pour plus d’informations sur la façon dont nous traitons vos données, veuillez consulter notre',
     deletePrivacyLink: 'Politique de confidentialité.',
     deleteSuccessTip: 'Votre compte a besoin de temps pour terminer la suppression. Nous vous enverrons un e-mail lorsque tout sera terminé.',

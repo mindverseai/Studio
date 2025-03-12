@@ -179,7 +179,7 @@ const translation = {
     discover: 'ค้นพบ',
     noPluginFound: 'ไม่พบปลั๊กอิน',
     empower: 'เพิ่มศักยภาพในการพัฒนา AI ของคุณ',
-    difyMarketplace: 'ตลาด Dify',
+    difyMarketplace: 'ตลาด Mindverse',
   },
   task: {
     installing: 'การติดตั้งปลั๊กอิน {{installingLength}} 0 เสร็จแล้ว',

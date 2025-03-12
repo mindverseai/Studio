@@ -176,7 +176,7 @@ const translation = {
     discover: 'Descoperi',
     empower: 'Îmbunătățește-ți dezvoltarea AI',
     pluginsResult: '{{num}} rezultate',
-    difyMarketplace: 'Piața Dify',
+    difyMarketplace: 'Piața Mindverse',
     moreFrom: 'Mai multe din Marketplace',
     and: 'și',
     viewMore: 'Vezi mai mult',

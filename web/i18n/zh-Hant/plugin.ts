@@ -178,7 +178,7 @@ const translation = {
     and: '和',
     sortBy: '黑城',
     viewMore: '查看更多',
-    difyMarketplace: 'Dify 市場',
+    difyMarketplace: 'Mindverse 市場',
     pluginsResult: '{{num}} 個結果',
   },
   task: {

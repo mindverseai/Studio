@@ -5,13 +5,15 @@ services:
   web-dev:
     image: node:20-alpine3.20
     working_dir: /app
-    command: sh -c "npm install -g pnpm@9.12.2 && cd web && pnpm install && pnpm dev"
+    command: sh -c "apk add --no-cache python3 make g++ && cd web && mkdir -p node_modules && chmod 777 node_modules && npm install -g pnpm@9.12.2 --unsafe-perm && pnpm install && pnpm dev"
     volumes:
       - ../web:/app/web
     environment:
       NODE_ENV: development
-      CONSOLE_API_URL: ${CONSOLE_API_URL:-http://localhost:5001}
-      APP_API_URL: ${APP_API_URL:-http://localhost:5001}
+      CONSOLE_API_URL: ${CONSOLE_API_URL:-http://localhost}
+      APP_API_URL: ${APP_API_URL:-http://localhost}
+      NEXT_PUBLIC_API_PREFIX: ${CONSOLE_API_URL:-http://localhost}/console/api
+      NEXT_PUBLIC_PUBLIC_API_PREFIX: ${APP_API_URL:-http://localhost}/api
       NEXT_TELEMETRY_DISABLED: 1
       PORT: 3000
     ports:

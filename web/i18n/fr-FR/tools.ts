@@ -9,7 +9,7 @@ const translation = {
   },
   contribute: {
     line1: 'Je suis intéressé par',
-    line2: 'contribuer des outils à Dify.',
+    line2: 'contribuer des outils à Mindverse.',
     viewGuide: 'Voir le guide',
   },
   author: 'Par',
@@ -149,7 +149,7 @@ const translation = {
     emptyTipCustom: 'Créer un outil personnalisé',
   },
   openInStudio: 'Ouvrir dans Studio',
-  customToolTip: 'En savoir plus sur les outils personnalisés Dify',
+  customToolTip: 'En savoir plus sur les outils personnalisés Mindverse',
   toolNameUsageTip: 'Nom de l’appel de l’outil pour le raisonnement et l’invite de l’agent',
   copyToolName: 'Copier le nom',
   noTools: 'Aucun outil trouvé',

@@ -16,7 +16,7 @@ const translation = {
     },
   },
   apps: {
-    title: 'Dify Tarafından Keşfet Uygulamaları',
+    title: 'Mindverse Tarafından Keşfet Uygulamaları',
     description: 'Bu şablon uygulamalarını anında kullanın veya şablonlara dayalı kendi uygulamalarınızı özelleştirin.',
     allCategories: 'Önerilen',
   },

@@ -221,7 +221,7 @@ const translation = {
   otherDataSource: {
     learnMore: 'Ulteriori informazioni',
     title: 'Connettersi ad altre origini dati?',
-    description: 'Attualmente, la knowledge base di Dify ha solo fonti di dati limitate. Contribuire con una fonte di dati alla knowledge base di Dify è un modo fantastico per migliorare la flessibilità e la potenza della piattaforma per tutti gli utenti. La nostra guida ai contributi ti aiuta a iniziare. Clicca sul link sottostante per saperne di più.',
+    description: 'Attualmente, la knowledge base di Mindverse ha solo fonti di dati limitate. Contribuire con una fonte di dati alla knowledge base di Mindverse è un modo fantastico per migliorare la flessibilità e la potenza della piattaforma per tutti gli utenti. La nostra guida ai contributi ti aiuta a iniziare. Clicca sul link sottostante per saperne di più.',
   },
 }
 

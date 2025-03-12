@@ -18,7 +18,7 @@ const translation = {
   externalKnowledgeNamePlaceholder: 'ナレッジベース名を入力',
   externalKnowledgeDescriptionPlaceholder: 'このナレッジベースの説明（任意）',
   learnHowToWriteGoodKnowledgeDescription: '効果的なナレッジの説明の書き方',
-  externalAPIPanelDescription: '外部ナレッジ連携APIは、Dify外のナレッジベースと連携し、そこからナレッジを取得するために使用します。',
+  externalAPIPanelDescription: '外部ナレッジ連携APIは、Mindverse外のナレッジベースと連携し、そこからナレッジを取得するために使用します。',
   externalAPIPanelDocumentation: '外部ナレッジ連携APIの作成方法',
   localDocs: 'ローカルドキュメント',
   documentCount: ' ドキュメント',

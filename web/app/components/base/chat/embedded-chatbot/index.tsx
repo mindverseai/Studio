@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAsyncEffect } from "ahooks";
+import useAsyncEffect from "ahooks/es/useAsyncEffect";
 import { useTranslation } from "react-i18next";
 import { RiLoopLeftLine } from "@remixicon/react";
 import { EmbeddedChatbotContext, useEmbeddedChatbotContext } from "./context";

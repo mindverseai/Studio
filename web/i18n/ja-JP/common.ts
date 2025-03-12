@@ -155,7 +155,7 @@ const translation = {
     communityFeedback: 'フィードバック',
     roadmap: 'ロードマップ',
     community: 'コミュニティ',
-    about: 'Difyについて',
+    about: 'Mindverseについて',
     logout: 'ログアウト',
   },
   settings: {
@@ -193,7 +193,7 @@ const translation = {
     deleteConfirmTip: '確認のため、登録したメールから次の内容をに送信してください ',
     account: 'アカウント',
     myAccount: 'マイアカウント',
-    studio: 'Difyスタジオ',
+    studio: 'Mindverseスタジオ',
     deletePrivacyLinkTip: 'お客様のデータの取り扱い方法の詳細については、当社の',
     deletePrivacyLink: 'プライバシーポリシー。',
     deleteSuccessTip: 'アカウントの削除が完了するまでに時間が必要です。すべて完了しましたら、メールでお知らせします。',

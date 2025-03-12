@@ -174,7 +174,7 @@ const translation = {
     and: 've',
     empower: 'Yapay zeka geliştirmenizi güçlendirin',
     pluginsResult: '{{num}} sonuç',
-    difyMarketplace: 'Dify Pazar Yeri',
+    difyMarketplace: 'Mindverse Pazar Yeri',
     sortBy: 'Kara şehir',
     moreFrom: 'Marketplace\'ten daha fazlası',
     noPluginFound: 'Eklenti bulunamadı',
