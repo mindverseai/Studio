@@ -39,27 +39,27 @@ server {
 
     location /console/api {
         proxy_pass http://api:5001;
-        include proxy.conf;
+        include /etc/nginx/proxy.conf;
     }
 
     location /api {
         proxy_pass http://api:5001;
-        include proxy.conf;
+        include /etc/nginx/proxy.conf;
     }
 
     location /v1 {
         proxy_pass http://api:5001;
-        include proxy.conf;
+        include /etc/nginx/proxy.conf;
     }
 
     location /files {
         proxy_pass http://api:5001;
-        include proxy.conf;
+        include /etc/nginx/proxy.conf;
     }
 
     location / {
         proxy_pass http://web:3000;
-        include proxy.conf;
+        include /etc/nginx/proxy.conf;
     }
 }
 EOF
