@@ -11,9 +11,6 @@ server {
     # placeholder for acme challenge location
     ${ACME_CHALLENGE_LOCATION}
 
-    # Static files location
-    ${STATIC_FILES_LOCATION}
-
     location /console/api {
       proxy_pass http://api:5001;
       include proxy.conf;

@@ -483,7 +483,6 @@ services:
       - ./volumes/certbot/www:/var/www/html
       - ../web/public/favicon.ico:/app/web/public/favicon.ico
       - ../web/public/logo/mind-verse.png:/app/web/public/logo/mind-verse.png
-      - ../web/public/logo.png:/app/web/public/logo.png
 
   # The postgres database.
   db:
