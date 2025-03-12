@@ -455,7 +455,7 @@ const translation = {
   apiBasedExtension: {
     title: 'API 擴充套件提供了一個集中式的 API 管理，在此統一新增 API 配���後，方便在 Mindverse 上的各類應用中直接使用。',
     link: '瞭解如何開發您自己的 API 擴充套件。',
-    linkUrl: 'https://docs.dify.ai/v/zh-hans/guides/extension/api-based-extension',
+    linkUrl: 'https://docs.mindverse.ai/v/zh-hans/guides/extension/api-based-extension',
     add: '新增 API 擴充套件',
     selector: {
       title: 'API 擴充套件',

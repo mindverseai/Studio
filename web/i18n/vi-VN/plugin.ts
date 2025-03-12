@@ -173,7 +173,7 @@ const translation = {
     },
     empower: 'Hỗ trợ phát triển AI của bạn',
     viewMore: 'Xem thêm',
-    difyMarketplace: 'Thị trường Mindverse',
+    mindverseMarketplace: 'Thị trường Mindverse',
     discover: 'Khám phá',
     pluginsResult: '{{num}} kết quả',
     moreFrom: 'Các ứng dụng khác từ Marketplace',

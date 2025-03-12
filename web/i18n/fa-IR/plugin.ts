@@ -177,7 +177,7 @@ const translation = {
     pluginsResult: 'نتایج {{num}}',
     noPluginFound: 'هیچ افزونه ای یافت نشد',
     sortBy: 'شهر سیاه',
-    difyMarketplace: 'بازار دیفی',
+    mindverseMarketplace: 'بازار دیفی',
     empower: 'توسعه هوش مصنوعی خود را توانمند کنید',
     discover: 'کشف',
   },

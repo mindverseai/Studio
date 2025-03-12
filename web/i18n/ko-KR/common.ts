@@ -451,7 +451,7 @@ const translation = {
   apiBasedExtension: {
     title: 'API 기반 확장은 중앙 집중식 API 관리를 제공하고 Mindverse 애플리케이션에서 쉽게 사용할 수 있도록 구성을 단순화합니다.',
     link: '사용자 정의 API 기반 확장을 개발하는 방법 배우기',
-    linkUrl: 'https://docs.dify.ai/features/extension/api_based_extension',
+    linkUrl: 'https://docs.mindverse.ai/features/extension/api_based_extension',
     add: 'API 기반 확장 추가',
     selector: {
       title: 'API 기반 확장',

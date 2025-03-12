@@ -459,7 +459,7 @@ const translation = {
   apiBasedExtension: {
     title: 'API-расширения обеспечивают централизованное управление API, упрощая настройку для удобного использования в приложениях Mindverse.',
     link: 'Узнайте, как разработать собственное API-расширение.',
-    linkUrl: 'https://docs.dify.ai/features/extension/api_based_extension',
+    linkUrl: 'https://docs.mindverse.ai/features/extension/api_based_extension',
     add: 'Добавить API Extension',
     selector: {
       title: 'API Extension',

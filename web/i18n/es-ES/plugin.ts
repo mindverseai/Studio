@@ -179,7 +179,7 @@ const translation = {
     pluginsResult: '{{num}} resultados',
     discover: 'Descubrir',
     and: 'y',
-    difyMarketplace: 'Mercado de Mindverse',
+    mindverseMarketplace: 'Mercado de Mindverse',
   },
   task: {
     installing: 'Instalando plugins {{installingLength}}, 0 hecho.',

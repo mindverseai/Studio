@@ -177,7 +177,7 @@ const translation = {
     viewMore: 'और देखें',
     moreFrom: 'मार्केटप्लेस से अधिक',
     and: 'और',
-    difyMarketplace: 'डिफाई मार्केटप्लेस',
+    mindverseMarketplace: 'डिफाई मार्केटप्लेस',
     sortBy: 'काला शहर',
     discover: 'खोजें',
   },

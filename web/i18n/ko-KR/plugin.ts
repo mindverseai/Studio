@@ -174,7 +174,7 @@ const translation = {
     noPluginFound: '플러그인을 찾을 수 없습니다.',
     empower: 'AI 개발 역량 강화',
     viewMore: '더보기',
-    difyMarketplace: 'Mindverse 마켓플레이스',
+    mindverseMarketplace: 'Mindverse 마켓플레이스',
     pluginsResult: '{{num}} 결과',
     discover: '발견하다',
     moreFrom: 'Marketplace에서 더 보기',

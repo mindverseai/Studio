@@ -182,7 +182,7 @@ const translation = {
     empower: 'Empower your AI development',
     discover: 'Discover',
     and: 'and',
-    difyMarketplace: 'Mindverse Marketplace',
+    mindverseMarketplace: 'Mindverse Marketplace',
     moreFrom: 'More from Marketplace',
     noPluginFound: 'No plugin found',
     pluginsResult: '{{num}} results',

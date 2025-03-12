@@ -459,7 +459,7 @@ const translation = {
   apiBasedExtension: {
     title: 'API 拡張機能は、集中的な API 管理を提供し、Mindverse アプリケーションで簡単に使用できるように設定を簡素化します。',
     link: '独自のAPI拡張機能を開発する方法について学ぶ。',
-    linkUrl: 'https://docs.dify.ai/features/extension/api_based_extension',
+    linkUrl: 'https://docs.mindverse.ai/features/extension/api_based_extension',
     add: 'API拡張機能を追加',
     selector: {
       title: 'API拡張機能',

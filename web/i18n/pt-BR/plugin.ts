@@ -176,7 +176,7 @@ const translation = {
     and: 'e',
     pluginsResult: '{{num}} resultados',
     empower: 'Capacite seu desenvolvimento de IA',
-    difyMarketplace: 'Mercado Mindverse',
+    mindverseMarketplace: 'Mercado Mindverse',
     moreFrom: 'Mais do Marketplace',
     noPluginFound: 'Nenhum plugin encontrado',
     discover: 'Descobrir',

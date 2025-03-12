@@ -175,7 +175,7 @@ const translation = {
     sortBy: 'Schwarze Stadt',
     discover: 'Entdecken',
     noPluginFound: 'Kein Plugin gefunden',
-    difyMarketplace: 'Mindverse Marktplatz',
+    mindverseMarketplace: 'Mindverse Marktplatz',
     moreFrom: 'Mehr aus dem Marketplace',
     pluginsResult: '{{num}} Ergebnisse',
     empower: 'Unterstützen Sie Ihre KI-Entwicklung',

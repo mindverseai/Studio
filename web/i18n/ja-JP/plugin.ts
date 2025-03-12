@@ -176,7 +176,7 @@ const translation = {
     pluginsResult: '{{num}} 件の結果',
     noPluginFound: 'プラグインが見つかりませんでした',
     moreFrom: 'マーケットプレイスからのさらなる情報',
-    difyMarketplace: 'Mindverseマーケットプレイス',
+    mindverseMarketplace: 'Mindverseマーケットプレイス',
     viewMore: 'もっと見る',
     discover: '発見する',
     empower: 'AI開発を強化する',

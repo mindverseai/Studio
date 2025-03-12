@@ -182,7 +182,7 @@ const translation = {
     empower: '助力您的 AI 开发',
     discover: '探索',
     and: '和',
-    difyMarketplace: 'Mindverse 市场',
+    mindverseMarketplace: 'Mindverse 市场',
     moreFrom: '更多来自市场',
     noPluginFound: '未找到插件',
     pluginsResult: '{{num}} 个插件结果',

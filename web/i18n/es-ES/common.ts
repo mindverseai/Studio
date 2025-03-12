@@ -459,7 +459,7 @@ const translation = {
   apiBasedExtension: {
     title: 'Las extensiones API proporcionan una gestión centralizada de API y simplifican la configuración para un uso fácil en las aplicaciones Mindverse.',
     link: 'Aprende cómo desarrollar tu propia Extensión API.',
-    linkUrl: 'https://docs.dify.ai/features/extension/api_based_extension',
+    linkUrl: 'https://docs.mindverse.ai/features/extension/api_based_extension',
     add: 'Agregar Extensión API',
     selector: {
       title: 'Extensión API',
