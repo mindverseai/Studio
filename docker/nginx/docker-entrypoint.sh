@@ -12,9 +12,11 @@ generate_nginx_config() {
     if [ "${NGINX_HTTPS_ENABLED}" = "true" ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME} ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME} ]; then
         echo "SSL certificates found. Enabling HTTPS configuration."
         export NGINX_USE_HTTPS=true
+        export NGINX_USE_HTTPS_COMMENT=""
     else
         echo "SSL certificates not found or HTTPS not enabled. Using HTTP-only configuration."
         export NGINX_USE_HTTPS=false
+        export NGINX_USE_HTTPS_COMMENT="#"
     fi
     
     # Generate the configuration with the NGINX_USE_HTTPS variable
@@ -36,6 +38,7 @@ if [ "${NGINX_HTTPS_ENABLED}" = "true" ] && [ "${NGINX_USE_HTTPS}" = "false" ]; 
         if [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME} ] && [ -f /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME} ]; then
             echo "SSL certificates found! Regenerating Nginx configuration with HTTPS..."
             export NGINX_USE_HTTPS=true
+            export NGINX_USE_HTTPS_COMMENT=""
             generate_nginx_config
             nginx -s reload
             echo "Nginx reloaded with HTTPS configuration."

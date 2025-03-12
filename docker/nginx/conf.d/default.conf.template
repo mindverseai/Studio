@@ -65,54 +65,53 @@ server {
     }
 }
 
-# HTTPS server - will only be used if NGINX_USE_HTTPS is true
-server {
-    listen ${NGINX_SSL_PORT} ssl;
-    server_name ${NGINX_SERVER_NAME};
-
-    # SSL certificates
-    ssl_certificate_key /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME};
-    ssl_certificate /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME};
-    ssl_protocols ${NGINX_SSL_PROTOCOLS};
-
-    client_max_body_size ${NGINX_CLIENT_MAX_BODY_SIZE};
-    proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT};
-    proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT};
-
-    location /console/api {
-      proxy_pass http://api:5001;
-      include /etc/nginx/proxy.conf;
-    }
-
-    location /api {
-      proxy_pass http://api:5001;
-      include /etc/nginx/proxy.conf;
-    }
-
-    location /v1 {
-      proxy_pass http://api:5001;
-      include /etc/nginx/proxy.conf;
-    }
-
-    location /files {
-      proxy_pass http://api:5001;
-      include /etc/nginx/proxy.conf;
-    }
-
-    location /explore {
-      proxy_pass http://web:3000;
-      include /etc/nginx/proxy.conf;
-    }
-
-    # Nur aktivieren, wenn der Plugin-Daemon-Service läuft
-    # location /e/ {
-    #   proxy_pass http://plugin_daemon:5002;
-    #   proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
-    #   include /etc/nginx/proxy.conf;
-    # }
-
-    location / {
-      proxy_pass http://web:3000;
-      include /etc/nginx/proxy.conf;
-    }
-}
+# HTTPS server - will only be included if NGINX_USE_HTTPS is true
+${NGINX_USE_HTTPS_COMMENT}server {
+${NGINX_USE_HTTPS_COMMENT}    listen ${NGINX_SSL_PORT} ssl;
+${NGINX_USE_HTTPS_COMMENT}    server_name ${NGINX_SERVER_NAME};
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    # SSL certificates
+${NGINX_USE_HTTPS_COMMENT}    ssl_certificate_key /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME};
+${NGINX_USE_HTTPS_COMMENT}    ssl_certificate /etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME};
+${NGINX_USE_HTTPS_COMMENT}    ssl_protocols ${NGINX_SSL_PROTOCOLS};
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    client_max_body_size ${NGINX_CLIENT_MAX_BODY_SIZE};
+${NGINX_USE_HTTPS_COMMENT}    proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT};
+${NGINX_USE_HTTPS_COMMENT}    proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT};
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    location /console/api {
+${NGINX_USE_HTTPS_COMMENT}      proxy_pass http://api:5001;
+${NGINX_USE_HTTPS_COMMENT}      include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}    }
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    location /api {
+${NGINX_USE_HTTPS_COMMENT}      proxy_pass http://api:5001;
+${NGINX_USE_HTTPS_COMMENT}      include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}    }
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    location /v1 {
+${NGINX_USE_HTTPS_COMMENT}      proxy_pass http://api:5001;
+${NGINX_USE_HTTPS_COMMENT}      include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}    }
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    location /files {
+${NGINX_USE_HTTPS_COMMENT}      proxy_pass http://api:5001;
+${NGINX_USE_HTTPS_COMMENT}      include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}    }
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    location /explore {
+${NGINX_USE_HTTPS_COMMENT}      proxy_pass http://web:3000;
+${NGINX_USE_HTTPS_COMMENT}      include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}    }
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    # Nur aktivieren, wenn der Plugin-Daemon-Service läuft
+${NGINX_USE_HTTPS_COMMENT}    # location /e/ {
+${NGINX_USE_HTTPS_COMMENT}    #   proxy_pass http://plugin_daemon:5002;
+${NGINX_USE_HTTPS_COMMENT}    #   proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
+${NGINX_USE_HTTPS_COMMENT}    #   include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}    # }
+${NGINX_USE_HTTPS_COMMENT}
+${NGINX_USE_HTTPS_COMMENT}    location / {
+${NGINX_USE_HTTPS_COMMENT}      proxy_pass http://web:3000;
+${NGINX_USE_HTTPS_COMMENT}      include /etc/nginx/proxy.conf;
+${NGINX_USE_HTTPS_COMMENT}}
