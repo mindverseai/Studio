@@ -13,7 +13,7 @@ server {
     # ACME Challenge Location for SSL certification
     location /.well-known/acme-challenge/ { 
         root /var/www/html; 
-        try_files $uri =404; 
+        try_files $uri =404;
     }
 }
 
