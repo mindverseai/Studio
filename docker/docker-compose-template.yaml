@@ -243,7 +243,6 @@ services:
       NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
       NGINX_ENABLE_CERTBOT_CHALLENGE: ${NGINX_ENABLE_CERTBOT_CHALLENGE:-false}
       CERTBOT_DOMAIN: ${CERTBOT_DOMAIN:-}
-      STATIC_FILES_LOCATION: ${STATIC_FILES_LOCATION:-"location ~* \\.(jpg|jpeg|png|gif|ico|css|js)$ { root /app/web/public; expires 30d; }"}
     depends_on:
       - api
       - web
