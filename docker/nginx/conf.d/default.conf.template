@@ -1,6 +1,6 @@
 # Please do not directly edit this file. Instead, modify the .env variables related to NGINX configuration.
 
-# HTTP server for Certbot validation and regular HTTP traffic
+# HTTP server for all traffic and Certbot validation
 server {
     listen ${NGINX_PORT};
     server_name ${NGINX_SERVER_NAME};
@@ -14,19 +14,18 @@ server {
         try_files $uri =404;
     }
 
-    # If HTTPS is enabled, redirect all other HTTP requests to HTTPS
-    # Otherwise, serve the web application directly
+    # If HTTPS is enabled and certificates exist, redirect to HTTPS
+    # Otherwise, serve the application directly
     location / {
-        if (${NGINX_HTTPS_ENABLED} = true) {
+        if (${NGINX_USE_HTTPS} = true) {
             return 301 https://$host$request_uri;
         }
         proxy_pass http://web:3000;
         include /etc/nginx/proxy.conf;
     }
 
-    # Only serve these locations if HTTPS is not enabled
     location /console/api {
-        if (${NGINX_HTTPS_ENABLED} = true) {
+        if (${NGINX_USE_HTTPS} = true) {
             return 301 https://$host$request_uri;
         }
         proxy_pass http://api:5001;
@@ -34,7 +33,7 @@ server {
     }
 
     location /api {
-        if (${NGINX_HTTPS_ENABLED} = true) {
+        if (${NGINX_USE_HTTPS} = true) {
             return 301 https://$host$request_uri;
         }
         proxy_pass http://api:5001;
@@ -42,7 +41,7 @@ server {
     }
 
     location /v1 {
-        if (${NGINX_HTTPS_ENABLED} = true) {
+        if (${NGINX_USE_HTTPS} = true) {
             return 301 https://$host$request_uri;
         }
         proxy_pass http://api:5001;
@@ -50,15 +49,23 @@ server {
     }
 
     location /files {
-        if (${NGINX_HTTPS_ENABLED} = true) {
+        if (${NGINX_USE_HTTPS} = true) {
             return 301 https://$host$request_uri;
         }
         proxy_pass http://api:5001;
         include /etc/nginx/proxy.conf;
     }
+
+    location /explore {
+        if (${NGINX_USE_HTTPS} = true) {
+            return 301 https://$host$request_uri;
+        }
+        proxy_pass http://web:3000;
+        include /etc/nginx/proxy.conf;
+    }
 }
 
-# HTTPS server - will be conditionally included based on the existence of certificates
+# HTTPS server - will only be used if NGINX_USE_HTTPS is true
 server {
     listen ${NGINX_SSL_PORT} ssl;
     server_name ${NGINX_SERVER_NAME};
