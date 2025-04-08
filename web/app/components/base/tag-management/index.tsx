@@ -30,7 +30,7 @@ const TagManagementModal = ({ show, type }: TagManagementModalProps) => {
     setTagList(res)
   }
 
-  const [pending, setPending] = useState<boolean>(false)
+  const [pending, setPending] = useState<Boolean>(false)
   const [name, setName] = useState<string>('')
   const createNewTag = async () => {
     if (!name)
@@ -75,7 +75,7 @@ const TagManagementModal = ({ show, type }: TagManagementModalProps) => {
           autoFocus
           value={name}
           onChange={e => setName(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && !e.nativeEvent.isComposing && createNewTag()}
+          onKeyDown={e => e.key === 'Enter' && createNewTag()}
           onBlur={createNewTag}
         />
         {tagList.map(tag => (

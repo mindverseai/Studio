@@ -41,7 +41,7 @@ export const useToolTabs = () => {
     },
     {
       key: ToolTypeEnum.BuiltIn,
-      name: t('workflow.tabs.plugin'),
+      name: t('workflow.tabs.builtInTool'),
     },
     {
       key: ToolTypeEnum.Custom,

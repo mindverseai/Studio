@@ -8,7 +8,7 @@ import Button from '@/app/components/base/button'
 import Input from '@/app/components/base/input'
 import cn from '@/utils/classnames'
 
-export type Props = {
+type Props = {
   className?: string
   current: number
   onChange: (cur: number) => void
@@ -33,20 +33,20 @@ const CustomizedPagination: FC<Props> = ({
   const [showPerPageTip, setShowPerPageTip] = React.useState(false)
 
   const { run: handlePaging } = useDebounceFn((value: string) => {
-    if (Number.parseInt(value) > totalPages) {
+    if (parseInt(value) > totalPages) {
       setInputValue(totalPages)
       onChange(totalPages - 1)
       setShowInput(false)
       return
     }
-    if (Number.parseInt(value) < 1) {
+    if (parseInt(value) < 1) {
       setInputValue(1)
       onChange(0)
       setShowInput(false)
       return
     }
-    onChange(Number.parseInt(value) - 1)
-    setInputValue(Number.parseInt(value))
+    onChange(parseInt(value) - 1)
+    setInputValue(parseInt(value))
     setShowInput(false)
   }, { wait: 500 })
 
@@ -54,9 +54,9 @@ const CustomizedPagination: FC<Props> = ({
     const value = e.target.value
     if (!value)
       return setInputValue('')
-    if (isNaN(Number.parseInt(value)))
+    if (isNaN(parseInt(value)))
       return setInputValue('')
-    setInputValue(Number.parseInt(value))
+    setInputValue(parseInt(value))
     handlePaging(value)
   }
 

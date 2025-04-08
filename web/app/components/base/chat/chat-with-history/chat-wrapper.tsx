@@ -3,11 +3,10 @@ import Chat from '../chat'
 import type {
   ChatConfig,
   ChatItem,
-  ChatItemInTree,
   OnSend,
 } from '../types'
 import { useChat } from '../chat/hooks'
-import { getLastAnswer, isValidGeneratedAnswer } from '../utils'
+import { getLastAnswer } from '../utils'
 import { useChatWithHistoryContext } from './context'
 import Header from './header'
 import ConfigPanel from './config-panel'
@@ -21,7 +20,7 @@ import AnswerIcon from '@/app/components/base/answer-icon'
 const ChatWrapper = () => {
   const {
     appParams,
-    appPrevChatTree,
+    appPrevChatList,
     currentConversationId,
     currentConversationItem,
     inputsForms,
@@ -51,7 +50,8 @@ const ChatWrapper = () => {
   }, [appParams, currentConversationItem?.introduction, currentConversationId])
   const {
     chatList,
-    setTargetMessageId,
+    chatListRef,
+    handleUpdateChatList,
     handleSend,
     handleStop,
     isResponding,
@@ -62,7 +62,7 @@ const ChatWrapper = () => {
       inputs: (currentConversationId ? currentConversationItem?.inputs : newConversationInputs) as any,
       inputsForm: inputsForms,
     },
-    appPrevChatTree,
+    appPrevChatList,
     taskId => stopChatMessageResponding('', taskId, isInstalledApp, appId),
   )
 
@@ -72,13 +72,13 @@ const ChatWrapper = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const doSend: OnSend = useCallback((message, files, isRegenerate = false, parentAnswer: ChatItem | null = null) => {
+  const doSend: OnSend = useCallback((message, files, last_answer) => {
     const data: any = {
       query: message,
       files,
       inputs: currentConversationId ? currentConversationItem?.inputs : newConversationInputs,
       conversation_id: currentConversationId,
-      parent_message_id: (isRegenerate ? parentAnswer?.id : getLastAnswer(chatList)?.id) || null,
+      parent_message_id: last_answer?.id || getLastAnswer(chatListRef.current)?.id || null,
     }
 
     handleSend(
@@ -91,21 +91,31 @@ const ChatWrapper = () => {
       },
     )
   }, [
-    chatList,
-    handleNewConversationCompleted,
-    handleSend,
+    chatListRef,
     currentConversationId,
     currentConversationItem,
+    handleSend,
     newConversationInputs,
+    handleNewConversationCompleted,
     isInstalledApp,
     appId,
   ])
 
-  const doRegenerate = useCallback((chatItem: ChatItemInTree) => {
-    const question = chatList.find(item => item.id === chatItem.parentMessageId)!
-    const parentAnswer = chatList.find(item => item.id === question.parentMessageId)
-    doSend(question.content, question.message_files, true, isValidGeneratedAnswer(parentAnswer) ? parentAnswer : null)
-  }, [chatList, doSend])
+  const doRegenerate = useCallback((chatItem: ChatItem) => {
+    const index = chatList.findIndex(item => item.id === chatItem.id)
+    if (index === -1)
+      return
+
+    const prevMessages = chatList.slice(0, index)
+    const question = prevMessages.pop()
+    const lastAnswer = getLastAnswer(prevMessages)
+
+    if (!question)
+      return
+
+    handleUpdateChatList(prevMessages)
+    doSend(question.content, question.message_files, lastAnswer)
+  }, [chatList, handleUpdateChatList, doSend])
 
   const chatNode = useMemo(() => {
     if (inputsForms.length) {
@@ -177,7 +187,6 @@ const ChatWrapper = () => {
         answerIcon={answerIcon}
         hideProcessDetail
         themeBuilder={themeBuilder}
-        switchSibling={siblingMessageId => setTargetMessageId(siblingMessageId)}
       />
     </div>
   )

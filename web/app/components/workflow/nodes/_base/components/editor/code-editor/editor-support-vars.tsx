@@ -88,7 +88,7 @@ const CodeEditor: FC<Props> = ({
 
       const index = (() => {
         if (match)
-          return Number.parseInt(match[1]!) + 1
+          return parseInt(match[1]!) + 1
 
         return 1
       })()

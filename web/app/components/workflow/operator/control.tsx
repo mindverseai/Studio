@@ -18,7 +18,6 @@ import {
   ControlMode,
 } from '../types'
 import { useStore } from '../store'
-import Divider from '../../base/divider'
 import AddBlock from './add-block'
 import TipPopup from './tip-popup'
 import { useOperator } from './hooks'
@@ -44,26 +43,26 @@ const Control = () => {
   }
 
   return (
-    <div className='flex items-center p-0.5 rounded-lg border-[0.5px] border-components-actionbar-border bg-components-actionbar-bg shadow-lg text-text-tertiary'>
+    <div className='flex items-center p-0.5 rounded-lg border-[0.5px] border-gray-100 bg-white shadow-lg text-gray-500'>
       <AddBlock />
       <TipPopup title={t('workflow.nodes.note.addNote')}>
         <div
           className={cn(
-            'flex items-center justify-center ml-[1px] w-8 h-8 rounded-lg hover:bg-state-base-hover hover:text-text-secondary cursor-pointer',
-            `${nodesReadOnly && 'cursor-not-allowed text-text-disabled hover:bg-transparent hover:text-text-disabled'}`,
+            'flex items-center justify-center ml-[1px] w-8 h-8 rounded-lg hover:bg-black/5 hover:text-gray-700 cursor-pointer',
+            `${nodesReadOnly && '!cursor-not-allowed opacity-50'}`,
           )}
           onClick={addNote}
         >
           <RiStickyNoteAddLine className='w-4 h-4' />
         </div>
       </TipPopup>
-      <Divider type='vertical' className='h-3.5 mx-0.5' />
+      <div className='mx-[3px] w-[1px] h-3.5 bg-gray-200'></div>
       <TipPopup title={t('workflow.common.pointerMode')} shortcuts={['v']}>
         <div
           className={cn(
             'flex items-center justify-center mr-[1px] w-8 h-8 rounded-lg cursor-pointer',
-            controlMode === ControlMode.Pointer ? 'bg-state-accent-active text-text-accent' : 'hover:bg-state-base-hover hover:text-text-secondary',
-            `${nodesReadOnly && 'cursor-not-allowed text-text-disabled hover:bg-transparent hover:text-text-disabled'}`,
+            controlMode === ControlMode.Pointer ? 'bg-primary-50 text-primary-600' : 'hover:bg-black/5 hover:text-gray-700',
+            `${nodesReadOnly && '!cursor-not-allowed opacity-50'}`,
           )}
           onClick={handleModePointer}
         >
@@ -74,20 +73,20 @@ const Control = () => {
         <div
           className={cn(
             'flex items-center justify-center w-8 h-8 rounded-lg cursor-pointer',
-            controlMode === ControlMode.Hand ? 'bg-state-accent-active text-text-accent' : 'hover:bg-state-base-hover hover:text-text-secondary',
-            `${nodesReadOnly && 'cursor-not-allowed text-text-disabled hover:bg-transparent hover:text-text-disabled'}`,
+            controlMode === ControlMode.Hand ? 'bg-primary-50 text-primary-600' : 'hover:bg-black/5 hover:text-gray-700',
+            `${nodesReadOnly && '!cursor-not-allowed opacity-50'}`,
           )}
           onClick={handleModeHand}
         >
           <RiHand className='w-4 h-4' />
         </div>
       </TipPopup>
-      <Divider type='vertical' className='h-3.5 mx-0.5' />
+      <div className='mx-[3px] w-[1px] h-3.5 bg-gray-200'></div>
       <TipPopup title={t('workflow.panel.organizeBlocks')} shortcuts={['ctrl', 'o']}>
         <div
           className={cn(
-            'flex items-center justify-center w-8 h-8 rounded-lg hover:bg-state-base-hover hover:text-text-secondary cursor-pointer',
-            `${nodesReadOnly && 'cursor-not-allowed text-text-disabled hover:bg-transparent hover:text-text-disabled'}`,
+            'flex items-center justify-center w-8 h-8 rounded-lg hover:bg-black/5 hover:text-gray-700 cursor-pointer',
+            `${nodesReadOnly && '!cursor-not-allowed opacity-50'}`,
           )}
           onClick={handleLayout}
         >

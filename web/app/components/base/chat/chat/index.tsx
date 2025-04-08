@@ -251,8 +251,11 @@ const Chat: FC<ChatProps> = ({
           </div>
         </div>
         <div
-          className={`absolute bottom-0 bg-chat-input-mask ${(hasTryToAsk || !noChatInput || !noStopResponding) && chatFooterClassName}`}
+          className={`absolute bottom-0 ${(hasTryToAsk || !noChatInput || !noStopResponding) && chatFooterClassName}`}
           ref={chatFooterRef}
+          style={{
+            background: 'linear-gradient(0deg, #F9FAFB 40%, rgba(255, 255, 255, 0.00) 100%)',
+          }}
         >
           <div
             ref={chatFooterInnerRef}
@@ -289,7 +292,6 @@ const Chat: FC<ChatProps> = ({
                   inputs={inputs}
                   inputsForm={inputsForm}
                   theme={themeBuilder?.theme}
-                  isResponding={isResponding}
                 />
               )
             }

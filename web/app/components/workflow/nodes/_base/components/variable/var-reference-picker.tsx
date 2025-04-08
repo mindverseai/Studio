@@ -36,7 +36,6 @@ import TypeSelector from '@/app/components/workflow/nodes/_base/components/selec
 import AddButton from '@/app/components/base/button/add-button'
 import Badge from '@/app/components/base/badge'
 import Tooltip from '@/app/components/base/tooltip'
-import { isExceptionVariable } from '@/app/components/workflow/utils'
 
 const TRIGGER_DEFAULT_WIDTH = 227
 
@@ -64,7 +63,6 @@ type Props = {
   placeholder?: string
   minWidth?: number
   popupFor?: 'assigned' | 'toAssigned'
-  zIndex?: number
 }
 
 const VarReferencePicker: FC<Props> = ({
@@ -91,7 +89,6 @@ const VarReferencePicker: FC<Props> = ({
   placeholder,
   minWidth,
   popupFor,
-  zIndex,
 }) => {
   const { t } = useTranslation()
   const store = useStoreApi()
@@ -227,18 +224,16 @@ const VarReferencePicker: FC<Props> = ({
     isConstant: !!isConstant,
   })
 
-  const { isEnv, isChatVar, isValidVar, isException } = useMemo(() => {
+  const { isEnv, isChatVar, isValidVar } = useMemo(() => {
     const isEnv = isENV(value as ValueSelector)
     const isChatVar = isConversationVar(value as ValueSelector)
     const isValidVar = Boolean(outputVarNode) || isEnv || isChatVar
-    const isException = isExceptionVariable(varName, outputVarNode?.type)
     return {
       isEnv,
       isChatVar,
       isValidVar,
-      isException,
     }
-  }, [value, outputVarNode, varName])
+  }, [value, outputVarNode])
 
   // 8(left/right-padding) + 14(icon) + 4 + 14 + 2 = 42 + 17 buff
   const availableWidth = triggerWidth - 56
@@ -272,7 +267,7 @@ const VarReferencePicker: FC<Props> = ({
                   <AddButton onClick={() => { }}></AddButton>
                 </div>
               )
-              : (<div ref={!isSupportConstantValue ? triggerRef : null} className={cn((open || isFocus) ? 'border-gray-300' : 'border-gray-100', 'relative group/wrap flex items-center w-full h-8', !isSupportConstantValue && 'p-1 rounded-lg bg-components-input-bg-normal', isInTable && 'bg-transparent border-none', readonly && 'bg-components-input-bg-disabled')}>
+              : (<div ref={!isSupportConstantValue ? triggerRef : null} className={cn((open || isFocus) ? 'border-gray-300' : 'border-gray-100', 'relative group/wrap flex items-center w-full h-8', !isSupportConstantValue && 'p-1 rounded-lg bg-gray-100 border', isInTable && 'bg-transparent border-none', readonly && 'bg-components-input-bg-disabled')}>
                 {isSupportConstantValue
                   ? <div onClick={(e) => {
                     e.stopPropagation()
@@ -340,7 +335,7 @@ const VarReferencePicker: FC<Props> = ({
                                     {!hasValue && <Variable02 className='w-3.5 h-3.5' />}
                                     {isEnv && <Env className='w-3.5 h-3.5 text-util-colors-violet-violet-600' />}
                                     {isChatVar && <BubbleX className='w-3.5 h-3.5 text-util-colors-teal-teal-700' />}
-                                    <div className={cn('ml-0.5 text-xs font-medium truncate', isEnv && '!text-text-secondary', isChatVar && 'text-util-colors-teal-teal-700', isException && 'text-text-warning')} title={varName} style={{
+                                    <div className={cn('ml-0.5 text-xs font-medium truncate', isEnv && '!text-text-secondary', isChatVar && 'text-util-colors-teal-teal-700')} title={varName} style={{
                                       maxWidth: maxVarNameWidth,
                                     }}>{varName}</div>
                                   </div>
@@ -388,7 +383,7 @@ const VarReferencePicker: FC<Props> = ({
           </>
         </WrapElem>
         <PortalToFollowElemContent style={{
-          zIndex: zIndex || 100,
+          zIndex: 100,
         }} className='mt-1'>
           {!isConstant && (
             <VarReferencePopup

@@ -29,8 +29,6 @@ import { useAppContext } from '@/context/app-context'
 import { ModelFeatureEnum } from '@/app/components/header/account-setting/model-provider-page/declarations'
 import { useFeatures } from '@/app/components/base/features/hooks'
 import type { InputForm } from '@/app/components/base/chat/chat/type'
-import { getLastAnswer } from '@/app/components/base/chat/utils'
-import { canFindTool } from '@/utils'
 
 type ChatItemProps = {
   modelAndParameter: ModelAndParameter
@@ -68,6 +66,7 @@ const ChatItem: FC<ChatItemProps> = ({
   }, [modelConfig.configs.prompt_variables])
   const {
     chatList,
+    chatListRef,
     isResponding,
     handleSend,
     suggestedQuestions,
@@ -102,7 +101,7 @@ const ChatItem: FC<ChatItemProps> = ({
       query: message,
       inputs,
       model_config: configData,
-      parent_message_id: getLastAnswer(chatList)?.id || null,
+      parent_message_id: chatListRef.current.at(-1)?.id || null,
     }
 
     if ((config.file_upload as any).enabled && files?.length && supportVision)
@@ -116,7 +115,7 @@ const ChatItem: FC<ChatItemProps> = ({
         onGetSuggestedQuestions: (responseItemId, getAbortController) => fetchSuggestedQuestions(appId, responseItemId, getAbortController),
       },
     )
-  }, [appId, chatList, config, handleSend, inputs, modelAndParameter.model, modelAndParameter.parameters, modelAndParameter.provider, textGenerationModelList])
+  }, [appId, config, handleSend, inputs, modelAndParameter, textGenerationModelList, chatListRef])
 
   const { eventEmitter } = useEventEmitterContextContext()
   eventEmitter?.useSubscription((v: any) => {
@@ -129,7 +128,7 @@ const ChatItem: FC<ChatItemProps> = ({
   const allToolIcons = useMemo(() => {
     const icons: Record<string, any> = {}
     modelConfig.agentConfig.tools?.forEach((item: any) => {
-      icons[item.tool_name] = collectionList.find((collection: any) => canFindTool(collection.id, item.provider_id))?.icon
+      icons[item.tool_name] = collectionList.find((collection: any) => collection.id === item.provider_id)?.icon
     })
     return icons
   }, [collectionList, modelConfig.agentConfig.tools])
@@ -149,7 +148,7 @@ const ChatItem: FC<ChatItemProps> = ({
       suggestedQuestions={suggestedQuestions}
       onSend={doSend}
       showPromptLog
-      questionIcon={<Avatar avatar={userProfile.avatar_url} name={userProfile.name} size={40} />}
+      questionIcon={<Avatar name={userProfile.name} size={40} />}
       allToolIcons={allToolIcons}
       hideLogModal
       noSpacing

@@ -48,16 +48,16 @@ const Dropdown: FC<DropdownProps> = ({
               <div
                 className={`
                   flex items-center justify-center w-6 h-6 cursor-pointer rounded-md
-                  ${open && 'bg-divider-regular'}
+                  ${open && 'bg-black/5'}
                 `}
               >
-                <RiMoreFill className='w-4 h-4 text-text-tertiary' />
+                <RiMoreFill className='w-4 h-4 text-gray-500' />
               </div>
             )
         }
       </PortalToFollowElemTrigger>
       <PortalToFollowElemContent className={popupClassName}>
-        <div className='rounded-lg border-[0.5px] border-components-panel-border bg-components-panel-bg shadow-lg text-sm text-text-secondary'>
+        <div className='rounded-lg border-[0.5px] border-gray-200 bg-white shadow-lg text-sm text-gray-700'>
           {
             !!items.length && (
               <div className='p-1'>
@@ -65,7 +65,7 @@ const Dropdown: FC<DropdownProps> = ({
                   items.map(item => (
                     <div
                       key={item.value}
-                      className='flex items-center px-3 h-8 rounded-lg cursor-pointer hover:bg-components-panel-on-panel-item-bg-hover'
+                      className='flex items-center px-3 h-8 rounded-lg cursor-pointer hover:bg-gray-100'
                       onClick={() => handleSelect(item)}
                     >
                       {item.text}
@@ -77,7 +77,7 @@ const Dropdown: FC<DropdownProps> = ({
           }
           {
             (!!items.length && !!secondItems?.length) && (
-              <div className='h-[1px] bg-divider-regular' />
+              <div className='h-[1px] bg-gray-100' />
             )
           }
           {
@@ -87,7 +87,7 @@ const Dropdown: FC<DropdownProps> = ({
                   secondItems.map(item => (
                     <div
                       key={item.value}
-                      className='flex items-center px-3 h-8 rounded-lg cursor-pointer hover:bg-components-panel-on-panel-item-bg-hover'
+                      className='flex items-center px-3 h-8 rounded-lg cursor-pointer hover:bg-gray-100'
                       onClick={() => handleSelect(item)}
                     >
                       {item.text}

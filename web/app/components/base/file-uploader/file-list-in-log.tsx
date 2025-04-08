@@ -1,5 +1,4 @@
-import React, { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import React, { useState } from 'react'
 import { RiArrowRightSLine } from '@remixicon/react'
 import FileImageRender from './file-image-render'
 import FileTypeIcon from './file-type-icon'
@@ -13,36 +12,23 @@ import { SupportUploadFileTypes } from '@/app/components/workflow/types'
 import cn from '@/utils/classnames'
 
 type Props = {
-  fileList: {
-    varName: string
-    list: FileEntity[]
-  }[]
-  isExpanded?: boolean
-  noBorder?: boolean
-  noPadding?: boolean
+  fileList: FileEntity[]
 }
 
-const FileListInLog = ({ fileList, isExpanded = false, noBorder = false, noPadding = false }: Props) => {
-  const { t } = useTranslation()
-  const [expanded, setExpanded] = useState(isExpanded)
-  const fullList = useMemo(() => {
-    return fileList.reduce((acc: FileEntity[], { list }) => {
-      return [...acc, ...list]
-    }, [])
-  }, [fileList])
+const FileListInLog = ({ fileList }: Props) => {
+  const [expanded, setExpanded] = useState(false)
 
   if (!fileList.length)
     return null
-
   return (
-    <div className={cn('px-3 py-2', expanded && 'py-3', !noBorder && 'border-t border-divider-subtle', noPadding && '!p-0')}>
+    <div className={cn('border-t border-divider-subtle px-3 py-2', expanded && 'py-3')}>
       <div className='flex justify-between gap-1'>
         {expanded && (
-          <div className='grow py-1 text-text-secondary system-xs-semibold-uppercase cursor-pointer' onClick={() => setExpanded(!expanded)}>{t('appLog.runDetail.fileListLabel')}</div>
+          <div></div>
         )}
         {!expanded && (
-          <div className='flex gap-1'>
-            {fullList.map((file) => {
+          <div className='flex'>
+            {fileList.map((file) => {
               const { id, name, type, supportFileType, base64Url, url } = file
               const isImageFile = supportFileType === SupportUploadFileTypes.image
               return (
@@ -77,25 +63,19 @@ const FileListInLog = ({ fileList, isExpanded = false, noBorder = false, noPaddi
           </div>
         )}
         <div className='flex items-center gap-1 cursor-pointer' onClick={() => setExpanded(!expanded)}>
-          {!expanded && <div className='text-text-tertiary system-xs-medium-uppercase'>{t('appLog.runDetail.fileListDetail')}</div>}
+          {!expanded && <div className='text-text-tertiary system-xs-medium-uppercase'>DETAIL</div>}
           <RiArrowRightSLine className={cn('w-4 h-4 text-text-tertiary', expanded && 'rotate-90')} />
         </div>
       </div>
       {expanded && (
-        <div className='flex flex-col gap-3'>
-          {fileList.map(item => (
-            <div key={item.varName} className='flex flex-col gap-1 system-xs-regular'>
-              <div className='py-1 text-text-tertiary '>{item.varName}</div>
-              {item.list.map(file => (
-                <FileItem
-                  key={file.id}
-                  file={file}
-                  showDeleteAction={false}
-                  showDownloadAction
-                  canPreview
-                />
-              ))}
-            </div>
+        <div className='flex flex-col gap-1'>
+          {fileList.map(file => (
+            <FileItem
+              key={file.id}
+              file={file}
+              showDeleteAction={false}
+              showDownloadAction
+            />
           ))}
         </div>
       )}

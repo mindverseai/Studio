@@ -21,10 +21,10 @@ import { sleep } from '@/utils'
 import type { SiteInfo } from '@/models/share'
 import { TEXT_GENERATION_TIMEOUT_MS } from '@/config'
 import {
-  getFilesInLogs,
+  getProcessedFilesFromResponse,
 } from '@/app/components/base/file-uploader/utils'
 
-export interface IResultProps {
+export type IResultProps = {
   isWorkflow: boolean
   isCallBatchAPI: boolean
   isPC: boolean
@@ -288,7 +288,7 @@ const Result: FC<IResultProps> = ({
             }
             setWorkflowProcessData(produce(getWorkflowProcessData()!, (draft) => {
               draft.status = WorkflowRunningStatus.Succeeded
-              draft.files = getFilesInLogs(data.outputs || []) as any[]
+              draft.files = getProcessedFilesFromResponse(data.files || [])
             }))
             if (!data.outputs) {
               setCompletionRes('')

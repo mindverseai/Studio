@@ -126,8 +126,11 @@ export const getMultipleRetrievalConfig = (
     reranking_mode,
     reranking_model,
     weights,
-    reranking_enable: ((allInternal && allEconomic) || allExternal) ? reranking_enable : shouldSetWeightDefaultValue,
+    reranking_enable: ((allInternal && allEconomic) || allExternal) ? reranking_enable : true,
   }
+
+  if (!rerankModelIsValid)
+    result.reranking_model = undefined
 
   const setDefaultWeights = () => {
     result.weights = {
@@ -152,23 +155,16 @@ export const getMultipleRetrievalConfig = (
 
   if (allEconomic || mixtureHighQualityAndEconomic || inconsistentEmbeddingModel || allExternal || mixtureInternalAndExternal) {
     result.reranking_mode = RerankingModeEnum.RerankingModel
-    if (!result.reranking_model?.provider || !result.reranking_model?.model) {
-      if (rerankModelIsValid) {
-        result.reranking_enable = true
-        result.reranking_model = {
-          provider: validRerankModel?.provider || '',
-          model: validRerankModel?.model || '',
-        }
-      }
-      else {
-        result.reranking_model = {
-          provider: '',
-          model: '',
-        }
+
+    if (rerankModelIsValid) {
+      result.reranking_mode = RerankingModeEnum.RerankingModel
+      result.reranking_model = {
+        provider: validRerankModel?.provider || '',
+        model: validRerankModel?.model || '',
       }
     }
     else {
-      result.reranking_enable = true
+      result.reranking_model = undefined
     }
   }
 
@@ -176,7 +172,6 @@ export const getMultipleRetrievalConfig = (
     if (!reranking_mode) {
       if (validRerankModel?.provider && validRerankModel?.model) {
         result.reranking_mode = RerankingModeEnum.RerankingModel
-        result.reranking_enable = true
         result.reranking_model = {
           provider: validRerankModel.provider,
           model: validRerankModel.model,
@@ -194,7 +189,6 @@ export const getMultipleRetrievalConfig = (
     if (reranking_mode === RerankingModeEnum.WeightedScore && weights && shouldSetWeightDefaultValue) {
       if (rerankModelIsValid) {
         result.reranking_mode = RerankingModeEnum.RerankingModel
-        result.reranking_enable = true
         result.reranking_model = {
           provider: validRerankModel.provider || '',
           model: validRerankModel.model || '',
@@ -204,6 +198,7 @@ export const getMultipleRetrievalConfig = (
         setDefaultWeights()
       }
     }
+
     if (reranking_mode === RerankingModeEnum.RerankingModel && !rerankModelIsValid && shouldSetWeightDefaultValue) {
       result.reranking_mode = RerankingModeEnum.WeightedScore
       setDefaultWeights()

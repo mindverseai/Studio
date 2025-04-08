@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -14,6 +15,7 @@ import TracingPanel from '@/app/components/workflow/run/tracing-panel'
 import cn from '@/utils/classnames'
 import { CheckCircle } from '@/app/components/base/icons/src/vender/solid/general'
 import { WorkflowRunningStatus } from '@/app/components/workflow/types'
+import { useStore as useAppStore } from '@/app/components/app/store'
 
 type WorkflowProcessProps = {
   data: WorkflowProcess
@@ -21,14 +23,13 @@ type WorkflowProcessProps = {
   expand?: boolean
   hideInfo?: boolean
   hideProcessDetail?: boolean
-  readonly?: boolean
 }
 const WorkflowProcessItem = ({
   data,
+  item,
   expand = false,
   hideInfo = false,
   hideProcessDetail = false,
-  readonly = false,
 }: WorkflowProcessProps) => {
   const { t } = useTranslation()
   const [collapse, setCollapse] = useState(!expand)
@@ -53,6 +54,16 @@ const WorkflowProcessItem = ({
     setCollapse(!expand)
   }, [expand])
 
+  const setCurrentLogItem = useAppStore(s => s.setCurrentLogItem)
+  const setShowMessageLogModal = useAppStore(s => s.setShowMessageLogModal)
+  const setCurrentLogModalActiveTab = useAppStore(s => s.setCurrentLogModalActiveTab)
+
+  const showIterationDetail = useCallback(() => {
+    setCurrentLogItem(item)
+    setCurrentLogModalActiveTab('TRACING')
+    setShowMessageLogModal(true)
+  }, [item, setCurrentLogItem, setCurrentLogModalActiveTab, setShowMessageLogModal])
+
   return (
     <div
       className={cn(
@@ -64,8 +75,8 @@ const WorkflowProcessItem = ({
       }}
     >
       <div
-        className={cn('flex items-center cursor-pointer', !collapse && 'px-1.5', readonly && 'cursor-default')}
-        onClick={() => !readonly && setCollapse(!collapse)}
+        className={cn('flex items-center cursor-pointer', !collapse && 'px-1.5')}
+        onClick={() => setCollapse(!collapse)}
       >
         {
           running && (
@@ -85,14 +96,15 @@ const WorkflowProcessItem = ({
         <div className={cn('system-xs-medium text-text-secondary', !collapse && 'grow')}>
           {t('workflow.common.workflowProcess')}
         </div>
-        {!readonly && <RiArrowRightSLine className={`'ml-1 w-4 h-4 text-text-tertiary' ${collapse ? '' : 'rotate-90'}`} />}
+        <RiArrowRightSLine className={`'ml-1 w-4 h-4 text-text-tertiary' ${collapse ? '' : 'rotate-90'}`} />
       </div>
       {
-        !collapse && !readonly && (
+        !collapse && (
           <div className='mt-1.5'>
             {
               <TracingPanel
                 list={data.tracing}
+                onShowIterationDetail={showIterationDetail}
                 hideNodeInfo={hideInfo}
                 hideNodeProcessDetail={hideProcessDetail}
               />

@@ -27,7 +27,6 @@ import VariableAssigner from '@/app/components/workflow/nodes/variable-assigner/
 import Assigner from '@/app/components/workflow/nodes/assigner/default'
 import ParameterExtractorDefault from '@/app/components/workflow/nodes/parameter-extractor/default'
 import IterationDefault from '@/app/components/workflow/nodes/iteration/default'
-import DocumentExtractorDefault from '@/app/components/workflow/nodes/document-extractor/default'
 import { ssePost } from '@/service/base'
 
 import { getInputVars as doGetInputVars } from '@/app/components/base/prompt-editor/constants'
@@ -44,9 +43,7 @@ const { checkValid: checkVariableAssignerValid } = VariableAssigner
 const { checkValid: checkAssignerValid } = Assigner
 const { checkValid: checkParameterExtractorValid } = ParameterExtractorDefault
 const { checkValid: checkIterationValid } = IterationDefault
-const { checkValid: checkDocumentExtractorValid } = DocumentExtractorDefault
 
-// eslint-disable-next-line ts/no-unsafe-function-type
 const checkValidFns: Record<BlockEnum, Function> = {
   [BlockEnum.LLM]: checkLLMValid,
   [BlockEnum.KnowledgeRetrieval]: checkKnowledgeRetrievalValid,
@@ -60,7 +57,6 @@ const checkValidFns: Record<BlockEnum, Function> = {
   [BlockEnum.VariableAggregator]: checkVariableAssignerValid,
   [BlockEnum.ParameterExtractor]: checkParameterExtractorValid,
   [BlockEnum.Iteration]: checkIterationValid,
-  [BlockEnum.DocExtractor]: checkDocumentExtractorValid,
 } as any
 
 type Params<T> = {
@@ -145,7 +141,7 @@ const useOneStepRun = <T>({
   const { handleNodeDataUpdate }: { handleNodeDataUpdate: (data: any) => void } = useNodeDataUpdate()
   const [canShowSingleRun, setCanShowSingleRun] = useState(false)
   const isShowSingleRun = data._isSingleRun && canShowSingleRun
-  const [iterationRunResult, setIterationRunResult] = useState<NodeTracing[]>([])
+  const [iterationRunResult, setIterationRunResult] = useState<NodeTracing[][]>([])
 
   useEffect(() => {
     if (!checkValid) {
@@ -176,7 +172,7 @@ const useOneStepRun = <T>({
   const workflowStore = useWorkflowStore()
   useEffect(() => {
     workflowStore.getState().setShowSingleRunPanel(!!isShowSingleRun)
-  }, [isShowSingleRun, workflowStore])
+  }, [isShowSingleRun])
 
   const hideSingleRun = () => {
     handleNodeDataUpdate({
@@ -214,7 +210,7 @@ const useOneStepRun = <T>({
       }
       else {
         setIterationRunResult([])
-        let _iterationResult: NodeTracing[] = []
+        let _iterationResult: NodeTracing[][] = []
         let _runResult: any = null
         ssePost(
           getIterationSingleNodeRunUrl(isChatMode, appId!, id),
@@ -234,43 +230,27 @@ const useOneStepRun = <T>({
               _runResult.created_by = iterationData.created_by.name
               setRunResult(_runResult)
             },
-            onIterationStart: (params) => {
-              const newIterationRunResult = produce(_iterationResult, (draft) => {
-                draft.push({
-                  ...params.data,
-                  status: NodeRunningStatus.Running,
-                })
-              })
-              _iterationResult = newIterationRunResult
-              setIterationRunResult(newIterationRunResult)
-            },
             onIterationNext: () => {
               // iteration next trigger time is triggered one more time than iterationTimes
               if (_iterationResult.length >= iterationTimes!)
-                return _iterationResult.length >= iterationTimes!
+                return
+
+              const newIterationRunResult = produce(_iterationResult, (draft) => {
+                draft.push([])
+              })
+              _iterationResult = newIterationRunResult
+              setIterationRunResult(newIterationRunResult)
             },
             onIterationFinish: (params) => {
               _runResult = params.data
               setRunResult(_runResult)
-              const iterationRunResult = _iterationResult
-              const currentIndex = iterationRunResult.findIndex(trace => trace.id === params.data.id)
-              const newIterationRunResult = produce(iterationRunResult, (draft) => {
-                if (currentIndex > -1) {
-                  draft[currentIndex] = {
-                    ...draft[currentIndex],
-                    ...data,
-                  }
-                }
-              })
-              _iterationResult = newIterationRunResult
-              setIterationRunResult(newIterationRunResult)
             },
             onNodeStarted: (params) => {
               const newIterationRunResult = produce(_iterationResult, (draft) => {
-                draft.push({
+                draft[draft.length - 1].push({
                   ...params.data,
                   status: NodeRunningStatus.Running,
-                })
+                } as NodeTracing)
               })
               _iterationResult = newIterationRunResult
               setIterationRunResult(newIterationRunResult)
@@ -279,21 +259,14 @@ const useOneStepRun = <T>({
               const iterationRunResult = _iterationResult
 
               const { data } = params
-              const currentIndex = iterationRunResult.findIndex(trace => trace.id === data.id)
+              const currentIndex = iterationRunResult[iterationRunResult.length - 1].findIndex(trace => trace.node_id === data.node_id)
               const newIterationRunResult = produce(iterationRunResult, (draft) => {
                 if (currentIndex > -1) {
-                  draft[currentIndex] = {
-                    ...draft[currentIndex],
+                  draft[draft.length - 1][currentIndex] = {
                     ...data,
-                  }
+                    status: NodeRunningStatus.Succeeded,
+                  } as NodeTracing
                 }
-              })
-              _iterationResult = newIterationRunResult
-              setIterationRunResult(newIterationRunResult)
-            },
-            onNodeRetry: (params) => {
-              const newIterationRunResult = produce(_iterationResult, (draft) => {
-                draft.push(params.data)
               })
               _iterationResult = newIterationRunResult
               setIterationRunResult(newIterationRunResult)

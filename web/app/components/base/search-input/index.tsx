@@ -23,7 +23,6 @@ const SearchInput: FC<SearchInputProps> = ({
   const { t } = useTranslation()
   const [focus, setFocus] = useState<boolean>(false)
   const isComposing = useRef<boolean>(false)
-  const [internalValue, setInternalValue] = useState<string>(value)
 
   return (
     <div className={cn(
@@ -46,18 +45,16 @@ const SearchInput: FC<SearchInputProps> = ({
           white && '!bg-white hover:!bg-white group-hover:!bg-white placeholder:!text-gray-400',
         )}
         placeholder={placeholder || t('common.operation.search')!}
-        value={internalValue}
+        value={value}
         onChange={(e) => {
-          setInternalValue(e.target.value)
           if (!isComposing.current)
             onChange(e.target.value)
         }}
         onCompositionStart={() => {
           isComposing.current = true
         }}
-        onCompositionEnd={(e) => {
+        onCompositionEnd={() => {
           isComposing.current = false
-          onChange(e.data)
         }}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
@@ -66,10 +63,7 @@ const SearchInput: FC<SearchInputProps> = ({
       {value && (
         <div
           className='shrink-0 flex items-center justify-center w-4 h-4 cursor-pointer group/clear'
-          onClick={() => {
-            onChange('')
-            setInternalValue('')
-          }}
+          onClick={() => onChange('')}
         >
           <XCircle className='w-3.5 h-3.5 text-gray-400 group-hover/clear:text-gray-600' />
         </div>

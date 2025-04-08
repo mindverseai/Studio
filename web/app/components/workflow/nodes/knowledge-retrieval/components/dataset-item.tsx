@@ -23,7 +23,6 @@ type Props = {
   onRemove: () => void
   onChange: (dataSet: DataSet) => void
   readonly?: boolean
-  editable?: boolean
 }
 
 const DatasetItem: FC<Props> = ({
@@ -31,7 +30,6 @@ const DatasetItem: FC<Props> = ({
   onRemove,
   onChange,
   readonly,
-  editable = true,
 }) => {
   const media = useBreakpoints()
   const { t } = useTranslation()
@@ -77,23 +75,21 @@ const DatasetItem: FC<Props> = ({
       </div>
       {!readonly && (
         <div className='hidden group-hover/dataset-item:flex shrink-0 ml-2  items-center space-x-1'>
-          {
-            editable && <ActionButton
-              onClick={(e) => {
-                e.stopPropagation()
-                showSettingsModal()
-              }}
-            >
-              <RiEditLine className='w-4 h-4 shrink-0 text-text-tertiary' />
-            </ActionButton>
-          }
+          <ActionButton
+            onClick={(e) => {
+              e.stopPropagation()
+              showSettingsModal()
+            }}
+          >
+            <RiEditLine className='w-4 h-4 flex-shrink-0 text-text-tertiary' />
+          </ActionButton>
           <ActionButton
             onClick={handleRemove}
             state={ActionButtonState.Destructive}
             onMouseEnter={() => setIsDeleteHovered(true)}
             onMouseLeave={() => setIsDeleteHovered(false)}
           >
-            <RiDeleteBinLine className={`w-4 h-4 shrink-0 ${isDeleteHovered ? 'text-text-destructive' : 'text-text-tertiary'}`} />
+            <RiDeleteBinLine className={`w-4 h-4 flex-shrink-0 ${isDeleteHovered ? 'text-text-destructive' : 'text-text-tertiary'}`} />
           </ActionButton>
         </div>
       )}
@@ -106,7 +102,7 @@ const DatasetItem: FC<Props> = ({
       {
         payload.provider === 'external' && <Badge
           className='group-hover/dataset-item:hidden shrink-0'
-          text={t('dataset.externalTag') as string}
+          text={t('dataset.externalTag')}
         />
       }
 

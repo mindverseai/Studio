@@ -36,7 +36,6 @@ const FileIcon: FC<FileIconProps> = ({
       return <Json className={className} />
     case 'md':
     case 'markdown':
-    case 'mdx':
       return <Md className={className} />
     case 'pdf':
       return <Pdf className={className} />

@@ -18,7 +18,7 @@ export class WorkflowVariableBlockNode extends DecoratorNode<JSX.Element> {
   }
 
   static clone(node: WorkflowVariableBlockNode): WorkflowVariableBlockNode {
-    return new WorkflowVariableBlockNode(node.__variables, node.__workflowNodesMap, node.__key)
+    return new WorkflowVariableBlockNode(node.__variables, node.__workflowNodesMap)
   }
 
   isInline(): boolean {

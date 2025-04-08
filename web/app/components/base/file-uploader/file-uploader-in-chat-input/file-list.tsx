@@ -23,7 +23,7 @@ export const FileList = ({
   onRemove,
   showDeleteAction = true,
   showDownloadAction = false,
-  canPreview = true,
+  canPreview,
 }: FileListProps) => {
   return (
     <div className={cn('flex flex-wrap gap-2', className)}>
@@ -51,7 +51,6 @@ export const FileList = ({
               showDownloadAction={showDownloadAction}
               onRemove={onRemove}
               onReUpload={onReUpload}
-              canPreview={canPreview}
             />
           )
         })

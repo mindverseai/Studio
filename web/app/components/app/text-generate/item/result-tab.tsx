@@ -27,15 +27,15 @@ const ResultTab = ({
     onCurrentTabChange(tab)
   }
   useEffect(() => {
-    if (data?.resultText || !!data?.files?.length)
+    if (data?.resultText)
       switchTab('RESULT')
     else
       switchTab('DETAIL')
-  }, [data?.files?.length, data?.resultText])
+  }, [data?.resultText])
 
   return (
     <div className='grow relative flex flex-col'>
-      {(data?.resultText || !!data?.files?.length) && (
+      {data?.resultText && (
         <div className='shrink-0 flex items-center mb-2 border-b-[0.5px] border-[rgba(0,0,0,0.05)]'>
           <div
             className={cn(
@@ -56,21 +56,14 @@ const ResultTab = ({
       <div className={cn('grow bg-white')}>
         {currentTab === 'RESULT' && (
           <>
-            {data?.resultText && <Markdown content={data?.resultText || ''} />}
+            <Markdown content={data?.resultText || ''} />
             {!!data?.files?.length && (
-              <div className='flex flex-col gap-2'>
-                {data?.files.map((item: any) => (
-                  <div key={item.varName} className='flex flex-col gap-1 system-xs-regular'>
-                    <div className='py-1 text-text-tertiary '>{item.varName}</div>
-                    <FileList
-                      files={item.list}
-                      showDeleteAction={false}
-                      showDownloadAction
-                      canPreview
-                    />
-                  </div>
-                ))}
-              </div>
+              <FileList
+                files={data?.files}
+                showDeleteAction={false}
+                showDownloadAction
+                canPreview
+              />
             )}
           </>
         )}

@@ -2,9 +2,9 @@
 import { useState } from 'react'
 import cn from '@/utils/classnames'
 
-export type AvatarProps = {
+type AvatarProps = {
   name: string
-  avatar: string | null
+  avatar?: string
   size?: number
   className?: string
   textClassName?: string

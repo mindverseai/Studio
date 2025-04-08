@@ -11,17 +11,11 @@ type Props = {
   enable: boolean
 }
 
-const maxTopK = (() => {
-  const configValue = parseInt(globalThis.document?.body?.getAttribute('data-public-top-k-max-value') || '', 10)
-  if (configValue && !isNaN(configValue))
-    return configValue
-  return 10
-})()
 const VALUE_LIMIT = {
   default: 2,
   step: 1,
   min: 1,
-  max: maxTopK,
+  max: 10,
 }
 
 const key = 'top_k'

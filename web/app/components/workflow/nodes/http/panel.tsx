@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { memo } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
 import useConfig from './use-config'
 import ApiInput from './components/api-input'
@@ -65,7 +65,7 @@ const Panel: FC<NodePanelProps<HttpNodeType>> = ({
     return null
 
   return (
-    <div className='pt-2'>
+    <div className='mt-2'>
       <div className='px-4 pb-4 space-y-4'>
         <Field
           title={t(`${i18nPrefix}.api`)}
@@ -136,12 +136,14 @@ const Panel: FC<NodePanelProps<HttpNodeType>> = ({
         </Field>
       </div>
       <Split />
-      <Timeout
-        nodeId={id}
-        readonly={readOnly}
-        payload={inputs.timeout}
-        onChange={setTimeout}
-      />
+      <div className='px-4 pt-4 pb-4'>
+        <Timeout
+          nodeId={id}
+          readonly={readOnly}
+          payload={inputs.timeout}
+          onChange={setTimeout}
+        />
+      </div>
       {(isShowAuthorization && !readOnly) && (
         <AuthorizationModal
           nodeId={id}
@@ -152,7 +154,7 @@ const Panel: FC<NodePanelProps<HttpNodeType>> = ({
         />
       )}
       <Split />
-      <div className=''>
+      <div className='px-4 pt-4 pb-2'>
         <OutputVars>
           <>
             <VarItem
@@ -181,7 +183,6 @@ const Panel: FC<NodePanelProps<HttpNodeType>> = ({
       {isShowSingleRun && (
         <BeforeRunForm
           nodeName={inputs.title}
-          nodeType={inputs.type}
           onHide={hideSingleRun}
           forms={[
             {
@@ -208,4 +209,4 @@ const Panel: FC<NodePanelProps<HttpNodeType>> = ({
   )
 }
 
-export default memo(Panel)
+export default React.memo(Panel)

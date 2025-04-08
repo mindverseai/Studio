@@ -59,8 +59,7 @@ const RetrievalConfig: FC<Props> = ({
   }, [onOpenFromPropsChange])
 
   const {
-    currentProvider: validRerankDefaultProvider,
-    currentModel: validRerankDefaultModel,
+    defaultModel: rerankDefaultModel,
   } = useModelListAndDefaultModelAndCurrentProviderAndModel(ModelTypeEnum.rerank)
 
   const { multiple_retrieval_config } = payload
@@ -76,8 +75,8 @@ const RetrievalConfig: FC<Props> = ({
         ? undefined
         : (!configs.reranking_model?.reranking_provider_name
           ? {
-            provider: validRerankDefaultProvider?.provider || '',
-            model: validRerankDefaultModel?.model || '',
+            provider: rerankDefaultModel?.provider?.provider || '',
+            model: rerankDefaultModel?.model || '',
           }
           : {
             provider: configs.reranking_model?.reranking_provider_name,
@@ -87,7 +86,7 @@ const RetrievalConfig: FC<Props> = ({
       weights: configs.weights as any,
       reranking_enable: configs.reranking_enable,
     })
-  }, [onMultipleRetrievalConfigChange, payload.retrieval_mode, validRerankDefaultProvider, validRerankDefaultModel, onRetrievalModeChange])
+  }, [onMultipleRetrievalConfigChange, payload.retrieval_mode, rerankDefaultModel?.provider?.provider, rerankDefaultModel?.model, onRetrievalModeChange])
 
   return (
     <PortalToFollowElem

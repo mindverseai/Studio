@@ -1,5 +1,3 @@
-export { default as AnthropicDark } from './AnthropicDark'
-export { default as AnthropicLight } from './AnthropicLight'
 export { default as AnthropicText } from './AnthropicText'
 export { default as Anthropic } from './Anthropic'
 export { default as AzureOpenaiServiceText } from './AzureOpenaiServiceText'

@@ -2,8 +2,9 @@
 import type { FC } from 'react'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import PremiumBadge from '../../base/premium-badge'
-import { SparklesSoft } from '@/app/components/base/icons/src/public/common'
+import { GoldCoin } from '../../base/icons/src/vender/solid/FinanceAndECommerce'
+import { Sparkles } from '../../base/icons/src/public/billing'
+import s from './style.module.css'
 import cn from '@/utils/classnames'
 import { useModalContext } from '@/context/modal-context'
 
@@ -35,7 +36,9 @@ const PlainBtn = ({ className, onClick }: { className?: string; onClick: () => v
 const UpgradeBtn: FC<Props> = ({
   className,
   isPlain = false,
+  isFull = false,
   isShort = false,
+  size = 'md',
   onClick: _onClick,
   loc,
 }) => {
@@ -60,19 +63,22 @@ const UpgradeBtn: FC<Props> = ({
     return <PlainBtn onClick={onClick} className={className} />
 
   return (
-    <PremiumBadge
-      size="m"
-      color="blue"
-      allowHover={true}
+    <div
+      className={cn(
+        s.upgradeBtn,
+        className,
+        isFull ? 'justify-center' : 'px-3',
+        size === 'lg' ? 'h-10' : 'h-9',
+        'relative flex items-center cursor-pointer border rounded-[20px] border-[#0096EA] text-white',
+      )}
       onClick={onClick}
     >
-      <SparklesSoft className='flex items-center py-[1px] pl-[3px] w-3.5 h-3.5 text-components-premium-badge-indigo-text-stop-0' />
-      <div className='system-xs-medium'>
-        <span className='p-1'>
-          {t(`billing.upgradeBtn.${isShort ? 'encourageShort' : 'encourage'}`)}
-        </span>
-      </div>
-    </PremiumBadge>
+      <GoldCoin className='mr-1 w-3.5 h-3.5' />
+      <div className='text-xs font-normal'>{t(`billing.upgradeBtn.${isShort ? 'encourageShort' : 'encourage'}`)}</div>
+      <Sparkles
+        className='absolute -right-1 -top-2  w-4 h-5 bg-cover'
+      />
+    </div>
   )
 }
 export default React.memo(UpgradeBtn)

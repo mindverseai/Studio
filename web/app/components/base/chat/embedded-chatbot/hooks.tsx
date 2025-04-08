@@ -11,12 +11,10 @@ import { useLocalStorageState } from 'ahooks'
 import produce from 'immer'
 import type {
   ChatConfig,
-  ChatItem,
   Feedback,
 } from '../types'
 import { CONVERSATION_ID_INFO } from '../constants'
-import { buildChatItemTree, getProcessedInputsFromUrlParams } from '../utils'
-import { getProcessedFilesFromResponse } from '../../file-uploader/utils'
+import { getPrevChatList, getProcessedInputsFromUrlParams } from '../utils'
 import {
   fetchAppInfo,
   fetchAppMeta,
@@ -34,33 +32,6 @@ import { useToastContext } from '@/app/components/base/toast'
 import { changeLanguage } from '@/i18n/i18next-config'
 import { InputVarType } from '@/app/components/workflow/types'
 import { TransferMethod } from '@/types/app'
-import { addFileInfos, sortAgentSorts } from '@/app/components/tools/utils'
-
-function getFormattedChatList(messages: any[]) {
-  const newChatList: ChatItem[] = []
-  messages.forEach((item) => {
-    const questionFiles = item.message_files?.filter((file: any) => file.belongs_to === 'user') || []
-    newChatList.push({
-      id: `question-${item.id}`,
-      content: item.query,
-      isAnswer: false,
-      message_files: getProcessedFilesFromResponse(questionFiles.map((item: any) => ({ ...item, related_id: item.id }))),
-      parentMessageId: item.parent_message_id || undefined,
-    })
-    const answerFiles = item.message_files?.filter((file: any) => file.belongs_to === 'assistant') || []
-    newChatList.push({
-      id: item.id,
-      content: item.answer,
-      agent_thoughts: addFileInfos(item.agent_thoughts ? sortAgentSorts(item.agent_thoughts) : item.agent_thoughts, item.message_files),
-      feedback: item.feedback,
-      isAnswer: true,
-      citation: item.retriever_resources,
-      message_files: getProcessedFilesFromResponse(answerFiles.map((item: any) => ({ ...item, related_id: item.id }))),
-      parentMessageId: `question-${item.id}`,
-    })
-  })
-  return newChatList
-}
 
 export const useEmbeddedChatbot = () => {
   const isInstalledApp = false
@@ -106,7 +77,7 @@ export const useEmbeddedChatbot = () => {
 
   const appPrevChatList = useMemo(
     () => (currentConversationId && appChatListData?.data.length)
-      ? buildChatItemTree(getFormattedChatList(appChatListData.data))
+      ? getPrevChatList(appChatListData.data)
       : [],
     [appChatListData, currentConversationId],
   )

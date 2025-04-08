@@ -2,15 +2,14 @@
 import type { FC } from 'react'
 import { memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { RiSettings2Line } from '@remixicon/react'
 import ParamConfigContent from './param-config-content'
-import Button from '@/app/components/base/button'
+import cn from '@/utils/classnames'
+import { Settings01 } from '@/app/components/base/icons/src/vender/line/general'
 import {
   PortalToFollowElem,
   PortalToFollowElemContent,
   PortalToFollowElemTrigger,
 } from '@/app/components/base/portal-to-follow-elem'
-import cn from '@/utils/classnames'
 
 const ParamsConfig: FC = () => {
   const { t } = useTranslation()
@@ -26,13 +25,13 @@ const ParamsConfig: FC = () => {
       }}
     >
       <PortalToFollowElemTrigger onClick={() => setOpen(v => !v)}>
-        <Button variant='ghost' size='small' className={cn('')}>
-          <RiSettings2Line className='w-3.5 h-3.5' />
-          <div className='ml-1'>{t('appDebug.voice.settings')}</div>
-        </Button>
+        <div className={cn('flex items-center rounded-md h-7 px-3 space-x-1 text-text-tertiary cursor-pointer hover:bg-gray-200', open && 'bg-gray-200')}>
+          <Settings01 className='w-3.5 h-3.5 ' />
+          <div className='ml-1 leading-[18px] text-xs font-medium '>{t('appDebug.voice.settings')}</div>
+        </div>
       </PortalToFollowElemTrigger>
       <PortalToFollowElemContent style={{ zIndex: 50 }}>
-        <div className='w-80 sm:w-[412px] p-4 bg-components-panel-bg rounded-lg border-[0.5px] border-components-panel-border shadow-lg space-y-3'>
+        <div className='w-80 sm:w-[412px] p-4 bg-white rounded-lg border-[0.5px] border-gray-200 shadow-lg space-y-3'>
           <ParamConfigContent />
         </div>
       </PortalToFollowElemContent>

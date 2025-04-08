@@ -17,7 +17,7 @@ import { BubbleX, Env } from '@/app/components/base/icons/src/vender/line/others
 import { checkKeys } from '@/utils/var'
 import { FILE_STRUCT } from '@/app/components/workflow/constants'
 
-interface ObjectChildrenProps {
+type ObjectChildrenProps = {
   nodeId: string
   title: string
   data: Var[]
@@ -28,7 +28,7 @@ interface ObjectChildrenProps {
   isSupportFileVar?: boolean
 }
 
-interface ItemProps {
+type ItemProps = {
   nodeId: string
   title: string
   objPath: string[]
@@ -37,7 +37,6 @@ interface ItemProps {
   onHovering?: (value: boolean) => void
   itemWidth?: number
   isSupportFileVar?: boolean
-  isException?: boolean
 }
 
 const Item: FC<ItemProps> = ({
@@ -49,7 +48,6 @@ const Item: FC<ItemProps> = ({
   onHovering,
   itemWidth,
   isSupportFileVar,
-  isException,
 }) => {
   const isFile = itemData.type === VarType.file
   const isObj = ([VarType.object, VarType.file].includes(itemData.type) && itemData.children && itemData.children.length > 0)
@@ -111,7 +109,7 @@ const Item: FC<ItemProps> = ({
           onClick={handleChosen}
         >
           <div className='flex items-center w-0 grow'>
-            {!isEnv && !isChatVar && <Variable02 className={cn('shrink-0 w-3.5 h-3.5 text-text-accent', isException && 'text-text-warning')} />}
+            {!isEnv && !isChatVar && <Variable02 className='shrink-0 w-3.5 h-3.5 text-text-accent' />}
             {isEnv && <Env className='shrink-0 w-3.5 h-3.5 text-util-colors-violet-violet-600' />}
             {isChatVar && <BubbleX className='w-3.5 h-3.5 text-util-colors-teal-teal-700' />}
             {!isEnv && !isChatVar && (
@@ -134,7 +132,7 @@ const Item: FC<ItemProps> = ({
         zIndex: 100,
       }}>
         {(isObj && !isFile) && (
-          // eslint-disable-next-line ts/no-use-before-define
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           <ObjectChildren
             nodeId={nodeId}
             title={title}
@@ -147,7 +145,7 @@ const Item: FC<ItemProps> = ({
           />
         )}
         {isFile && (
-          // eslint-disable-next-line ts/no-use-before-define
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           <ObjectChildren
             nodeId={nodeId}
             title={title}
@@ -218,7 +216,6 @@ const ObjectChildren: FC<ObjectChildrenProps> = ({
             onChange={onChange}
             onHovering={setIsChildrenHovering}
             isSupportFileVar={isSupportFileVar}
-            isException={v.isException}
           />
         ))
       }
@@ -226,7 +223,7 @@ const ObjectChildren: FC<ObjectChildrenProps> = ({
   )
 }
 
-interface Props {
+type Props = {
   hideSearch?: boolean
   searchBoxClassName?: string
   vars: NodeOutPutVar[]
@@ -277,7 +274,7 @@ const VarReferenceVars: FC<Props> = ({
       {
         !hideSearch && (
           <>
-            <div className={cn('mb-1 mx-2 mt-2', searchBoxClassName)} onClick={e => e.stopPropagation()}>
+            <div className={cn('mb-2 mx-1', searchBoxClassName)} onClick={e => e.stopPropagation()}>
               <Input
                 showLeftIcon
                 showClearIcon
@@ -315,7 +312,6 @@ const VarReferenceVars: FC<Props> = ({
                     onChange={onChange}
                     itemWidth={itemWidth}
                     isSupportFileVar={isSupportFileVar}
-                    isException={v.isException}
                   />
                 ))}
               </div>))

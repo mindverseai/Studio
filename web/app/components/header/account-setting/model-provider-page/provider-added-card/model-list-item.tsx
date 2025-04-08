@@ -49,7 +49,7 @@ const ModelListItem = ({ model, provider, isConfigurable, onConfig, onModifyLoad
       key={model.model}
       className={classNames(
         'group flex items-center pl-2 pr-2.5 h-8 rounded-lg',
-        isConfigurable && 'hover:bg-components-panel-on-panel-item-bg-hover',
+        isConfigurable && 'hover:bg-gray-50',
         model.deprecated && 'opacity-60',
       )}
     >
@@ -59,14 +59,14 @@ const ModelListItem = ({ model, provider, isConfigurable, onConfig, onModifyLoad
         modelName={model.model}
       />
       <ModelName
-        className='grow system-md-regular text-text-secondary'
+        className='grow text-sm font-normal text-gray-900'
         modelItem={model}
         showModelType
         showMode
         showContextSize
       >
         {modelLoadBalancingEnabled && !model.deprecated && model.load_balancing_enabled && (
-          <ModelBadge className='ml-1 uppercase text-text-accent-secondary border-text-accent-secondary'>
+          <ModelBadge className='ml-1 uppercase text-indigo-600 border-indigo-300'>
             <Balance className='w-3 h-3 mr-0.5' />
             {t('common.modelProvider.loadBalancingHeadline')}
           </ModelBadge>
@@ -77,22 +77,20 @@ const ModelListItem = ({ model, provider, isConfigurable, onConfig, onModifyLoad
           model.fetch_from === ConfigurationMethodEnum.customizableModel
             ? (isCurrentWorkspaceManager && (
               <Button
-                size='small'
-                className='hidden group-hover:flex'
+                className='hidden group-hover:flex h-7'
                 onClick={() => onConfig({ __model_name: model.model, __model_type: model.model_type })}
               >
-                <Settings01 className='mr-1 w-3.5 h-3.5' />
+                <Settings01 className='mr-[5px] w-3.5 h-3.5' />
                 {t('common.modelProvider.config')}
               </Button>
             ))
             : (isCurrentWorkspaceManager && (modelLoadBalancingEnabled || plan.type === Plan.sandbox) && !model.deprecated && [ModelStatusEnum.active, ModelStatusEnum.disabled].includes(model.status))
               ? (
                 <Button
-                  size='small'
-                  className='opacity-0 group-hover:opacity-100 transition-opacity'
+                  className='opacity-0 group-hover:opacity-100 h-[28px] transition-opacity'
                   onClick={() => onModifyLoadBalancing?.(model)}
                 >
-                  <Balance className='mr-1 w-3.5 h-3.5' />
+                  <Balance className='mr-1 w-[14px] h-[14px]' />
                   {t('common.modelProvider.configLoadBalancing')}
                 </Button>
               )

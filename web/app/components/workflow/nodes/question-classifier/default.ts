@@ -1,7 +1,7 @@
 import type { NodeDefault } from '../../types'
 import { BlockEnum } from '../../types'
 import type { QuestionClassifierNodeType } from './types'
-import { ALL_CHAT_AVAILABLE_BLOCKS, ALL_COMPLETION_AVAILABLE_BLOCKS } from '@/app/components/workflow/blocks'
+import { ALL_CHAT_AVAILABLE_BLOCKS, ALL_COMPLETION_AVAILABLE_BLOCKS } from '@/app/components/workflow/constants'
 
 const i18nPrefix = 'workflow'
 
@@ -17,16 +17,6 @@ const nodeDefault: NodeDefault<QuestionClassifierNodeType> = {
       },
     },
     classes: [
-      {
-        id: '1',
-        name: '',
-      },
-      {
-        id: '2',
-        name: '',
-      },
-    ],
-    _targetBranches: [
       {
         id: '1',
         name: '',

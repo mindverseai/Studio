@@ -1,4 +1,5 @@
 import mime from 'mime'
+import { flatten } from 'lodash-es'
 import { FileAppearanceTypeEnum } from './types'
 import type { FileEntity } from './types'
 import { upload } from '@/service/base'
@@ -84,7 +85,7 @@ export const getFileAppearanceType = (fileName: string, fileMimetype: string) =>
   if (extension === 'pdf')
     return FileAppearanceTypeEnum.pdf
 
-  if (extension === 'md' || extension === 'markdown' || extension === 'mdx')
+  if (extension === 'md' || extension === 'markdown')
     return FileAppearanceTypeEnum.markdown
 
   if (extension === 'xlsx' || extension === 'xls')
@@ -157,22 +158,12 @@ export const isAllowedFileExtension = (fileName: string, fileMimetype: string, a
 }
 
 export const getFilesInLogs = (rawData: any) => {
-  const result = Object.keys(rawData || {}).map((key) => {
-    if (typeof rawData[key] === 'object' && rawData[key]?.dify_model_identity === '__dify__file__') {
-      return {
-        varName: key,
-        list: getProcessedFilesFromResponse([rawData[key]]),
-      }
-    }
-    if (Array.isArray(rawData[key]) && rawData[key].some(item => item?.dify_model_identity === '__dify__file__')) {
-      return {
-        varName: key,
-        list: getProcessedFilesFromResponse(rawData[key]),
-      }
-    }
+  const originalFiles = flatten(Object.keys(rawData || {}).map((key) => {
+    if (typeof rawData[key] === 'object' || Array.isArray(rawData[key]))
+      return rawData[key]
     return undefined
-  }).filter(Boolean)
-  return result
+  }).filter(Boolean)).filter(item => item?.model_identity === '__dify__file__')
+  return getProcessedFilesFromResponse(originalFiles)
 }
 
 export const fileIsUploaded = (file: FileEntity) => {

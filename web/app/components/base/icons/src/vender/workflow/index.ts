@@ -1,4 +1,3 @@
-export { default as Agent } from './Agent'
 export { default as Answer } from './Answer'
 export { default as Assigner } from './Assigner'
 export { default as Code } from './Code'

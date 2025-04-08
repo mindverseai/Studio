@@ -10,7 +10,7 @@ import Modal from '@/app/components/base/modal'
 import Button from '@/app/components/base/button'
 import { RETRIEVE_TYPE } from '@/types/app'
 import Toast from '@/app/components/base/toast'
-import { useCurrentProviderAndModel, useModelListAndDefaultModelAndCurrentProviderAndModel } from '@/app/components/header/account-setting/model-provider-page/hooks'
+import { useModelListAndDefaultModelAndCurrentProviderAndModel } from '@/app/components/header/account-setting/model-provider-page/hooks'
 import { ModelTypeEnum } from '@/app/components/header/account-setting/model-provider-page/declarations'
 import { RerankingModeEnum } from '@/models/datasets'
 import type { DataSet } from '@/models/datasets'
@@ -41,27 +41,17 @@ const ParamsConfig = ({
   }, [datasetConfigs])
 
   const {
-    modelList: rerankModelList,
-    currentModel: rerankDefaultModel,
+    defaultModel: rerankDefaultModel,
+    currentModel: isRerankDefaultModelValid,
     currentProvider: rerankDefaultProvider,
   } = useModelListAndDefaultModelAndCurrentProviderAndModel(ModelTypeEnum.rerank)
-
-  const {
-    currentModel: isCurrentRerankModelValid,
-  } = useCurrentProviderAndModel(
-    rerankModelList,
-    {
-      provider: tempDataSetConfigs.reranking_model?.reranking_provider_name ?? '',
-      model: tempDataSetConfigs.reranking_model?.reranking_model_name ?? '',
-    },
-  )
 
   const isValid = () => {
     let errMsg = ''
     if (tempDataSetConfigs.retrieval_model === RETRIEVE_TYPE.multiWay) {
       if (tempDataSetConfigs.reranking_enable
         && tempDataSetConfigs.reranking_mode === RerankingModeEnum.RerankingModel
-        && !isCurrentRerankModelValid
+        && !isRerankDefaultModelValid
       )
         errMsg = t('appDebug.datasetConfig.rerankModelRequired')
     }
@@ -76,7 +66,16 @@ const ParamsConfig = ({
   const handleSave = () => {
     if (!isValid())
       return
-    setDatasetConfigs(tempDataSetConfigs)
+    const config = { ...tempDataSetConfigs }
+    if (config.retrieval_model === RETRIEVE_TYPE.multiWay
+      && config.reranking_mode === RerankingModeEnum.RerankingModel
+      && !config.reranking_model) {
+      config.reranking_model = {
+        reranking_provider_name: rerankDefaultModel?.provider?.provider,
+        reranking_model_name: rerankDefaultModel?.model,
+      } as any
+    }
+    setDatasetConfigs(config)
     setRerankSettingModalOpen(false)
   }
 
@@ -95,14 +94,14 @@ const ParamsConfig = ({
       reranking_enable: restConfigs.reranking_enable,
     }, selectedDatasets, selectedDatasets, {
       provider: rerankDefaultProvider?.provider,
-      model: rerankDefaultModel?.model,
+      model: isRerankDefaultModelValid?.model,
     })
 
     setTempDataSetConfigs({
       ...retrievalConfig,
-      reranking_model: {
-        reranking_provider_name: retrievalConfig.reranking_model?.provider || '',
-        reranking_model_name: retrievalConfig.reranking_model?.model || '',
+      reranking_model: restConfigs.reranking_model && {
+        reranking_provider_name: restConfigs.reranking_model.reranking_provider_name,
+        reranking_model_name: restConfigs.reranking_model.reranking_model_name,
       },
       retrieval_model,
       score_threshold_enabled,
@@ -140,11 +139,11 @@ const ParamsConfig = ({
             />
 
             <div className='mt-6 flex justify-end'>
-              <Button className='mr-2 shrink-0' onClick={() => {
+              <Button className='mr-2 flex-shrink-0' onClick={() => {
                 setTempDataSetConfigs(datasetConfigs)
                 setRerankSettingModalOpen(false)
               }}>{t('common.operation.cancel')}</Button>
-              <Button variant='primary' className='shrink-0' onClick={handleSave} >{t('common.operation.save')}</Button>
+              <Button variant='primary' className='flex-shrink-0' onClick={handleSave} >{t('common.operation.save')}</Button>
             </div>
           </Modal>
         )

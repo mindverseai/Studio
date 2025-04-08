@@ -22,7 +22,6 @@ import type { Node } from '@/app/components/workflow/types'
 import { BlockEnum } from '@/app/components/workflow/types'
 import { useGetLanguage } from '@/context/i18n'
 import { CollectionType } from '@/app/components/tools/types'
-import { canFindTool } from '@/utils'
 
 type PanelOperatorPopupProps = {
   id: string
@@ -58,7 +57,7 @@ const PanelOperatorPopup = ({
       return nodesExtraData[data.type].author
 
     if (data.provider_type === CollectionType.builtIn)
-      return buildInTools.find(toolWithProvider => canFindTool(toolWithProvider.id, data.provider_id))?.author
+      return buildInTools.find(toolWithProvider => toolWithProvider.id === data.provider_id)?.author
 
     if (data.provider_type === CollectionType.workflow)
       return workflowTools.find(toolWithProvider => toolWithProvider.id === data.provider_id)?.author
@@ -71,7 +70,7 @@ const PanelOperatorPopup = ({
       return nodesExtraData[data.type].about
 
     if (data.provider_type === CollectionType.builtIn)
-      return buildInTools.find(toolWithProvider => canFindTool(toolWithProvider.id, data.provider_id))?.description[language]
+      return buildInTools.find(toolWithProvider => toolWithProvider.id === data.provider_id)?.description[language]
 
     if (data.provider_type === CollectionType.workflow)
       return workflowTools.find(toolWithProvider => toolWithProvider.id === data.provider_id)?.description[language]

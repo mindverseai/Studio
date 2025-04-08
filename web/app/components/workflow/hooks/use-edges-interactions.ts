@@ -63,29 +63,25 @@ export const useEdgesInteractions = () => {
       edges,
       setEdges,
     } = store.getState()
-    const edgeWillBeDeleted = edges.filter(edge => edge.source === nodeId && edge.sourceHandle === branchId)
+    const currentEdgeIndex = edges.findIndex(edge => edge.source === nodeId && edge.sourceHandle === branchId)
 
-    if (!edgeWillBeDeleted.length)
+    if (currentEdgeIndex < 0)
       return
 
-    const nodes = getNodes()
-    const nodesConnectedSourceOrTargetHandleIdsMap = getNodesConnectedSourceOrTargetHandleIdsMap(
-      edgeWillBeDeleted.map(edge => ({ type: 'remove', edge })),
-      nodes,
-    )
-    const newNodes = produce(nodes, (draft: Node[]) => {
-      draft.forEach((node) => {
-        if (nodesConnectedSourceOrTargetHandleIdsMap[node.id]) {
-          node.data = {
-            ...node.data,
-            ...nodesConnectedSourceOrTargetHandleIdsMap[node.id],
-          }
-        }
-      })
+    const currentEdge = edges[currentEdgeIndex]
+    const newNodes = produce(getNodes(), (draft: Node[]) => {
+      const sourceNode = draft.find(node => node.id === currentEdge.source)
+      const targetNode = draft.find(node => node.id === currentEdge.target)
+
+      if (sourceNode)
+        sourceNode.data._connectedSourceHandleIds = sourceNode.data._connectedSourceHandleIds?.filter(handleId => handleId !== currentEdge.sourceHandle)
+
+      if (targetNode)
+        targetNode.data._connectedTargetHandleIds = targetNode.data._connectedTargetHandleIds?.filter(handleId => handleId !== currentEdge.targetHandle)
     })
     setNodes(newNodes)
     const newEdges = produce(edges, (draft) => {
-      return draft.filter(edge => !edgeWillBeDeleted.find(e => e.id === edge.id))
+      draft.splice(currentEdgeIndex, 1)
     })
     setEdges(newEdges)
     handleSyncWorkflowDraft()
@@ -159,9 +155,7 @@ export const useEdgesInteractions = () => {
 
     const newEdges = produce(edges, (draft) => {
       draft.forEach((edge) => {
-        edge.data._sourceRunningStatus = undefined
-        edge.data._targetRunningStatus = undefined
-        edge.data._waitingRun = false
+        edge.data._run = false
       })
     })
     setEdges(newEdges)

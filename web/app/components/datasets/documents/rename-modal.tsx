@@ -9,7 +9,7 @@ import Button from '@/app/components/base/button'
 import Input from '@/app/components/base/input'
 import { renameDocumentName } from '@/service/datasets'
 
-interface Props {
+type Props = {
   datasetId: string
   documentId: string
   name: string

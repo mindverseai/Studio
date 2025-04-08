@@ -10,7 +10,7 @@ const usePagination = ({
   edgePageCount,
   middlePagesSiblingCount,
 }: IPaginationProps): IUsePagination => {
-  const pages = new Array(totalPages)
+  const pages = Array(totalPages)
     .fill(0)
     .map((_, i) => i + 1)
 

@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   RiErrorWarningFill,
@@ -14,6 +14,7 @@ import { checkOrSetAccessToken } from '../utils'
 import s from './style.module.css'
 import RunBatch from './run-batch'
 import ResDownload from './run-batch/res-download'
+import styles from './styles.module.css'
 import cn from '@/utils/classnames'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import RunOnce from '@/app/components/share/text-generation/run-once'
@@ -93,12 +94,8 @@ const TextGeneration: FC<IMainProps> = ({
   // Notice this situation isCallBatchAPI but not in batch tab
   const [isCallBatchAPI, setIsCallBatchAPI] = useState(false)
   const isInBatchTab = currentTab === 'batch'
-  const [inputs, doSetInputs] = useState<Record<string, any>>({})
+  const [inputs, setInputs] = useState<Record<string, any>>({})
   const inputsRef = useRef(inputs)
-  const setInputs = useCallback((newInputs: Record<string, any>) => {
-    doSetInputs(newInputs)
-    inputsRef.current = newInputs
-  }, [])
   const [appId, setAppId] = useState<string>('')
   const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null)
   const [canReplaceLogo, setCanReplaceLogo] = useState<boolean>(false)
@@ -137,11 +134,9 @@ const TextGeneration: FC<IMainProps> = ({
   const handleSend = () => {
     setIsCallBatchAPI(false)
     setControlSend(Date.now())
-
-    // eslint-disable-next-line ts/no-use-before-define
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     setAllTaskList([]) // clear batch task running status
-
-    // eslint-disable-next-line ts/no-use-before-define
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     showResSidebar()
   }
 
@@ -159,7 +154,7 @@ const TextGeneration: FC<IMainProps> = ({
   const pendingTaskList = allTaskList.filter(task => task.status === TaskStatus.pending)
   const noPendingTask = pendingTaskList.length === 0
   const showTaskList = allTaskList.filter(task => task.status !== TaskStatus.pending)
-  const [currGroupNum, doSetCurrGroupNum] = useState(0)
+  const [_currGroupNum, doSetCurrGroupNum] = useState(0)
   const currGroupNumRef = useRef(0)
   const setCurrGroupNum = (num: number) => {
     doSetCurrGroupNum(num)
@@ -172,7 +167,7 @@ const TextGeneration: FC<IMainProps> = ({
   const allFailedTaskList = allTaskList.filter(task => task.status === TaskStatus.failed)
   const allTasksFinished = allTaskList.every(task => task.status === TaskStatus.completed)
   const allTasksRun = allTaskList.every(task => [TaskStatus.completed, TaskStatus.failed].includes(task.status))
-  const [batchCompletionRes, doSetBatchCompletionRes] = useState<Record<string, string>>({})
+  const [_batchCompletionRes, doSetBatchCompletionRes] = useState<Record<string, string>>({})
   const batchCompletionResRef = useRef<Record<string, string>>({})
   const setBatchCompletionRes = (res: Record<string, string>) => {
     doSetBatchCompletionRes(res)
@@ -321,8 +316,7 @@ const TextGeneration: FC<IMainProps> = ({
     setControlSend(Date.now())
     // clear run once task status
     setControlStopResponding(Date.now())
-
-    // eslint-disable-next-line ts/no-use-before-define
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     showResSidebar()
   }
   const handleCompleted = (completionRes: string, taskId?: number, isSuccess?: boolean) => {
@@ -411,7 +405,7 @@ const TextGeneration: FC<IMainProps> = ({
       setMoreLikeThisConfig(more_like_this)
       setTextToSpeechConfig(text_to_speech)
     })()
-  }, [])
+  }, [fetchInitData])
 
   // Can Use metadata(https://beta.nextjs.org/docs/api-reference/metadata) to set title. But it only works in server side client.
   useEffect(() => {
@@ -419,7 +413,7 @@ const TextGeneration: FC<IMainProps> = ({
       if (canReplaceLogo)
         document.title = `${siteInfo.title}`
       else
-        document.title = `${siteInfo.title} - Powered by Dify`
+        document.title = `${siteInfo.title} - Powered by Mindverse`
     }
   }, [siteInfo?.title, canReplaceLogo])
 
@@ -647,12 +641,10 @@ const TextGeneration: FC<IMainProps> = ({
             isInstalledApp ? 'left-[248px]' : 'left-8',
             'fixed  bottom-4  flex space-x-2 text-gray-400 font-normal text-xs',
           )}>
-            {siteInfo.copyright && (
-              <div className="">© {(new Date()).getFullYear()} {siteInfo.copyright}</div>
-            )}
+            <div className="">© {siteInfo.copyright || siteInfo.title} {(new Date()).getFullYear()}</div>
             {siteInfo.privacy_policy && (
               <>
-                {siteInfo.copyright && <div>·</div>}
+                <div>·</div>
                 <div>{t('share.chat.privacyPolicyLeft')}
                   <a
                     className='text-gray-500 px-1'
@@ -667,10 +659,7 @@ const TextGeneration: FC<IMainProps> = ({
 
         {/* Result */}
         <div
-          className={resWrapClassNames}
-          style={{
-            background: (!isPC && isShowResSidebar) ? 'rgba(35, 56, 118, 0.2)' : 'none',
-          }}
+          className={`${resWrapClassNames} ${((!isPC) && isShowResSidebar) ? styles.resultWrapperMobile : styles.resultWrapperDefault}`}
         >
           {renderResWrap}
         </div>

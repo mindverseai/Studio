@@ -1,15 +1,10 @@
 'use client'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  RiClipboardFill,
-  RiClipboardLine,
-} from '@remixicon/react'
 import { debounce } from 'lodash-es'
 import copy from 'copy-to-clipboard'
 import copyStyle from './style.module.css'
 import Tooltip from '@/app/components/base/tooltip'
-import ActionButton from '@/app/components/base/action-button'
 
 type Props = {
   content: string
@@ -18,7 +13,7 @@ type Props = {
 
 const prefixEmbedded = 'appOverview.overview.appInfo.embedded'
 
-const CopyFeedback = ({ content }: Props) => {
+const CopyFeedback = ({ content, className }: Props) => {
   const { t } = useTranslation()
   const [isCopied, setIsCopied] = useState<boolean>(false)
 
@@ -39,15 +34,19 @@ const CopyFeedback = ({ content }: Props) => {
           : t(`${prefixEmbedded}.copy`)) || ''
       }
     >
-      <ActionButton>
+      <div
+        className={`w-8 h-8 cursor-pointer hover:bg-gray-100 rounded-lg ${
+          className ?? ''
+        }`}
+      >
         <div
           onClick={onClickCopy}
           onMouseLeave={onMouseLeave}
-        >
-          {isCopied && <RiClipboardFill className='w-4 h-4' />}
-          {!isCopied && <RiClipboardLine className='w-4 h-4' />}
-        </div>
-      </ActionButton>
+          className={`w-full h-full ${copyStyle.copyIcon} ${
+            isCopied ? copyStyle.copied : ''
+          }`}
+        ></div>
+      </div>
     </Tooltip>
   )
 }
@@ -76,13 +75,15 @@ export const CopyFeedbackNew = ({ content, className }: Pick<Props, 'className' 
       }
     >
       <div
-        className={`w-8 h-8 cursor-pointer hover:bg-components-button-ghost-bg-hover rounded-lg ${className ?? ''
+        className={`w-8 h-8 cursor-pointer hover:bg-gray-100 rounded-lg ${
+          className ?? ''
         }`}
       >
         <div
           onClick={onClickCopy}
           onMouseLeave={onMouseLeave}
-          className={`w-full h-full ${copyStyle.copyIcon} ${isCopied ? copyStyle.copied : ''
+          className={`w-full h-full ${copyStyle.copyIcon} ${
+            isCopied ? copyStyle.copied : ''
           }`}
         ></div>
       </div>

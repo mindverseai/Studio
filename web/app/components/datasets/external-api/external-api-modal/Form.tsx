@@ -87,6 +87,4 @@ const Form: FC<FormProps> = React.memo(({
   )
 })
 
-Form.displayName = 'Form'
-
 export default Form

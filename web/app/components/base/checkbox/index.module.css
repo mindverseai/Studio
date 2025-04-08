@@ -1,7 +1,11 @@
-.mixed {
-  background: var(--color-components-checkbox-bg) url(./assets/mixed.svg) center center no-repeat;
+.wrapper {
+  border-color: #d0d5dd;
+}
+
+.checked {
+  background: #155eef url(./assets/check.svg) center center no-repeat;
   background-size: 12px 12px;
-  border: none;
+  border-color: #155eef;
 }
 
 .checked.disabled {

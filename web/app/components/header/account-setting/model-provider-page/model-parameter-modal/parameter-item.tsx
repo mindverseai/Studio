@@ -17,6 +17,7 @@ type ParameterItemProps = {
   parameterRule: ModelParameterRule
   value?: ParameterValue
   onChange?: (value: ParameterValue) => void
+  className?: string
   onSwitch?: (checked: boolean, assignValue: ParameterValue) => void
   isInWorkflow?: boolean
 }
@@ -24,6 +25,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
   parameterRule,
   value,
   onChange,
+  className,
   onSwitch,
   isInWorkflow,
 }) => {
@@ -148,7 +150,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
           />}
           <input
             ref={numberInputRef}
-            className='shrink-0 block ml-4 pl-3 w-16 h-8 appearance-none outline-none rounded-lg bg-components-input-bg-normal text-components-input-text-filled system-sm-regular'
+            className='shrink-0 block ml-4 pl-3 w-16 h-8 appearance-none outline-none rounded-lg bg-gray-100 text-[13px] text-gra-900'
             type='number'
             max={parameterRule.max}
             min={parameterRule.min}
@@ -173,7 +175,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
           />}
           <input
             ref={numberInputRef}
-            className='shrink-0 block ml-4 pl-3 w-16 h-8 appearance-none outline-none rounded-lg bg-components-input-bg-normal text-components-input-text-filled system-sm-regular'
+            className='shrink-0 block ml-4 pl-3 w-16 h-8 appearance-none outline-none rounded-lg bg-gray-100 text-[13px] text-gra-900'
             type='number'
             max={parameterRule.max}
             min={parameterRule.min}
@@ -188,12 +190,12 @@ const ParameterItem: FC<ParameterItemProps> = ({
     if (parameterRule.type === 'boolean') {
       return (
         <Radio.Group
-          className='w-[178px] flex items-center'
+          className='w-[200px] flex items-center'
           value={renderValue ? 1 : 0}
           onChange={handleRadioChange}
         >
-          <Radio value={1} className='w-[83px]'>True</Radio>
-          <Radio value={0} className='w-[83px]'>False</Radio>
+          <Radio value={1} className='!mr-1 w-[94px]'>True</Radio>
+          <Radio value={0} className='w-[94px]'>False</Radio>
         </Radio.Group>
       )
     }
@@ -201,7 +203,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
     if (parameterRule.type === 'string' && !parameterRule.options?.length) {
       return (
         <input
-          className={cn(isInWorkflow ? 'w-[178px]' : 'w-full', 'ml-4 flex items-center px-3 h-8 appearance-none outline-none rounded-lg bg-components-input-bg-normal text-components-input-text-filled system-sm-regular')}
+          className={cn(isInWorkflow ? 'w-[200px]' : 'w-full', 'ml-4 flex items-center px-3 h-8 appearance-none outline-none rounded-lg bg-gray-100 text-[13px] text-gra-900')}
           value={renderValue as string}
           onChange={handleStringInputChange}
         />
@@ -211,7 +213,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
     if (parameterRule.type === 'text') {
       return (
         <textarea
-          className='w-full h-20 ml-4 px-1 rounded-lg bg-components-input-bg-normal text-components-input-text-filled system-sm-regular'
+          className='w-full h-20 ml-4 px-1 rounded-lg bg-gray-100 outline-none text-[12px] text-gray-900'
           value={renderValue as string}
           onChange={handleStringInputChange}
         />
@@ -222,7 +224,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
       return (
         <SimpleSelect
           className='!py-0'
-          wrapperClassName={cn('w-full !h-8')}
+          wrapperClassName={cn(isInWorkflow ? '!w-[200px]' : 'w-full', 'ml-4 !h-8')}
           defaultValue={renderValue as string}
           onSelect={handleSelect}
           items={parameterRule.options.map(option => ({ value: option, name: option }))}
@@ -232,7 +234,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
 
     if (parameterRule.type === 'tag') {
       return (
-        <div className={cn('w-full !h-8')}>
+        <div className={cn(isInWorkflow ? 'w-[200px]' : 'w-full', 'ml-4')}>
           <TagInput
             items={renderValue as string[]}
             onChange={handleTagChange}
@@ -247,22 +249,11 @@ const ParameterItem: FC<ParameterItemProps> = ({
   }
 
   return (
-    <div className='flex items-center justify-between mb-2'>
-      <div className='shrink-0 basis-1/2'>
-        <div className={cn('shrink-0 w-full flex items-center')}>
-          {
-            !parameterRule.required && parameterRule.name !== 'stop' && (
-              <div className='mr-2 w-7'>
-                <Switch
-                  defaultValue={!isNullOrUndefined(value)}
-                  onChange={handleSwitch}
-                  size='md'
-                />
-              </div>
-            )
-          }
+    <div className={`flex items-center justify-between ${className}`}>
+      <div>
+        <div className={cn(isInWorkflow ? 'w-[140px]' : 'w-full', 'ml-4 shrink-0 flex items-center')}>
           <div
-            className='mr-0.5 system-xs-regular text-text-secondary truncate'
+            className='mr-0.5 text-[13px] font-medium text-gray-700 truncate'
             title={parameterRule.label[language] || parameterRule.label.en_US}
           >
             {parameterRule.label[language] || parameterRule.label.en_US}
@@ -271,17 +262,27 @@ const ParameterItem: FC<ParameterItemProps> = ({
             parameterRule.help && (
               <Tooltip
                 popupContent={(
-                  <div className='w-[178px] whitespace-pre-wrap'>{parameterRule.help[language] || parameterRule.help.en_US}</div>
+                  <div className='w-[200px] whitespace-pre-wrap'>{parameterRule.help[language] || parameterRule.help.en_US}</div>
                 )}
                 popupClassName='mr-1'
                 triggerClassName='mr-1 w-4 h-4 shrink-0'
               />
             )
           }
+          {
+            !parameterRule.required && parameterRule.name !== 'stop' && (
+              <Switch
+                className='mr-1'
+                defaultValue={!isNullOrUndefined(value)}
+                onChange={handleSwitch}
+                size='md'
+              />
+            )
+          }
         </div>
         {
           parameterRule.type === 'tag' && (
-            <div className={cn(!isInWorkflow && 'w-[178px]', 'text-text-tertiary system-xs-regular')}>
+            <div className={cn(!isInWorkflow && 'w-[200px]', 'text-gray-400 text-xs font-normal')}>
               {parameterRule?.tagPlaceholder?.[language]}
             </div>
           )

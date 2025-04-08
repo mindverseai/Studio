@@ -6,12 +6,7 @@ import {
 } from 'reactflow'
 import dagre from '@dagrejs/dagre'
 import { v4 as uuid4 } from 'uuid'
-import {
-  cloneDeep,
-  groupBy,
-  isEqual,
-  uniqBy,
-} from 'lodash-es'
+import { cloneDeep, groupBy, isEqual, uniqBy } from 'lodash-es'
 import type {
   Edge,
   InputVar,
@@ -19,15 +14,9 @@ import type {
   ToolWithProvider,
   ValueSelector,
 } from './types'
-import {
-  BlockEnum,
-  ErrorHandleMode,
-  NodeRunningStatus,
-} from './types'
+import { BlockEnum, ErrorHandleMode } from './types'
 import {
   CUSTOM_NODE,
-  DEFAULT_RETRY_INTERVAL,
-  DEFAULT_RETRY_MAX,
   ITERATION_CHILDREN_Z_INDEX,
   ITERATION_NODE_Z_INDEX,
   NODE_WIDTH_X_OFFSET,
@@ -41,13 +30,17 @@ import type { ToolNodeType } from './nodes/tool/types'
 import type { IterationNodeType } from './nodes/iteration/types'
 import { CollectionType } from '@/app/components/tools/types'
 import { toolParametersToFormSchemas } from '@/app/components/tools/utils/to-form-schema'
-import { canFindTool, correctModelProvider } from '@/utils'
 
 const WHITE = 'WHITE'
 const GRAY = 'GRAY'
 const BLACK = 'BLACK'
 
-const isCyclicUtil = (nodeId: string, color: Record<string, string>, adjList: Record<string, string[]>, stack: string[]) => {
+const isCyclicUtil = (
+  nodeId: string,
+  color: Record<string, string>,
+  adjList: Record<string, string[]>,
+  stack: string[],
+) => {
   color[nodeId] = GRAY
   stack.push(nodeId)
 
@@ -58,7 +51,10 @@ const isCyclicUtil = (nodeId: string, color: Record<string, string>, adjList: Re
       stack.push(childId)
       return true
     }
-    if (color[childId] === WHITE && isCyclicUtil(childId, color, adjList, stack))
+    if (
+      color[childId] === WHITE
+      && isCyclicUtil(childId, color, adjList, stack)
+    )
       return true
   }
   color[nodeId] = BLACK
@@ -77,8 +73,7 @@ const getCycleEdges = (nodes: Node[], edges: Edge[]) => {
     adjList[node.id] = []
   }
 
-  for (const edge of edges)
-    adjList[edge.source]?.push(edge.target)
+  for (const edge of edges) adjList[edge.source]?.push(edge.target)
 
   for (let i = 0; i < nodes.length; i++) {
     if (color[nodes[i].id] === WHITE)
@@ -118,10 +113,17 @@ export function getIterationStartNode(iterationId: string): Node {
   }).newNode
 }
 
-export function generateNewNode({ data, position, id, zIndex, type, ...rest }: Omit<Node, 'id'> & { id?: string }): {
-  newNode: Node
-  newIterationStartNode?: Node
-} {
+export function generateNewNode({
+  data,
+  position,
+  id,
+  zIndex,
+  type,
+  ...rest
+}: Omit<Node, 'id'> & { id?: string }): {
+    newNode: Node
+    newIterationStartNode?: Node
+  } {
   const newNode = {
     id: id || `${Date.now()}`,
     type: type || CUSTOM_NODE,
@@ -135,7 +137,8 @@ export function generateNewNode({ data, position, id, zIndex, type, ...rest }: O
 
   if (data.type === BlockEnum.Iteration) {
     const newIterationStartNode = getIterationStartNode(newNode.id);
-    (newNode.data as IterationNodeType).start_node_id = newIterationStartNode.id;
+    (newNode.data as IterationNodeType).start_node_id
+      = newIterationStartNode.id;
     (newNode.data as IterationNodeType)._children = [newIterationStartNode.id]
     return {
       newNode,
@@ -149,7 +152,9 @@ export function generateNewNode({ data, position, id, zIndex, type, ...rest }: O
 }
 
 export const preprocessNodesAndEdges = (nodes: Node[], edges: Edge[]) => {
-  const hasIterationNode = nodes.some(node => node.data.type === BlockEnum.Iteration)
+  const hasIterationNode = nodes.some(
+    node => node.data.type === BlockEnum.Iteration,
+  )
 
   if (!hasIterationNode) {
     return {
@@ -169,7 +174,10 @@ export const preprocessNodesAndEdges = (nodes: Node[], edges: Edge[]) => {
 
     if (currentNode.data.type === BlockEnum.Iteration) {
       if (currentNode.data.start_node_id) {
-        if (nodesMap[currentNode.data.start_node_id]?.type !== CUSTOM_ITERATION_START_NODE)
+        if (
+          nodesMap[currentNode.data.start_node_id]?.type
+          !== CUSTOM_ITERATION_START_NODE
+        )
           iterationNodesWithStartNode.push(currentNode)
       }
       else {
@@ -178,7 +186,10 @@ export const preprocessNodesAndEdges = (nodes: Node[], edges: Edge[]) => {
     }
   }
   const newIterationStartNodesMap = {} as Record<string, Node>
-  const newIterationStartNodes = [...iterationNodesWithStartNode, ...iterationNodesWithoutStartNode].map((iterationNode, index) => {
+  const newIterationStartNodes = [
+    ...iterationNodesWithStartNode,
+    ...iterationNodesWithoutStartNode,
+  ].map((iterationNode, index) => {
     const newNode = getIterationStartNode(iterationNode.id)
     newNode.id = newNode.id + index
     newIterationStartNodesMap[iterationNode.id] = newNode
@@ -209,8 +220,13 @@ export const preprocessNodesAndEdges = (nodes: Node[], edges: Edge[]) => {
     }
   })
   nodes.forEach((node) => {
-    if (node.data.type === BlockEnum.Iteration && newIterationStartNodesMap[node.id])
-      (node.data as IterationNodeType).start_node_id = newIterationStartNodesMap[node.id].id
+    if (
+      node.data.type === BlockEnum.Iteration
+      && newIterationStartNodesMap[node.id]
+    ) {
+      (node.data as IterationNodeType).start_node_id
+        = newIterationStartNodesMap[node.id].id
+    }
   })
 
   return {
@@ -220,7 +236,10 @@ export const preprocessNodesAndEdges = (nodes: Node[], edges: Edge[]) => {
 }
 
 export const initialNodes = (originNodes: Node[], originEdges: Edge[]) => {
-  const { nodes, edges } = preprocessNodesAndEdges(cloneDeep(originNodes), cloneDeep(originEdges))
+  const { nodes, edges } = preprocessNodesAndEdges(
+    cloneDeep(originNodes),
+    cloneDeep(originEdges),
+  )
   const firstNode = nodes[0]
 
   if (!firstNode?.position) {
@@ -236,8 +255,7 @@ export const initialNodes = (originNodes: Node[], originEdges: Edge[]) => {
     if (node.parentId) {
       if (acc[node.parentId])
         acc[node.parentId].push(node.id)
-      else
-        acc[node.parentId] = [node.id]
+      else acc[node.parentId] = [node.id]
     }
     return acc
   }, {} as Record<string, string[]>)
@@ -247,8 +265,12 @@ export const initialNodes = (originNodes: Node[], originEdges: Edge[]) => {
       node.type = CUSTOM_NODE
 
     const connectedEdges = getConnectedEdges([node], edges)
-    node.data._connectedSourceHandleIds = connectedEdges.filter(edge => edge.source === node.id).map(edge => edge.sourceHandle || 'source')
-    node.data._connectedTargetHandleIds = connectedEdges.filter(edge => edge.target === node.id).map(edge => edge.targetHandle || 'target')
+    node.data._connectedSourceHandleIds = connectedEdges
+      .filter(edge => edge.source === node.id)
+      .map(edge => edge.sourceHandle || 'source')
+    node.data._connectedTargetHandleIds = connectedEdges
+      .filter(edge => edge.target === node.id)
+      .map(edge => edge.targetHandle || 'target')
 
     if (node.data.type === BlockEnum.IfElse) {
       const nodeData = node.data as IfElseNodeType
@@ -263,13 +285,18 @@ export const initialNodes = (originNodes: Node[], originEdges: Edge[]) => {
         ]
       }
       node.data._targetBranches = branchNameCorrect([
-        ...(node.data as IfElseNodeType).cases.map(item => ({ id: item.case_id, name: '' })),
+        ...(node.data as IfElseNodeType).cases.map(item => ({
+          id: item.case_id,
+          name: '',
+        })),
         { id: 'false', name: '' },
       ])
     }
 
     if (node.data.type === BlockEnum.QuestionClassifier) {
-      node.data._targetBranches = (node.data as QuestionClassifierNodeType).classes.map((topic) => {
+      node.data._targetBranches = (
+        node.data as QuestionClassifierNodeType
+      ).classes.map((topic) => {
         return topic
       })
     }
@@ -279,27 +306,8 @@ export const initialNodes = (originNodes: Node[], originEdges: Edge[]) => {
       iterationNodeData._children = iterationNodeMap[node.id] || []
       iterationNodeData.is_parallel = iterationNodeData.is_parallel || false
       iterationNodeData.parallel_nums = iterationNodeData.parallel_nums || 10
-      iterationNodeData.error_handle_mode = iterationNodeData.error_handle_mode || ErrorHandleMode.Terminated
-    }
-
-    // legacy provider handle
-    if (node.data.type === BlockEnum.LLM)
-      (node as any).data.model.provider = correctModelProvider((node as any).data.model.provider)
-
-    if (node.data.type === BlockEnum.KnowledgeRetrieval && (node as any).data.multiple_retrieval_config?.reranking_model)
-      (node as any).data.multiple_retrieval_config.reranking_model.provider = correctModelProvider((node as any).data.multiple_retrieval_config?.reranking_model.provider)
-
-    if (node.data.type === BlockEnum.QuestionClassifier)
-      (node as any).data.model.provider = correctModelProvider((node as any).data.model.provider)
-
-    if (node.data.type === BlockEnum.ParameterExtractor)
-      (node as any).data.model.provider = correctModelProvider((node as any).data.model.provider)
-    if (node.data.type === BlockEnum.HttpRequest && !node.data.retry_config) {
-      node.data.retry_config = {
-        retry_enabled: true,
-        max_retries: DEFAULT_RETRY_MAX,
-        retry_interval: DEFAULT_RETRY_INTERVAL,
-      }
+      iterationNodeData.error_handle_mode
+        = iterationNodeData.error_handle_mode || ErrorHandleMode.Terminated
     }
 
     return node
@@ -307,7 +315,10 @@ export const initialNodes = (originNodes: Node[], originEdges: Edge[]) => {
 }
 
 export const initialEdges = (originEdges: Edge[], originNodes: Node[]) => {
-  const { nodes, edges } = preprocessNodesAndEdges(cloneDeep(originNodes), cloneDeep(originEdges))
+  const { nodes, edges } = preprocessNodesAndEdges(
+    cloneDeep(originNodes),
+    cloneDeep(originEdges),
+  )
   let selectedNode: Node | null = null
   const nodesMap = nodes.reduce((acc, node) => {
     acc[node.id] = node
@@ -319,47 +330,57 @@ export const initialEdges = (originEdges: Edge[], originNodes: Node[]) => {
   }, {} as Record<string, Node>)
 
   const cycleEdges = getCycleEdges(nodes, edges)
-  return edges.filter((edge) => {
-    return !cycleEdges.find(cycEdge => cycEdge.source === edge.source && cycEdge.target === edge.target)
-  }).map((edge) => {
-    edge.type = 'custom'
+  return edges
+    .filter((edge) => {
+      return !cycleEdges.find(
+        cycEdge =>
+          cycEdge.source === edge.source && cycEdge.target === edge.target,
+      )
+    })
+    .map((edge) => {
+      edge.type = 'custom'
 
-    if (!edge.sourceHandle)
-      edge.sourceHandle = 'source'
+      if (!edge.sourceHandle)
+        edge.sourceHandle = 'source'
 
-    if (!edge.targetHandle)
-      edge.targetHandle = 'target'
+      if (!edge.targetHandle)
+        edge.targetHandle = 'target'
 
-    if (!edge.data?.sourceType && edge.source && nodesMap[edge.source]) {
-      edge.data = {
-        ...edge.data,
-        sourceType: nodesMap[edge.source].data.type!,
-      } as any
-    }
+      if (!edge.data?.sourceType && edge.source && nodesMap[edge.source]) {
+        edge.data = {
+          ...edge.data,
+          sourceType: nodesMap[edge.source].data.type!,
+        } as any
+      }
 
-    if (!edge.data?.targetType && edge.target && nodesMap[edge.target]) {
-      edge.data = {
-        ...edge.data,
-        targetType: nodesMap[edge.target].data.type!,
-      } as any
-    }
+      if (!edge.data?.targetType && edge.target && nodesMap[edge.target]) {
+        edge.data = {
+          ...edge.data,
+          targetType: nodesMap[edge.target].data.type!,
+        } as any
+      }
 
-    if (selectedNode) {
-      edge.data = {
-        ...edge.data,
-        _connectedNodeIsSelected: edge.source === selectedNode.id || edge.target === selectedNode.id,
-      } as any
-    }
+      if (selectedNode) {
+        edge.data = {
+          ...edge.data,
+          _connectedNodeIsSelected:
+            edge.source === selectedNode.id || edge.target === selectedNode.id,
+        } as any
+      }
 
-    return edge
-  })
+      return edge
+    })
 }
 
 export const getLayoutByDagre = (originNodes: Node[], originEdges: Edge[]) => {
   const dagreGraph = new dagre.graphlib.Graph()
   dagreGraph.setDefaultEdgeLabel(() => ({}))
-  const nodes = cloneDeep(originNodes).filter(node => !node.parentId && node.type === CUSTOM_NODE)
-  const edges = cloneDeep(originEdges).filter(edge => !edge.data?.isInIteration)
+  const nodes = cloneDeep(originNodes).filter(
+    node => !node.parentId && node.type === CUSTOM_NODE,
+  )
+  const edges = cloneDeep(originEdges).filter(
+    edge => !edge.data?.isInIteration,
+  )
   dagreGraph.setGraph({
     rankdir: 'LR',
     align: 'UL',
@@ -386,7 +407,8 @@ export const getLayoutByDagre = (originNodes: Node[], originEdges: Edge[]) => {
 }
 
 export const canRunBySingle = (nodeType: BlockEnum) => {
-  return nodeType === BlockEnum.LLM
+  return (
+    nodeType === BlockEnum.LLM
     || nodeType === BlockEnum.KnowledgeRetrieval
     || nodeType === BlockEnum.Code
     || nodeType === BlockEnum.TemplateTransform
@@ -395,56 +417,83 @@ export const canRunBySingle = (nodeType: BlockEnum) => {
     || nodeType === BlockEnum.Tool
     || nodeType === BlockEnum.ParameterExtractor
     || nodeType === BlockEnum.Iteration
-    || nodeType === BlockEnum.Agent
-    || nodeType === BlockEnum.DocExtractor
+  )
 }
 
 type ConnectedSourceOrTargetNodesChange = {
   type: string
   edge: Edge
 }[]
-export const getNodesConnectedSourceOrTargetHandleIdsMap = (changes: ConnectedSourceOrTargetNodesChange, nodes: Node[]) => {
+export const getNodesConnectedSourceOrTargetHandleIdsMap = (
+  changes: ConnectedSourceOrTargetNodesChange,
+  nodes: Node[],
+) => {
   const nodesConnectedSourceOrTargetHandleIdsMap = {} as Record<string, any>
 
   changes.forEach((change) => {
-    const {
-      edge,
-      type,
-    } = change
+    const { edge, type } = change
     const sourceNode = nodes.find(node => node.id === edge.source)!
     if (sourceNode) {
-      nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id] = nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id] || {
-        _connectedSourceHandleIds: [...(sourceNode?.data._connectedSourceHandleIds || [])],
-        _connectedTargetHandleIds: [...(sourceNode?.data._connectedTargetHandleIds || [])],
-      }
+      nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id]
+        = nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id] || {
+          _connectedSourceHandleIds: [
+            ...(sourceNode?.data._connectedSourceHandleIds || []),
+          ],
+          _connectedTargetHandleIds: [
+            ...(sourceNode?.data._connectedTargetHandleIds || []),
+          ],
+        }
     }
 
     const targetNode = nodes.find(node => node.id === edge.target)!
     if (targetNode) {
-      nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id] = nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id] || {
-        _connectedSourceHandleIds: [...(targetNode?.data._connectedSourceHandleIds || [])],
-        _connectedTargetHandleIds: [...(targetNode?.data._connectedTargetHandleIds || [])],
-      }
+      nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id]
+        = nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id] || {
+          _connectedSourceHandleIds: [
+            ...(targetNode?.data._connectedSourceHandleIds || []),
+          ],
+          _connectedTargetHandleIds: [
+            ...(targetNode?.data._connectedTargetHandleIds || []),
+          ],
+        }
     }
 
     if (sourceNode) {
       if (type === 'remove') {
-        const index = nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id]._connectedSourceHandleIds.findIndex((handleId: string) => handleId === edge.sourceHandle)
-        nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id]._connectedSourceHandleIds.splice(index, 1)
+        const index = nodesConnectedSourceOrTargetHandleIdsMap[
+          sourceNode.id
+        ]._connectedSourceHandleIds.findIndex(
+          (handleId: string) => handleId === edge.sourceHandle,
+        )
+        nodesConnectedSourceOrTargetHandleIdsMap[
+          sourceNode.id
+        ]._connectedSourceHandleIds.splice(index, 1)
       }
 
-      if (type === 'add')
-        nodesConnectedSourceOrTargetHandleIdsMap[sourceNode.id]._connectedSourceHandleIds.push(edge.sourceHandle || 'source')
+      if (type === 'add') {
+        nodesConnectedSourceOrTargetHandleIdsMap[
+          sourceNode.id
+        ]._connectedSourceHandleIds.push(edge.sourceHandle || 'source')
+      }
     }
 
     if (targetNode) {
       if (type === 'remove') {
-        const index = nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id]._connectedTargetHandleIds.findIndex((handleId: string) => handleId === edge.targetHandle)
-        nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id]._connectedTargetHandleIds.splice(index, 1)
+        const index = nodesConnectedSourceOrTargetHandleIdsMap[
+          targetNode.id
+        ]._connectedTargetHandleIds.findIndex(
+          (handleId: string) => handleId === edge.targetHandle,
+        )
+        nodesConnectedSourceOrTargetHandleIdsMap[
+          targetNode.id
+        ]._connectedTargetHandleIds.splice(index, 1)
       }
 
-      if (type === 'add')
-        nodesConnectedSourceOrTargetHandleIdsMap[targetNode.id]._connectedTargetHandleIds.push(edge.targetHandle || 'target')
+      if (type === 'add') {
+        nodesConnectedSourceOrTargetHandleIdsMap[
+          targetNode.id
+        ]._connectedTargetHandleIds.push(edge.targetHandle || 'target')
+      }
     }
   })
 
@@ -457,7 +506,7 @@ export const genNewNodeTitleFromOld = (oldTitle: string) => {
 
   if (match) {
     const title = match[1]
-    const num = Number.parseInt(match[2], 10)
+    const num = parseInt(match[2], 10)
     return `${title} (${num + 1})`
   }
   else {
@@ -516,27 +565,46 @@ export const getToolCheckParams = (
 ) => {
   const { provider_id, provider_type, tool_name } = toolData
   const isBuiltIn = provider_type === CollectionType.builtIn
-  const currentTools = provider_type === CollectionType.builtIn ? buildInTools : provider_type === CollectionType.custom ? customTools : workflowTools
-  const currCollection = currentTools.find(item => canFindTool(item.id, provider_id))
-  const currTool = currCollection?.tools.find(tool => tool.name === tool_name)
-  const formSchemas = currTool ? toolParametersToFormSchemas(currTool.parameters) : []
-  const toolInputVarSchema = formSchemas.filter((item: any) => item.form === 'llm')
-  const toolSettingSchema = formSchemas.filter((item: any) => item.form !== 'llm')
+  const currentTools
+    = provider_type === CollectionType.builtIn
+      ? buildInTools
+      : provider_type === CollectionType.custom
+        ? customTools
+        : workflowTools
+  const currCollection = currentTools?.find(item => item?.id === provider_id)
+  const currTool = currCollection?.tools?.find(
+    tool => tool?.name === tool_name,
+  )
+  const formSchemas = currTool
+    ? toolParametersToFormSchemas(currTool.parameters)
+    : []
+  const toolInputVarSchema = formSchemas.filter(
+    (item: any) => item?.form === 'llm',
+  )
+  const toolSettingSchema = formSchemas.filter(
+    (item: any) => item?.form !== 'llm',
+  )
 
   return {
     toolInputsSchema: (() => {
       const formInputs: InputVar[] = []
       toolInputVarSchema.forEach((item: any) => {
-        formInputs.push({
-          label: item.label[language] || item.label.en_US,
-          variable: item.variable,
-          type: item.type,
-          required: item.required,
-        })
+        if (item?.label) {
+          formInputs.push({
+            label:
+              item.label[language] || item.label.en_US || item.variable || '',
+            variable: item.variable,
+            type: item.type,
+            required: item.required,
+          })
+        }
       })
       return formInputs
     })(),
-    notAuthed: isBuiltIn && !!currCollection?.allow_delete && !currCollection?.is_team_authorization,
+    notAuthed:
+      isBuiltIn
+      && !!currCollection?.allow_delete
+      && !currCollection?.is_team_authorization,
     toolSettingSchema,
     language,
   }
@@ -574,7 +642,6 @@ export const isMac = () => {
 const specialKeysNameMap: Record<string, string | undefined> = {
   ctrl: '⌘',
   alt: '⌥',
-  shift: '⇧',
 }
 
 export const getKeyboardKeyNameBySystem = (key: string) => {
@@ -621,11 +688,37 @@ export const isEventTargetInputArea = (target: HTMLElement) => {
     return true
 }
 
-export const variableTransformer = (v: ValueSelector | string) => {
-  if (typeof v === 'string')
-    return v.replace(/^{{#|#}}$/g, '').split('.')
+export const variableTransformer = (
+  v: ValueSelector | string | null | undefined,
+): string[] | string => {
+  if (!v)
+    return []
 
-  return `{{#${v.join('.')}#}}`
+  if (typeof v === 'string') {
+    try {
+      const result = v.replace(/^{{#|#}}$/g, '').split('.')
+      return Array.isArray(result) ? result : []
+    }
+    catch (error) {
+      console.error('Error in variableTransformer:', error)
+      return []
+    }
+  }
+
+  if (Array.isArray(v)) {
+    try {
+      if (v.every(item => typeof item === 'string'))
+        return `{{#${v.join('.')}#}}`
+
+      return ''
+    }
+    catch (error) {
+      console.error('Error in variableTransformer:', error)
+      return ''
+    }
+  }
+
+  return []
 }
 
 type ParallelInfoItem = {
@@ -646,7 +739,11 @@ type NodeStreamInfo = {
   upstreamNodes: Set<string>
   downstreamEdges: Set<string>
 }
-export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: string) => {
+export const getParallelInfo = (
+  nodes: Node[],
+  edges: Edge[],
+  parentNodeId?: string,
+) => {
   let startNode
 
   if (parentNodeId) {
@@ -654,7 +751,9 @@ export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: str
     if (!parentNode)
       throw new Error('Parent node not found')
 
-    startNode = nodes.find(node => node.id === (parentNode.data as IterationNodeType).start_node_id)
+    startNode = nodes.find(
+      node => node.id === (parentNode.data as IterationNodeType).start_node_id,
+    )
   }
   else {
     startNode = nodes.find(node => node.data.type === BlockEnum.Start)
@@ -684,11 +783,17 @@ export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: str
 
     while (nextHandles.length) {
       const currentNodeHandle = nextHandles.shift()!
-      const { node: currentNode, handle: currentHandle = 'source' } = currentNodeHandle
+      const { node: currentNode, handle: currentHandle = 'source' }
+        = currentNodeHandle
       const currentNodeHandleKey = currentNode.id
-      const connectedEdges = edges.filter(edge => edge.source === currentNode.id && edge.sourceHandle === currentHandle)
+      const connectedEdges = edges.filter(
+        edge =>
+          edge.source === currentNode.id && edge.sourceHandle === currentHandle,
+      )
       const connectedEdgesLength = connectedEdges.length
-      const outgoers = nodes.filter(node => connectedEdges.some(edge => edge.target === node.id))
+      const outgoers = nodes.filter(node =>
+        connectedEdges.some(edge => edge.target === node.id),
+      )
       const incomers = getIncomers(currentNode, nodes, edges)
 
       if (!streamInfo[currentNodeHandleKey]) {
@@ -715,7 +820,10 @@ export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: str
         parallelListItem.depth = nodeParallelInfoMap[currentNode.id].depth
 
       outgoers.forEach((outgoer) => {
-        const outgoerConnectedEdges = getConnectedEdges([outgoer], edges).filter(edge => edge.source === outgoer.id)
+        const outgoerConnectedEdges = getConnectedEdges(
+          [outgoer],
+          edges,
+        ).filter(edge => edge.source === outgoer.id)
         const sourceEdgesGroup = groupBy(outgoerConnectedEdges, 'sourceHandle')
         const incomers = getIncomers(outgoer, nodes, edges)
 
@@ -751,7 +859,9 @@ export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: str
         }
 
         if (connectedEdgesLength > 1) {
-          const edge = connectedEdges.find(edge => edge.target === outgoer.id)!
+          const edge = connectedEdges.find(
+            edge => edge.target === outgoer.id,
+          )!
           nodeEdgesSet[outgoerKey].add(edge.id)
           totalEdgesSet.add(edge.id)
 
@@ -767,13 +877,17 @@ export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: str
           const prevDepth = nodeParallelInfoMap[currentNode.id].depth + 1
           const currentDepth = nodeParallelInfoMap[outgoer.id].depth
 
-          nodeParallelInfoMap[outgoer.id].depth = Math.max(prevDepth, currentDepth)
+          nodeParallelInfoMap[outgoer.id].depth = Math.max(
+            prevDepth,
+            currentDepth,
+          )
         }
         else {
           for (const item of streamInfo[currentNodeHandleKey].upstreamNodes)
             streamInfo[outgoerKey].upstreamNodes.add(item)
 
-          nodeParallelInfoMap[outgoer.id].depth = nodeParallelInfoMap[currentNode.id].depth
+          nodeParallelInfoMap[outgoer.id].depth
+            = nodeParallelInfoMap[currentNode.id].depth
         }
       })
     }
@@ -792,37 +906,8 @@ export const getParallelInfo = (nodes: Node[], edges: Edge[], parentNodeId?: str
   }
 }
 
-export const hasErrorHandleNode = (nodeType?: BlockEnum) => {
-  return nodeType === BlockEnum.LLM || nodeType === BlockEnum.Tool || nodeType === BlockEnum.HttpRequest || nodeType === BlockEnum.Code
-}
-
-export const getEdgeColor = (nodeRunningStatus?: NodeRunningStatus, isFailBranch?: boolean) => {
-  if (nodeRunningStatus === NodeRunningStatus.Succeeded)
-    return 'var(--color-workflow-link-line-success-handle)'
-
-  if (nodeRunningStatus === NodeRunningStatus.Failed)
-    return 'var(--color-workflow-link-line-error-handle)'
-
-  if (nodeRunningStatus === NodeRunningStatus.Exception)
-    return 'var(--color-workflow-link-line-failure-handle)'
-
-  if (nodeRunningStatus === NodeRunningStatus.Running) {
-    if (isFailBranch)
-      return 'var(--color-workflow-link-line-failure-handle)'
-
-    return 'var(--color-workflow-link-line-handle)'
-  }
-
-  return 'var(--color-workflow-link-line-normal)'
-}
-
-export const isExceptionVariable = (variable: string, nodeType?: BlockEnum) => {
-  if ((variable === 'error_message' || variable === 'error_type') && hasErrorHandleNode(nodeType))
-    return true
-
-  return false
-}
-
-export const hasRetryNode = (nodeType?: BlockEnum) => {
-  return nodeType === BlockEnum.LLM || nodeType === BlockEnum.Tool || nodeType === BlockEnum.HttpRequest || nodeType === BlockEnum.Code
+export const isValueSelector = (
+  v: ValueSelector | string | null | undefined,
+): v is ValueSelector => {
+  return Array.isArray(v) && v.every(item => typeof item === 'string')
 }

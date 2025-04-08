@@ -1,0 +1,23 @@
+.iconWrapper {
+    width: 32px;
+    height: 32px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 6px;
+}
+
+.appIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
+
+.dynamicBackground {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
