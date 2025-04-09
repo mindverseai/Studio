@@ -11,7 +11,7 @@ mkdir -p ${BACKUP_DIR}
 echo "Starting backup creation..."
 
 # Find the PostgreSQL container
-DB_CONTAINER=$(docker ps --filter "name=sandbox" --format "{{.Names}}")
+DB_CONTAINER=$(docker ps --filter "name=db" --format "{{.Names}}")
 
 if [ -z "$DB_CONTAINER" ]; then
     echo "❌ Error: Could not find the PostgreSQL container. Please make sure it's running."
