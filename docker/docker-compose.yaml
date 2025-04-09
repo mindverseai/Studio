@@ -367,7 +367,10 @@ services:
     volumes:
       - ./volumes/db/data:/var/lib/postgresql/data
     healthcheck:
-      test: ["pg_isready"]
+      test: ["CMD", "pg_isready"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   # The redis cache.
   redis:
@@ -854,25 +857,6 @@ services:
       - NGINX_PORT=${NGINX_PORT:-80}
     entrypoint: ["/docker-entrypoint.sh"]
     command: ["nginx", "-g", "daemon off;"]
-
-  backup:
-    image: alpine:latest
-    volumes:
-      - ./scripts/backup:/root/backups
-      - ./volumes/backups:/root/backups/data
-      - ./volumes/logs:/var/log
-    command: >
-      sh -c "
-        mkdir -p /root/backups/data /var/log &&
-        chmod +x /root/backups/backup.sh /root/backups/setup_cron.sh &&
-        /root/backups/setup_cron.sh &&
-        crond -f -l 8
-      "
-    restart: unless-stopped
-    depends_on:
-      - db
-    networks:
-      - dify-network
 
 networks:
   # create a network between sandbox, api and ssrf_proxy, and can not access outside.
