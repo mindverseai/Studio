@@ -11,7 +11,7 @@ mkdir -p ${BACKUP_DIR}
 echo "Starting backup creation..."
 
 # Find the PostgreSQL container
-DB_CONTAINER=$(docker ps --filter "name=db" --format "{{.Names}}")
+DB_CONTAINER=$(docker ps --filter "name=sandbox" --format "{{.Names}}")
 
 if [ -z "$DB_CONTAINER" ]; then
     echo "❌ Error: Could not find the PostgreSQL container. Please make sure it's running."
@@ -22,10 +22,8 @@ fi
 echo "📦 Found database container: ${DB_CONTAINER}"
 
 # Create the backup
-docker exec ${DB_CONTAINER} pg_dump -U postgres dify > ${BACKUP_FILE}
-
-# Check if backup was successful
-if [ $? -eq 0 ]; then
+echo "🔄 Creating backup..."
+if docker exec ${DB_CONTAINER} pg_dump -U postgres dify > ${BACKUP_FILE}; then
     # Get backup size
     BACKUP_SIZE=$(ls -lh ${BACKUP_FILE} | awk '{print $5}')
     echo "✅ Backup created successfully!"
@@ -40,6 +38,6 @@ if [ $? -eq 0 ]; then
         echo "⚠️ Backup file created but verification incomplete"
     fi
 else
-    echo "❌ Backup failed!"
+    echo "❌ Backup failed! Error code: $?"
     exit 1
 fi
