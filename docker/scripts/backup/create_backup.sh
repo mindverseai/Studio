@@ -10,8 +10,19 @@ mkdir -p ${BACKUP_DIR}
 
 echo "Starting backup creation..."
 
+# Find the PostgreSQL container
+DB_CONTAINER=$(docker ps --filter "name=db" --format "{{.Names}}")
+
+if [ -z "$DB_CONTAINER" ]; then
+    echo "❌ Error: Could not find the PostgreSQL container. Please make sure it's running."
+    echo "Try running: docker ps | grep postgres"
+    exit 1
+fi
+
+echo "📦 Found database container: ${DB_CONTAINER}"
+
 # Create the backup
-docker exec docker_db_1 pg_dump -U postgres dify > ${BACKUP_FILE}
+docker exec ${DB_CONTAINER} pg_dump -U postgres dify > ${BACKUP_FILE}
 
 # Check if backup was successful
 if [ $? -eq 0 ]; then
