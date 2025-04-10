@@ -19,10 +19,20 @@ if echo "$CERTBOT_STATUS" | grep -q "Restarting"; then
     exit 0
 fi
 
+# Try to find the .env file in both possible locations
+if [ -f "/root/Studio/docker/.env" ]; then
+    ENV_FILE="/root/Studio/docker/.env"
+elif [ -f "/root/Mindverse-Studio/docker/.env" ]; then
+    ENV_FILE="/root/Mindverse-Studio/docker/.env"
+else
+    log "ERROR: Could not find .env file in either /root/Studio/docker/ or /root/Mindverse-Studio/docker/"
+    exit 1
+fi
+
 # Get the domain from the environment
-DOMAIN=$(grep -o 'DOMAIN=.*' .env | cut -d'=' -f2)
+DOMAIN=$(grep -o 'DOMAIN=.*' "$ENV_FILE" | cut -d'=' -f2)
 if [ -z "$DOMAIN" ]; then
-    log "ERROR: DOMAIN not found in .env file"
+    log "ERROR: DOMAIN not found in $ENV_FILE"
     exit 1
 fi
 
