@@ -41,7 +41,7 @@ sed -e "s|\${CERTBOT_EMAIL}|$CERTBOT_EMAIL|g" \
 chmod +x /update-cert.sh
 
 obtain_or_renew_cert() {
-    certbot certonly --webroot --webroot-path /var/www/html \
+    certbot certonly --non-interactive --webroot --webroot-path /var/www/html \
         -d "$CERTBOT_DOMAIN" \
         -m "$CERTBOT_EMAIL" \
         --agree-tos \
