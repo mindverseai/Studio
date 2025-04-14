@@ -10,18 +10,8 @@ server {
         try_files $uri =404;
     }
     
-    # API service
-    location /api/ {
-        proxy_pass http://docker_api_1:5001/;
-    }
-    
-    # Web service
+    # Redirect all HTTP traffic to HTTPS
     location / {
-        proxy_pass http://docker_web_1:3000/;
-    }
-    
-    # Redirect all other HTTP traffic to HTTPS if HTTPS is enabled
-    if ($scheme != "https") {
         return 301 https://$host$request_uri;
     }
 }

@@ -1,3 +1,5 @@
+# Please do not directly edit this file. Instead, modify the .env variables related to NGINX configuration.
+
 server {
     listen ${NGINX_SSL_PORT} ssl;
     server_name ${NGINX_SERVER_NAME};
@@ -22,13 +24,21 @@ server {
     # Proxy settings
     include /etc/nginx/proxy.conf;
 
+    # Include ACME challenge location for Let's Encrypt
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+        try_files $uri =404;
+    }
+
     # API service
     location /api/ {
-        proxy_pass http://docker_api_1:5001/;
+        proxy_pass http://docker-api-1:5001/;
+        include /etc/nginx/proxy.conf;
     }
 
     # Web service
     location / {
-        proxy_pass http://docker_web_1:3000/;
+        proxy_pass http://docker-web-1:3000/;
+        include /etc/nginx/proxy.conf;
     }
 } 

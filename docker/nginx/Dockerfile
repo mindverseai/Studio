@@ -1,12 +1,11 @@
-FROM nginx:latest
-
-# Install envsubst
-RUN apt-get update && apt-get install -y gettext-base && rm -rf /var/lib/apt/lists/*
+FROM nginx:1.25-alpine
 
 # Create required directories
-RUN mkdir -p /docker-entrypoint.d/conf.d
+RUN mkdir -p /docker-entrypoint.d/conf.d \
+    && mkdir -p /var/www/html \
+    && mkdir -p /etc/letsencrypt
 
-# Copy configuration templates
+# Copy configuration files
 COPY conf.d/default.conf.template /docker-entrypoint.d/conf.d/
 COPY conf.d/https.conf.template /docker-entrypoint.d/conf.d/
 COPY nginx.conf.template /docker-entrypoint.d/
