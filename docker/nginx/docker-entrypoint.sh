@@ -1,39 +1,30 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
+# Create required directories
+mkdir -p /var/www/html
+mkdir -p /etc/letsencrypt
+
+# Generate nginx configuration
+envsubst '${NGINX_SERVER_NAME} ${NGINX_HTTPS_ENABLED} ${NGINX_SSL_PORT} ${NGINX_PORT} ${NGINX_SSL_CERT_FILENAME} ${NGINX_SSL_CERT_KEY_FILENAME} ${NGINX_SSL_PROTOCOLS} ${NGINX_WORKER_PROCESSES} ${NGINX_CLIENT_MAX_BODY_SIZE} ${NGINX_KEEPALIVE_TIMEOUT} ${NGINX_PROXY_READ_TIMEOUT} ${NGINX_PROXY_SEND_TIMEOUT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
+# Generate proxy configuration
+envsubst '${NGINX_PROXY_READ_TIMEOUT} ${NGINX_PROXY_SEND_TIMEOUT}' < /etc/nginx/proxy.conf.template > /etc/nginx/proxy.conf
+
+# Generate HTTPS configuration if enabled
 if [ "${NGINX_HTTPS_ENABLED}" = "true" ]; then
-    # Check if the certificate and key files for the specified domain exist
-    if [ -n "${CERTBOT_DOMAIN}" ] && \
-       [ -f "/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}" ] && \
-       [ -f "/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}" ]; then
-        SSL_CERTIFICATE_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_FILENAME}"
-        SSL_CERTIFICATE_KEY_PATH="/etc/letsencrypt/live/${CERTBOT_DOMAIN}/${NGINX_SSL_CERT_KEY_FILENAME}"
+    # Check if we have certbot certificates
+    if [ -d "/etc/letsencrypt/live/${CERTBOT_DOMAIN}" ]; then
+        # Use certbot certificates
+        envsubst '${NGINX_SERVER_NAME} ${NGINX_SSL_PORT} ${NGINX_SSL_PROTOCOLS}' < /etc/nginx/https.conf.template | \
+        sed -e "s|ssl_certificate.*|ssl_certificate /etc/letsencrypt/live/${CERTBOT_DOMAIN}/fullchain.pem;|" \
+            -e "s|ssl_certificate_key.*|ssl_certificate_key /etc/letsencrypt/live/${CERTBOT_DOMAIN}/privkey.pem;|" \
+            > /etc/nginx/conf.d/https.conf
     else
-        SSL_CERTIFICATE_PATH="/etc/ssl/${NGINX_SSL_CERT_FILENAME}"
-        SSL_CERTIFICATE_KEY_PATH="/etc/ssl/${NGINX_SSL_CERT_KEY_FILENAME}"
+        # Use default certificates
+        envsubst '${NGINX_SERVER_NAME} ${NGINX_SSL_PORT} ${NGINX_SSL_PROTOCOLS} ${NGINX_SSL_CERT_FILENAME} ${NGINX_SSL_CERT_KEY_FILENAME}' < /etc/nginx/https.conf.template > /etc/nginx/conf.d/https.conf
     fi
-    export SSL_CERTIFICATE_PATH
-    export SSL_CERTIFICATE_KEY_PATH
-
-    # set the HTTPS_CONFIG environment variable to the content of the https.conf.template
-    HTTPS_CONFIG=$(envsubst < /etc/nginx/https.conf.template)
-    export HTTPS_CONFIG
-    # Substitute the HTTPS_CONFIG in the default.conf.template with content from https.conf.template
-    envsubst '${HTTPS_CONFIG}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 fi
 
-if [ "${NGINX_ENABLE_CERTBOT_CHALLENGE}" = "true" ]; then
-    ACME_CHALLENGE_LOCATION='location /.well-known/acme-challenge/ { root /var/www/html; }'
-else
-    ACME_CHALLENGE_LOCATION=''
-fi
-export ACME_CHALLENGE_LOCATION
-
-env_vars=$(printenv | cut -d= -f1 | sed 's/^/$/g' | paste -sd, -)
-
-envsubst "$env_vars" < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
-envsubst "$env_vars" < /etc/nginx/proxy.conf.template > /etc/nginx/proxy.conf
-
-envsubst < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
-
-# Start Nginx using the default entrypoint
+# Start nginx
 exec nginx -g 'daemon off;'

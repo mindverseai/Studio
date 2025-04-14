@@ -1,30 +1,42 @@
 #!/bin/sh
 set -e
 
-printf '%s\n' "Docker entrypoint script is running"
+# Create required directories
+mkdir -p /var/www/html
+mkdir -p /etc/letsencrypt
 
-printf '%s\n' "\nChecking specific environment variables:"
-printf '%s\n' "CERTBOT_EMAIL: ${CERTBOT_EMAIL:-Not set}"
-printf '%s\n' "CERTBOT_DOMAIN: ${CERTBOT_DOMAIN:-Not set}"
-printf '%s\n' "CERTBOT_OPTIONS: ${CERTBOT_OPTIONS:-Not set}"
-
-printf '%s\n' "\nChecking mounted directories:"
-for dir in "/etc/letsencrypt" "/var/www/html" "/var/log/letsencrypt"; do
-    if [ -d "$dir" ]; then
-        printf '%s\n' "$dir exists. Contents:"
-        ls -la "$dir"
-    else
-        printf '%s\n' "$dir does not exist."
+# Function to check if certificate exists and is valid
+check_certificate() {
+    if [ -d "/etc/letsencrypt/live/${CERTBOT_DOMAIN}" ]; then
+        # Check if certificate is valid (not expired)
+        if ! openssl x509 -noout -dates -in "/etc/letsencrypt/live/${CERTBOT_DOMAIN}/fullchain.pem" | grep -q "notAfter"; then
+            return 1
+        fi
+        return 0
     fi
-done
+    return 1
+}
 
-printf '%s\n' "\nGenerating update-cert.sh from template"
-sed -e "s|\${CERTBOT_EMAIL}|$CERTBOT_EMAIL|g" \
-    -e "s|\${CERTBOT_DOMAIN}|$CERTBOT_DOMAIN|g" \
-    -e "s|\${CERTBOT_OPTIONS}|$CERTBOT_OPTIONS|g" \
-    /update-cert.template.txt > /update-cert.sh
+# Function to obtain certificate
+obtain_certificate() {
+    certbot certonly --webroot \
+        --webroot-path=/var/www/html \
+        --email "${CERTBOT_EMAIL}" \
+        --agree-tos \
+        --no-eff-email \
+        --force-renewal \
+        --non-interactive \
+        --domain "${CERTBOT_DOMAIN}" \
+        ${CERTBOT_OPTIONS}
+}
 
-chmod +x /update-cert.sh
+# Main logic
+if ! check_certificate; then
+    echo "No valid certificate found. Obtaining new certificate..."
+    obtain_certificate
+else
+    echo "Valid certificate found."
+fi
 
-printf '%s\n' "\nExecuting command:" "$@"
+# Keep container running
 exec "$@"
