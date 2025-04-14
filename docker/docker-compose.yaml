@@ -640,7 +640,9 @@ services:
   # The nginx reverse proxy.
   # used for reverse proxying the API service and Web service.
   nginx:
-    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     restart: always
     volumes:
       - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
