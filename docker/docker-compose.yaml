@@ -503,6 +503,34 @@ services:
     ports:
       - '${EXPOSE_DB_PORT:-5432}:5432'
 
+  # Database backup service
+  backup:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - ./scripts/backup:/root/backups/scripts:ro
+      - ./volumes/backups:/root/backups/data
+      - ./volumes/logs:/var/log
+    command: >
+      sh -c "
+        mkdir -p /root/backups/data /var/log &&
+        cp /root/backups/scripts/backup.sh /root/backups/backup.sh &&
+        cp /root/backups/scripts/setup_cron.sh /root/backups/setup_cron.sh &&
+        chmod +x /root/backups/backup.sh &&
+        chmod +x /root/backups/setup_cron.sh &&
+        /root/backups/setup_cron.sh &&
+        crond -f -l 8
+      "
+    depends_on:
+      - db
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:-difyai123456}
+      PGDATABASE: dify
+    networks:
+      - default
+
   # The redis cache.
   redis:
     image: redis:6-alpine
