@@ -1,48 +1,27 @@
 # Please do not directly edit this file. Instead, modify the .env variables related to NGINX configuration.
 
 server {
-    listen ${NGINX_PORT};
+    listen 80;
     server_name ${NGINX_SERVER_NAME};
-
-    location /console/api {
-      proxy_pass http://api:5001;
-      include proxy.conf;
+    
+    # Include ACME challenge location for Let's Encrypt
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+        try_files $uri =404;
     }
-
-    location /api {
-      proxy_pass http://api:5001;
-      include proxy.conf;
+    
+    # API service
+    location /api/ {
+        proxy_pass http://docker_api_1:5001/;
     }
-
-    location /v1 {
-      proxy_pass http://api:5001;
-      include proxy.conf;
-    }
-
-    location /files {
-      proxy_pass http://api:5001;
-      include proxy.conf;
-    }
-
-    location /explore {
-      proxy_pass http://web:3000;
-      include proxy.conf;
-    }
-
-    location /e/ {
-      proxy_pass http://plugin_daemon:5002;
-      proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
-      include proxy.conf;
-    }
-
+    
+    # Web service
     location / {
-      proxy_pass http://web:3000;
-      include proxy.conf;
+        proxy_pass http://docker_web_1:3000/;
     }
-
-    # placeholder for acme challenge location
-    ${ACME_CHALLENGE_LOCATION}
-
-    # placeholder for https config defined in https.conf.template
-    ${HTTPS_CONFIG}
+    
+    # Redirect all other HTTP traffic to HTTPS if HTTPS is enabled
+    if ($scheme != "https") {
+        return 301 https://$host$request_uri;
+    }
 }

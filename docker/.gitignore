@@ -23,4 +23,9 @@ backups/
 
 # System files
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Generated nginx configs
+nginx/conf.d/default.conf
+nginx/conf.d/https.conf
+!nginx/conf.d/*.template 

@@ -5,6 +5,14 @@ set -e
 mkdir -p /var/www/html
 mkdir -p /etc/letsencrypt
 
+# Copy configuration templates
+cp /docker-entrypoint.d/conf.d/default.conf.template /etc/nginx/conf.d/default.conf.template
+cp /docker-entrypoint.d/conf.d/https.conf.template /etc/nginx/conf.d/https.conf.template
+
+# Process templates with environment variables
+envsubst '${NGINX_SERVER_NAME} ${NGINX_SSL_PORT} ${NGINX_SSL_CERT_FILENAME} ${NGINX_SSL_CERT_KEY_FILENAME} ${NGINX_SSL_PROTOCOLS}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+envsubst '${NGINX_SERVER_NAME} ${NGINX_SSL_PORT} ${NGINX_SSL_CERT_FILENAME} ${NGINX_SSL_CERT_KEY_FILENAME} ${NGINX_SSL_PROTOCOLS}' < /etc/nginx/conf.d/https.conf.template > /etc/nginx/conf.d/https.conf
+
 # Generate nginx configuration
 envsubst '${NGINX_SERVER_NAME} ${NGINX_HTTPS_ENABLED} ${NGINX_SSL_PORT} ${NGINX_PORT} ${NGINX_SSL_CERT_FILENAME} ${NGINX_SSL_CERT_KEY_FILENAME} ${NGINX_SSL_PROTOCOLS} ${NGINX_WORKER_PROCESSES} ${NGINX_CLIENT_MAX_BODY_SIZE} ${NGINX_KEEPALIVE_TIMEOUT} ${NGINX_PROXY_READ_TIMEOUT} ${NGINX_PROXY_SEND_TIMEOUT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
