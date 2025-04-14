@@ -1,0 +1,26 @@
+# Volumes
+volumes/
+data/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# SSL certificates
+*.crt
+*.key
+*.pem
+
+# Logs
+*.log
+logs/
+
+# Backup files
+backups/
+*.bak
+*.backup
+
+# System files
+.DS_Store
+Thumbs.db 
