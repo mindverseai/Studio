@@ -79,3 +79,11 @@ export const fetchTracingList: Fetcher<NodeTracingListResponse, { url: string }>
 export const fetchAgentLogDetail = ({ appID, params }: { appID: string; params: AgentLogDetailRequest }) => {
   return get<AgentLogDetailResponse>(`/apps/${appID}/agent/logs`, { params })
 }
+
+export const fetchExportChatConversations = (appId: string) => {
+  return get(`/apps/${appId}/chat-conversations/export`)
+}
+
+export const fetchExportCompletionConversations = (appId: string) => {
+  return get(`/apps/${appId}/completion-conversations/export`)
+}

@@ -12,7 +12,7 @@ import List from './list'
 import Filter, { TIME_PERIOD_MAPPING } from './filter'
 import Pagination from '@/app/components/base/pagination'
 import Loading from '@/app/components/base/loading'
-import { fetchChatConversations, fetchCompletionConversations } from '@/service/log'
+import { fetchChatConversations, fetchCompletionConversations, fetchExportChatConversations, fetchExportCompletionConversations } from '@/service/log'
 import { APP_PAGE_LIMIT } from '@/config'
 import type { App, AppMode } from '@/types/app'
 export type ILogsProps = {
@@ -100,11 +100,70 @@ const Logs: FC<ILogsProps> = ({ appDetail }) => {
 
   const total = isChatMode ? chatConversations?.total : completionConversations?.total
 
+  const downloadCSV = (data: any[], filename: string) => {
+    const csvContent = [
+      // CSV headers
+      isChatMode 
+        ? ['Conversation ID', 'Conversation Name', 'Created At', 'Updated At', 'From End User Session ID', 'From Account Name', 'Message Count', 'Messages']
+        : ['Conversation ID', 'Created At', 'Updated At', 'User Query', 'Assistant Answer', 'From End User Session ID', 'From Account Name'],
+      // CSV rows
+      ...data.map(item => {
+        if (isChatMode) {
+          const messagesText = item.messages.map((msg: any) => 
+            `Q: ${msg.query} A: ${msg.answer}`
+          ).join(' | ')
+          return [
+            item.conversation_id,
+            item.conversation_name,
+            item.created_at,
+            item.updated_at,
+            item.from_end_user_session_id,
+            item.from_account_name,
+            item.message_count,
+            messagesText
+          ]
+        } else {
+          return [
+            item.conversation_id,
+            item.created_at,
+            item.updated_at,
+            item.user_query,
+            item.assistant_answer,
+            item.from_end_user_session_id,
+            item.from_account_name
+          ]
+        }
+      })
+    ].map(row => row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(',')).join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', filename)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleExport = async () => {
+    try {
+      const exportFunction = isChatMode ? fetchExportChatConversations : fetchExportCompletionConversations
+      const response = await exportFunction(appDetail.id)
+      const filename = `${appDetail.name}-conversations-${new Date().toISOString().slice(0, 10)}.csv`
+      downloadCSV(response.data, filename)
+    } catch (error) {
+      console.error('Export failed:', error)
+      // Could add a toast notification here
+    }
+  }
+
   return (
     <div className='grow flex flex-col h-full'>
       <p className='shrink-0 text-text-tertiary system-sm-regular'>{t('appLog.description')}</p>
       <div className='grow max-h-[calc(100%-16px)] flex flex-col py-4 flex-1'>
-        <Filter isChatMode={isChatMode} appId={appDetail.id} queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Filter isChatMode={isChatMode} appId={appDetail.id} queryParams={queryParams} setQueryParams={setQueryParams} onExport={handleExport} />
         {total === undefined
           ? <Loading type='app' />
           : total > 0

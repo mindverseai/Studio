@@ -297,10 +297,91 @@ class ChatConversationDetailApi(Resource):
         return {"result": "success"}, 204
 
 
+class CompletionConversationExportApi(Resource):
+    @setup_required
+    @login_required
+    @account_initialization_required
+    @get_app_model(mode=AppMode.COMPLETION)
+    def get(self, app_model):
+        if not current_user.is_editor:
+            raise Forbidden()
+        
+        # Use similar logic to CompletionConversationApi but without pagination
+        query = db.select(Conversation).where(Conversation.app_id == app_model.id, Conversation.mode == "completion")
+        query = query.order_by(Conversation.created_at.desc())
+        
+        conversations = db.session.execute(query).scalars().all()
+        
+        # Format conversations for export with messages
+        export_data = []
+        for conversation in conversations:
+            if conversation.message:
+                export_data.append({
+                    "conversation_id": conversation.id,
+                    "created_at": conversation.created_at.isoformat(),
+                    "updated_at": conversation.updated_at.isoformat(),
+                    "user_query": conversation.message.query or "",
+                    "assistant_answer": conversation.message.answer or "",
+                    "from_end_user_session_id": conversation.from_end_user_session_id or "",
+                    "from_account_name": conversation.from_account_name or "",
+                })
+        
+        return {"data": export_data}
+
+
+class ChatConversationExportApi(Resource):
+    @setup_required
+    @login_required
+    @account_initialization_required
+    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT])
+    def get(self, app_model):
+        if not current_user.is_editor:
+            raise Forbidden()
+        
+        # Get all conversations for this app
+        query = db.select(Conversation).where(Conversation.app_id == app_model.id)
+        query = query.order_by(Conversation.created_at.desc())
+        
+        conversations = db.session.execute(query).scalars().all()
+        
+        # Format conversations for export with all messages
+        export_data = []
+        for conversation in conversations:
+            messages = db.session.query(Message).filter(
+                Message.conversation_id == conversation.id
+            ).order_by(Message.created_at.asc()).all()
+            
+            conversation_data = {
+                "conversation_id": conversation.id,
+                "conversation_name": conversation.name or "",
+                "created_at": conversation.created_at.isoformat(),
+                "updated_at": conversation.updated_at.isoformat(),
+                "from_end_user_session_id": conversation.from_end_user_session_id or "",
+                "from_account_name": conversation.from_account_name or "",
+                "message_count": len(messages),
+                "messages": []
+            }
+            
+            for message in messages:
+                conversation_data["messages"].append({
+                    "message_id": message.id,
+                    "created_at": message.created_at.isoformat(),
+                    "query": message.query or "",
+                    "answer": message.answer or "",
+                    "from_source": message.from_source,
+                })
+            
+            export_data.append(conversation_data)
+        
+        return {"data": export_data}
+
+
 api.add_resource(CompletionConversationApi, "/apps/<uuid:app_id>/completion-conversations")
 api.add_resource(CompletionConversationDetailApi, "/apps/<uuid:app_id>/completion-conversations/<uuid:conversation_id>")
+api.add_resource(CompletionConversationExportApi, "/apps/<uuid:app_id>/completion-conversations/export")
 api.add_resource(ChatConversationApi, "/apps/<uuid:app_id>/chat-conversations")
 api.add_resource(ChatConversationDetailApi, "/apps/<uuid:app_id>/chat-conversations/<uuid:conversation_id>")
+api.add_resource(ChatConversationExportApi, "/apps/<uuid:app_id>/chat-conversations/export")
 
 
 def _get_conversation(app_model, conversation_id):

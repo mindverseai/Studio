@@ -4,12 +4,13 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 import dayjs from 'dayjs'
-import { RiCalendarLine } from '@remixicon/react'
+import { RiCalendarLine, RiDownloadLine } from '@remixicon/react'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import type { QueryParam } from './index'
 import Chip from '@/app/components/base/chip'
 import Input from '@/app/components/base/input'
 import Sort from '@/app/components/base/sort'
+import Button from '@/app/components/base/button'
 import { fetchAnnotationsCount } from '@/service/log'
 dayjs.extend(quarterOfYear)
 
@@ -32,9 +33,10 @@ type IFilterProps = {
   appId: string
   queryParams: QueryParam
   setQueryParams: (v: QueryParam) => void
+  onExport?: () => void
 }
 
-const Filter: FC<IFilterProps> = ({ isChatMode, appId, queryParams, setQueryParams }: IFilterProps) => {
+const Filter: FC<IFilterProps> = ({ isChatMode, appId, queryParams, setQueryParams, onExport }: IFilterProps) => {
   const { data } = useSWR({ url: `/apps/${appId}/annotations/count` }, fetchAnnotationsCount)
   const { t } = useTranslation()
   if (!data)
@@ -78,6 +80,15 @@ const Filter: FC<IFilterProps> = ({ isChatMode, appId, queryParams, setQueryPara
         }}
         onClear={() => setQueryParams({ ...queryParams, keyword: '' })}
       />
+      <Button
+        variant='secondary'
+        size='small'
+        onClick={onExport}
+        className='flex items-center gap-1'
+      >
+        <RiDownloadLine className='w-4 h-4' />
+        {t('common.operation.download')}
+      </Button>
       {isChatMode && (
         <>
           <div className='w-px h-3.5 bg-divider-regular'></div>
