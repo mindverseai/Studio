@@ -12,7 +12,7 @@ import List from './list'
 import Filter, { TIME_PERIOD_MAPPING } from './filter'
 import Pagination from '@/app/components/base/pagination'
 import Loading from '@/app/components/base/loading'
-import { fetchChatConversations, fetchCompletionConversations } from '@/service/log'
+import { fetchChatConversations, fetchCompletionConversations, fetchChatMessages } from '@/service/log'
 import { APP_PAGE_LIMIT } from '@/config'
 import type { App, AppMode } from '@/types/app'
 export type ILogsProps = {
@@ -160,7 +160,7 @@ const Logs: FC<ILogsProps> = ({ appDetail }) => {
         
         const response = await fetchFunction({
           url,
-          params: { page, limit: 100 } // Use max limit to reduce API calls
+          params: { page, limit: 100 } as any // Use max limit to reduce API calls
         })
         
         allConversations = [...allConversations, ...response.data]
@@ -173,17 +173,46 @@ const Logs: FC<ILogsProps> = ({ appDetail }) => {
       
       if (isChatMode) {
         for (const conversation of allConversations) {
-          const conversationData = {
-            conversation_id: conversation.id,
-            conversation_name: conversation.name || "",
-            created_at: conversation.created_at,
-            updated_at: conversation.updated_at,
-            from_end_user_session_id: conversation.from_end_user_session_id || "",
-            from_account_name: conversation.from_account_name || "",
-            message_count: conversation.message_count || 0,
-            messages: `${conversation.summary_or_query || 'No messages'}` // Use summary as simplified messages
+          try {
+            // Fetch actual messages for this conversation
+            const messagesResponse = await fetchChatMessages({
+              url: `/apps/${appDetail.id}/chat-messages`,
+              params: {
+                conversation_id: conversation.id,
+                limit: 100 // Get up to 100 messages per conversation
+              }
+            })
+            
+            // Format messages as Q: A: pairs
+            const messagesText = messagesResponse.data.map((msg: any) => 
+              `Q: ${msg.query || 'No query'} A: ${msg.answer || 'No answer'}`
+            ).join(' | ')
+            
+            const conversationData = {
+              conversation_id: conversation.id,
+              conversation_name: conversation.name || "",
+              created_at: conversation.created_at,
+              updated_at: conversation.updated_at,
+              from_end_user_session_id: conversation.from_end_user_session_id || "",
+              from_account_name: conversation.from_account_name || "",
+              message_count: messagesResponse.data.length,
+              messages: messagesText || 'No messages found'
+            }
+            exportData.push(conversationData)
+          } catch (error) {
+            console.error(`Failed to fetch messages for conversation ${conversation.id}:`, error)
+            // Add conversation without messages if API call fails
+            exportData.push({
+              conversation_id: conversation.id,
+              conversation_name: conversation.name || "",
+              created_at: conversation.created_at,
+              updated_at: conversation.updated_at,
+              from_end_user_session_id: conversation.from_end_user_session_id || "",
+              from_account_name: conversation.from_account_name || "",
+              message_count: conversation.message_count || 0,
+              messages: 'Failed to fetch messages'
+            })
           }
-          exportData.push(conversationData)
         }
       } else {
         // For completion mode, conversations already have the single message
