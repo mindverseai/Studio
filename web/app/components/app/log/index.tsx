@@ -12,7 +12,7 @@ import List from './list'
 import Filter, { TIME_PERIOD_MAPPING } from './filter'
 import Pagination from '@/app/components/base/pagination'
 import Loading from '@/app/components/base/loading'
-import { fetchChatConversations, fetchCompletionConversations, fetchExportChatConversations, fetchExportCompletionConversations } from '@/service/log'
+import { fetchChatConversations, fetchCompletionConversations } from '@/service/log'
 import { APP_PAGE_LIMIT } from '@/config'
 import type { App, AppMode } from '@/types/app'
 export type ILogsProps = {
@@ -104,14 +104,11 @@ const Logs: FC<ILogsProps> = ({ appDetail }) => {
     const csvContent = [
       // CSV headers
       isChatMode 
-        ? ['Conversation ID', 'Conversation Name', 'Created At', 'Updated At', 'From End User Session ID', 'From Account Name', 'Message Count', 'Messages']
+        ? ['Conversation ID', 'Conversation Name', 'Created At', 'Updated At', 'From End User Session ID', 'From Account Name', 'Message Count', 'Summary/Query']
         : ['Conversation ID', 'Created At', 'Updated At', 'User Query', 'Assistant Answer', 'From End User Session ID', 'From Account Name'],
       // CSV rows
       ...data.map(item => {
         if (isChatMode) {
-          const messagesText = item.messages.map((msg: any) => 
-            `Q: ${msg.query} A: ${msg.answer}`
-          ).join(' | ')
           return [
             item.conversation_id,
             item.conversation_name,
@@ -120,7 +117,7 @@ const Logs: FC<ILogsProps> = ({ appDetail }) => {
             item.from_end_user_session_id,
             item.from_account_name,
             item.message_count,
-            messagesText
+            item.messages
           ]
         } else {
           return [
@@ -149,10 +146,62 @@ const Logs: FC<ILogsProps> = ({ appDetail }) => {
 
   const handleExport = async () => {
     try {
-      const exportFunction = isChatMode ? fetchExportChatConversations : fetchExportCompletionConversations
-      const response = await exportFunction(appDetail.id)
+      // Use existing APIs to fetch all conversations
+      let allConversations: any[] = []
+      let page = 1
+      let hasMore = true
+
+      // Fetch all pages of conversations
+      while (hasMore) {
+        const fetchFunction = isChatMode ? fetchChatConversations : fetchCompletionConversations
+        const url = isChatMode 
+          ? `/apps/${appDetail.id}/chat-conversations`
+          : `/apps/${appDetail.id}/completion-conversations`
+        
+        const response = await fetchFunction({
+          url,
+          params: { page, limit: 100 } // Use max limit to reduce API calls
+        })
+        
+        allConversations = [...allConversations, ...response.data]
+        hasMore = response.has_more
+        page++
+      }
+
+      // For chat mode, we need to fetch messages for each conversation
+      const exportData: any[] = []
+      
+      if (isChatMode) {
+        for (const conversation of allConversations) {
+          const conversationData = {
+            conversation_id: conversation.id,
+            conversation_name: conversation.name || "",
+            created_at: conversation.created_at,
+            updated_at: conversation.updated_at,
+            from_end_user_session_id: conversation.from_end_user_session_id || "",
+            from_account_name: conversation.from_account_name || "",
+            message_count: conversation.message_count || 0,
+            messages: `${conversation.summary_or_query || 'No messages'}` // Use summary as simplified messages
+          }
+          exportData.push(conversationData)
+        }
+      } else {
+        // For completion mode, conversations already have the single message
+        for (const conversation of allConversations) {
+          exportData.push({
+            conversation_id: conversation.id,
+            created_at: conversation.created_at,
+            updated_at: conversation.updated_at,
+            user_query: conversation.message?.query || "",
+            assistant_answer: conversation.message?.answer || "",
+            from_end_user_session_id: conversation.from_end_user_session_id || "",
+            from_account_name: conversation.from_account_name || "",
+          })
+        }
+      }
+
       const filename = `${appDetail.name}-conversations-${new Date().toISOString().slice(0, 10)}.csv`
-      downloadCSV(response.data, filename)
+      downloadCSV(exportData, filename)
     } catch (error) {
       console.error('Export failed:', error)
       // Could add a toast notification here
