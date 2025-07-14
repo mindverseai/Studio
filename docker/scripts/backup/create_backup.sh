@@ -31,4 +31,4 @@ if [ $? -eq 0 ]; then
 else
     echo "❌ Backup failed!"
     exit 1
-fi
+fi 
