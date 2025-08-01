@@ -1,9 +1,10 @@
 from controllers.console.datasets.hit_testing_base import DatasetsHitTestingBase
 from controllers.service_api import api
-from controllers.service_api.wraps import DatasetApiResource
+from controllers.service_api.wraps import DatasetApiResource, dataset_api_required
 
 
 class HitTestingApi(DatasetApiResource, DatasetsHitTestingBase):
+    @dataset_api_required('HIT_TESTING')
     def post(self, tenant_id, dataset_id):
         dataset_id_str = str(dataset_id)
 

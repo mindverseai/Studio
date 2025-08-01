@@ -15,7 +15,7 @@ from controllers.service_api.dataset.error import (
     NoFileUploadedError,
     TooManyFilesError,
 )
-from controllers.service_api.wraps import DatasetApiResource, cloud_edition_billing_resource_check
+from controllers.service_api.wraps import DatasetApiResource, cloud_edition_billing_resource_check, dataset_api_required
 from core.errors.error import ProviderTokenNotInitError
 from extensions.ext_database import db
 from fields.document_fields import document_fields, document_status_fields
@@ -89,6 +89,7 @@ class DocumentAddByTextApi(DatasetApiResource):
 class DocumentUpdateByTextApi(DatasetApiResource):
     """Resource for update documents."""
 
+    @dataset_api_required('UPDATE_BY_TEXT')
     @cloud_edition_billing_resource_check("vector_space", "dataset")
     def post(self, tenant_id, dataset_id, document_id):
         """Update document by text."""
@@ -206,6 +207,7 @@ class DocumentAddByFileApi(DatasetApiResource):
 class DocumentUpdateByFileApi(DatasetApiResource):
     """Resource for update documents."""
 
+    @dataset_api_required('UPDATE_BY_FILE')
     @cloud_edition_billing_resource_check("vector_space", "dataset")
     def post(self, tenant_id, dataset_id, document_id):
         """Update document by upload file."""
@@ -295,6 +297,7 @@ class DocumentDeleteApi(DatasetApiResource):
 
 
 class DocumentListApi(DatasetApiResource):
+    @dataset_api_required('LIST_DOCUMENTS')
     def get(self, tenant_id, dataset_id):
         dataset_id = str(dataset_id)
         tenant_id = str(tenant_id)
@@ -328,6 +331,7 @@ class DocumentListApi(DatasetApiResource):
 
 
 class DocumentIndexingStatusApi(DatasetApiResource):
+    @dataset_api_required('INDEXING_STATUS')
     def get(self, tenant_id, dataset_id, batch):
         dataset_id = str(dataset_id)
         batch = str(batch)

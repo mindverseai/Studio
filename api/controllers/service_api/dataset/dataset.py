@@ -5,7 +5,7 @@ from werkzeug.exceptions import NotFound
 import services.dataset_service
 from controllers.service_api import api
 from controllers.service_api.dataset.error import DatasetInUseError, DatasetNameDuplicateError
-from controllers.service_api.wraps import DatasetApiResource
+from controllers.service_api.wraps import DatasetApiResource, dataset_api_required
 from core.model_runtime.entities.model_entities import ModelType
 from core.provider_manager import ProviderManager
 from fields.dataset_fields import dataset_detail_fields
@@ -23,6 +23,7 @@ def _validate_name(name):
 class DatasetListApi(DatasetApiResource):
     """Resource for datasets."""
 
+    @dataset_api_required('LIST_DATASETS')
     def get(self, tenant_id):
         """Resource for getting datasets."""
 
@@ -56,6 +57,7 @@ class DatasetListApi(DatasetApiResource):
         response = {"data": data, "has_more": len(datasets) == limit, "limit": limit, "total": total, "page": page}
         return response, 200
 
+    @dataset_api_required('CREATE_DATASET')
     def post(self, tenant_id):
         """Resource for creating datasets."""
         parser = reqparse.RequestParser()
@@ -132,6 +134,7 @@ class DatasetListApi(DatasetApiResource):
 class DatasetApi(DatasetApiResource):
     """Resource for dataset."""
 
+    @dataset_api_required('DELETE_DATASET')
     def delete(self, _, dataset_id):
         """
         Deletes a dataset given its ID.

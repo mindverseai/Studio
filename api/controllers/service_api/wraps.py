@@ -10,6 +10,7 @@ from flask_restful import Resource
 from pydantic import BaseModel
 from werkzeug.exceptions import Forbidden, Unauthorized
 
+from configs import dify_config
 from extensions.ext_database import db
 from libs.login import _get_user
 from models.account import Account, Tenant, TenantAccountJoin, TenantStatus
@@ -111,6 +112,48 @@ def cloud_edition_billing_resource_check(resource: str, api_token_type: str):
         return decorated
 
     return interceptor
+
+
+def dataset_api_required(endpoint_name: str):
+    """
+    Decorator to check if specific dataset API endpoints are enabled.
+    
+    Args:
+        endpoint_name: The name of the endpoint to check permission for.
+                      Must match one of the config field names (without DATASET_API_ prefix)
+    """
+    def decorator(view):
+        @wraps(view)
+        def decorated_view(*args, **kwargs):
+            # Check if dataset APIs are globally disabled
+            if not dify_config.DATASET_API_ENABLED:
+                raise Forbidden("Dataset API access has been disabled.")
+            
+            # Check specific endpoint permission based on endpoint_name
+            endpoint_config_map = {
+                'CREATE_BY_TEXT': dify_config.DATASET_API_CREATE_BY_TEXT_ENABLED,
+                'CREATE_BY_FILE': dify_config.DATASET_API_CREATE_BY_FILE_ENABLED,
+                'DELETE_DOCUMENT': dify_config.DATASET_API_DELETE_DOCUMENT_ENABLED,
+                'UPDATE_BY_TEXT': dify_config.DATASET_API_UPDATE_BY_TEXT_ENABLED,
+                'UPDATE_BY_FILE': dify_config.DATASET_API_UPDATE_BY_FILE_ENABLED,
+                'LIST_DOCUMENTS': dify_config.DATASET_API_LIST_DOCUMENTS_ENABLED,
+                'INDEXING_STATUS': dify_config.DATASET_API_INDEXING_STATUS_ENABLED,
+                'HIT_TESTING': dify_config.DATASET_API_HIT_TESTING_ENABLED,
+                'SEGMENTS': dify_config.DATASET_API_SEGMENTS_ENABLED,
+                'LIST_DATASETS': dify_config.DATASET_API_LIST_DATASETS_ENABLED,
+                'CREATE_DATASET': dify_config.DATASET_API_CREATE_DATASET_ENABLED,
+                'DELETE_DATASET': dify_config.DATASET_API_DELETE_DATASET_ENABLED,
+            }
+            
+            # Check if this specific endpoint is enabled
+            if endpoint_name in endpoint_config_map:
+                if not endpoint_config_map[endpoint_name]:
+                    raise Forbidden(f"Dataset API endpoint '{endpoint_name}' has been disabled.")
+            
+            return view(*args, **kwargs)
+        
+        return decorated_view
+    return decorator
 
 
 def cloud_edition_billing_knowledge_limit_check(resource: str, api_token_type: str):

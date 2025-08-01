@@ -8,6 +8,7 @@ from controllers.service_api.wraps import (
     DatasetApiResource,
     cloud_edition_billing_knowledge_limit_check,
     cloud_edition_billing_resource_check,
+    dataset_api_required,
 )
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.model_manager import ModelManager
@@ -21,6 +22,7 @@ from services.dataset_service import DatasetService, DocumentService, SegmentSer
 class SegmentApi(DatasetApiResource):
     """Resource for segments."""
 
+    @dataset_api_required('SEGMENTS')
     @cloud_edition_billing_resource_check("vector_space", "dataset")
     @cloud_edition_billing_knowledge_limit_check("add_segment", "dataset")
     def post(self, tenant_id, dataset_id, document_id):
@@ -69,6 +71,7 @@ class SegmentApi(DatasetApiResource):
         else:
             return {"error": "Segments is required"}, 400
 
+    @dataset_api_required('SEGMENTS')
     def get(self, tenant_id, dataset_id, document_id):
         """Create single segment."""
         # check dataset
@@ -124,6 +127,7 @@ class SegmentApi(DatasetApiResource):
 
 
 class DatasetSegmentApi(DatasetApiResource):
+    @dataset_api_required('SEGMENTS')
     def delete(self, tenant_id, dataset_id, document_id, segment_id):
         # check dataset
         dataset_id = str(dataset_id)
@@ -147,6 +151,7 @@ class DatasetSegmentApi(DatasetApiResource):
         SegmentService.delete_segment(segment, document, dataset)
         return {"result": "success"}, 200
 
+    @dataset_api_required('SEGMENTS')
     @cloud_edition_billing_resource_check("vector_space", "dataset")
     def post(self, tenant_id, dataset_id, document_id, segment_id):
         # check dataset

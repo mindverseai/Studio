@@ -626,6 +626,72 @@ class DataSetConfig(BaseSettings):
         default=30,
     )
 
+    # Dataset API endpoint controls
+    DATASET_API_ENABLED: bool = Field(
+        description="Enable or disable all dataset API endpoints",
+        default=True,
+    )
+
+    DATASET_API_CREATE_BY_TEXT_ENABLED: bool = Field(
+        description="Enable or disable dataset document create by text API endpoint",
+        default=True,
+    )
+
+    DATASET_API_CREATE_BY_FILE_ENABLED: bool = Field(
+        description="Enable or disable dataset document create by file API endpoint", 
+        default=True,
+    )
+
+    DATASET_API_DELETE_DOCUMENT_ENABLED: bool = Field(
+        description="Enable or disable dataset document delete API endpoint",
+        default=True,
+    )
+
+    DATASET_API_UPDATE_BY_TEXT_ENABLED: bool = Field(
+        description="Enable or disable dataset document update by text API endpoint",
+        default=True,
+    )
+
+    DATASET_API_UPDATE_BY_FILE_ENABLED: bool = Field(
+        description="Enable or disable dataset document update by file API endpoint",
+        default=True,
+    )
+
+    DATASET_API_LIST_DOCUMENTS_ENABLED: bool = Field(
+        description="Enable or disable dataset document list API endpoint",
+        default=True,
+    )
+
+    DATASET_API_INDEXING_STATUS_ENABLED: bool = Field(
+        description="Enable or disable dataset document indexing status API endpoint",
+        default=True,
+    )
+
+    DATASET_API_HIT_TESTING_ENABLED: bool = Field(
+        description="Enable or disable dataset hit testing API endpoint",
+        default=True,
+    )
+
+    DATASET_API_SEGMENTS_ENABLED: bool = Field(
+        description="Enable or disable dataset segments API endpoints",
+        default=True,
+    )
+
+    DATASET_API_LIST_DATASETS_ENABLED: bool = Field(
+        description="Enable or disable dataset list API endpoint",
+        default=True,
+    )
+
+    DATASET_API_CREATE_DATASET_ENABLED: bool = Field(
+        description="Enable or disable dataset create API endpoint",
+        default=True,
+    )
+
+    DATASET_API_DELETE_DATASET_ENABLED: bool = Field(
+        description="Enable or disable dataset delete API endpoint",
+        default=True,
+    )
+
 
 class WorkspaceConfig(BaseSettings):
     """
