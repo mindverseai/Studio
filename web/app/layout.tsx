@@ -95,6 +95,7 @@ const LocaleLayout = async ({
       <body
         className="color-scheme h-full select-auto"
         {...datasetMap}
+        suppressHydrationWarning
       >
         <SerwistProvider swUrl={swUrl}>
           <ReactScanLoader />

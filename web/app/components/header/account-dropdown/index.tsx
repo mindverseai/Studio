@@ -3,38 +3,26 @@ import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/r
 import {
   RiAccountCircleLine,
   RiArrowRightUpLine,
-  RiBookOpenLine,
-  RiGithubLine,
   RiGraduationCapFill,
-  RiInformation2Line,
   RiLogoutBoxRLine,
-  RiMap2Line,
   RiSettings3Line,
-  RiStarLine,
   RiTShirt2Line,
 } from '@remixicon/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { resetUser } from '@/app/components/base/amplitude/utils'
 import Avatar from '@/app/components/base/avatar'
 import PremiumBadge from '@/app/components/base/premium-badge'
 import ThemeSwitcher from '@/app/components/base/theme-switcher'
 import { ACCOUNT_SETTING_TAB } from '@/app/components/header/account-setting/constants'
-import { IS_CLOUD_EDITION } from '@/config'
 import { useAppContext } from '@/context/app-context'
 import { useGlobalPublicStore } from '@/context/global-public-context'
-import { useDocLink } from '@/context/i18n'
 import { useModalContext } from '@/context/modal-context'
 import { useProviderContext } from '@/context/provider-context'
 import { useLogout } from '@/service/use-common'
 import { cn } from '@/utils/classnames'
-import AccountAbout from '../account-about'
-import GithubStar from '../github-star'
-import Indicator from '../indicator'
-import Compliance from './compliance'
-import Support from './support'
 
 export default function AppSelector() {
   const itemClassName = `
@@ -42,12 +30,10 @@ export default function AppSelector() {
     rounded-lg hover:bg-state-base-hover cursor-pointer gap-1
   `
   const router = useRouter()
-  const [aboutVisible, setAboutVisible] = useState(false)
   const { systemFeatures } = useGlobalPublicStore()
 
   const { t } = useTranslation()
-  const docLink = useDocLink()
-  const { userProfile, langGeniusVersionInfo, isCurrentWorkspaceOwner } = useAppContext()
+  const { userProfile } = useAppContext()
   const { isEducationAccount } = useProviderContext()
   const { setShowAccountSettingModal } = useModalContext()
 
@@ -70,7 +56,7 @@ export default function AppSelector() {
     <div className="">
       <Menu as="div" className="relative inline-block text-left">
         {
-          ({ open, close }) => (
+          ({ open }) => (
             <>
               <MenuButton className={cn('inline-flex items-center rounded-[20px] p-0.5 hover:bg-background-default-dodge', open && 'bg-background-default-dodge')}>
                 <Avatar avatar={userProfile.avatar_url} name={userProfile.name} size={36} />
@@ -133,68 +119,6 @@ export default function AppSelector() {
                   </div>
                   {!systemFeatures.branding.enabled && (
                     <>
-                      <div className="p-1">
-                        <MenuItem>
-                          <Link
-                            className={cn(itemClassName, 'group justify-between', 'data-[active]:bg-state-base-hover')}
-                            href={docLink('/introduction')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <RiBookOpenLine className="size-4 shrink-0 text-text-tertiary" />
-                            <div className="system-md-regular grow px-1 text-text-secondary">{t('userProfile.helpCenter', { ns: 'common' })}</div>
-                            <RiArrowRightUpLine className="size-[14px] shrink-0 text-text-tertiary" />
-                          </Link>
-                        </MenuItem>
-                        <Support closeAccountDropdown={close} />
-                        {IS_CLOUD_EDITION && isCurrentWorkspaceOwner && <Compliance />}
-                      </div>
-                      <div className="p-1">
-                        <MenuItem>
-                          <Link
-                            className={cn(itemClassName, 'group justify-between', 'data-[active]:bg-state-base-hover')}
-                            href="https://roadmap.dify.ai"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <RiMap2Line className="size-4 shrink-0 text-text-tertiary" />
-                            <div className="system-md-regular grow px-1 text-text-secondary">{t('userProfile.roadmap', { ns: 'common' })}</div>
-                            <RiArrowRightUpLine className="size-[14px] shrink-0 text-text-tertiary" />
-                          </Link>
-                        </MenuItem>
-                        <MenuItem>
-                          <Link
-                            className={cn(itemClassName, 'group justify-between', 'data-[active]:bg-state-base-hover')}
-                            href="https://github.com/langgenius/dify"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <RiGithubLine className="size-4 shrink-0 text-text-tertiary" />
-                            <div className="system-md-regular grow px-1 text-text-secondary">{t('userProfile.github', { ns: 'common' })}</div>
-                            <div className="flex items-center gap-0.5 rounded-[5px] border border-divider-deep bg-components-badge-bg-dimm px-[5px] py-[3px]">
-                              <RiStarLine className="size-3 shrink-0 text-text-tertiary" />
-                              <GithubStar className="system-2xs-medium-uppercase text-text-tertiary" />
-                            </div>
-                          </Link>
-                        </MenuItem>
-                        {
-                          document?.body?.getAttribute('data-public-site-about') !== 'hide' && (
-                            <MenuItem>
-                              <div
-                                className={cn(itemClassName, 'justify-between', 'data-[active]:bg-state-base-hover')}
-                                onClick={() => setAboutVisible(true)}
-                              >
-                                <RiInformation2Line className="size-4 shrink-0 text-text-tertiary" />
-                                <div className="system-md-regular grow px-1 text-text-secondary">{t('userProfile.about', { ns: 'common' })}</div>
-                                <div className="flex shrink-0 items-center">
-                                  <div className="system-xs-regular mr-2 text-text-tertiary">{langGeniusVersionInfo.current_version}</div>
-                                  <Indicator color={langGeniusVersionInfo.current_version === langGeniusVersionInfo.latest_version ? 'green' : 'orange'} />
-                                </div>
-                              </div>
-                            </MenuItem>
-                          )
-                        }
-                      </div>
                     </>
                   )}
                   <MenuItem disabled>
@@ -222,9 +146,6 @@ export default function AppSelector() {
           )
         }
       </Menu>
-      {
-        aboutVisible && <AccountAbout onCancel={() => setAboutVisible(false)} langGeniusVersionInfo={langGeniusVersionInfo} />
-      }
     </div>
   )
 }

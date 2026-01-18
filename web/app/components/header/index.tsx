@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
 import { useCallback } from 'react'
-import DifyLogo from '@/app/components/base/logo/dify-logo'
 import WorkplaceSelector from '@/app/components/header/account-dropdown/workplace-selector'
 import { ACCOUNT_SETTING_TAB } from '@/app/components/header/account-setting/constants'
 import { useAppContext } from '@/context/app-context'
@@ -55,7 +54,13 @@ const Header = () => {
                 alt="logo"
               />
             )
-          : <DifyLogo />}
+          : (
+              <img
+                src="https://e-handwerk.ai/logo/logo-site.png"
+                className="block h-[22px] w-auto object-contain"
+                alt="logo"
+              />
+            )}
       </Link>
     </h1>
   )
